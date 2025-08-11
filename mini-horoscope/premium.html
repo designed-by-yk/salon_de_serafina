@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>プレミアム星座占い - 詳細鑑定</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* プレミアム専用スタイル */
+    .premium-container {
+      background: linear-gradient(135deg, #2d1b69 0%, #1a0b3d 50%, #0d051f 100%);
+      min-height: 100vh;
+      position: relative;
+    }
+    
+    .premium-header {
+      text-align: center;
+      padding: 20px 20px 15px 20px;
+      background: linear-gradient(45deg, #ffd700, #ffa500, #ff6347);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .premium-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+    }
+    
+    .premium-badge {
+      display: inline-block;
+      background: linear-gradient(45deg, #ffd700, #ffb347);
+      color: #2d1b69 !important;
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 16px;
+      box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+      margin-bottom: 20px;
+      pointer-events: none;
+      user-select: none;
+      text-align: center;
+      min-width: 150px;
+      line-height: 1.2;
+    }
+    
+    .premium-content {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .login-required {
+      text-align: center;
+      padding: 25px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      margin: 20px auto;
+      max-width: 700px;
+    }
+    
+    .detailed-reading {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 25px;
+      padding: 30px;
+      margin-bottom: 30px;
+      border: 2px solid rgba(255, 215, 0, 0.2);
+      backdrop-filter: blur(10px);
+    }
+    
+    .reading-section {
+      margin-bottom: 25px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      border-left: 4px solid #ffd700;
+    }
+    
+    .reading-section h3 {
+      color: #ffd700;
+      margin-bottom: 10px;
+      font-size: 1.2rem;
+    }
+    
+    .reading-section p {
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .special-message {
+      background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 105, 180, 0.2));
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 30px;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      text-align: center;
+    }
+    
+    .special-message h3 {
+      color: #ff69b4;
+      margin-bottom: 15px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 30px 0;
+    }
+    
+    .premium-btn {
+      background: linear-gradient(45deg, #ffd700, #ffb347);
+      color: #2d1b69;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 25px;
+      font-family: inherit;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+      text-align: center;
+      display: inline-block;
+      min-width: 180px;
+      white-space: nowrap;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    
+    .premium-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+    }
+    
+    .test-btn {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+    }
+    
+    .history-section {
+      margin-top: 40px;
+    }
+    
+    .history-item {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-left: 3px solid #ffd700;
+    }
+    
+    .history-date {
+      color: #ffd700;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    .breadcrumb {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px 20px;
+      font-size: 14px;
+      backdrop-filter: blur(10px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+    }
+
+    .breadcrumb a {
+      color: rgba(255, 255, 255, 0.9);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .breadcrumb a:hover {
+      color: #ffd700;
+    }
+
+    .breadcrumb-separator {
+      color: rgba(255, 255, 255, 0.6);
+      margin: 0 8px;
+    }
+
+    .breadcrumb-current {
+      color: #ffd700;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 60px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    @media (max-width: 768px) {
+      .premium-header h1 {
+        font-size: 2rem;
+      }
+      
+      .premium-content {
+        padding: 15px;
+      }
+      
+      .detailed-reading {
+        padding: 20px;
+      }
+      
+      .controls {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .premium-btn {
+        width: 100%;
+        max-width: 280px;
+      }
+    }
+    
+    /* キャンペーンバッジ */
+    .campaign-badge {
+      position: absolute;
+      top: -15px;
+      right: -10px;
+      background: linear-gradient(45deg, #ff4444, #ff6666);
+      color: white;
+      font-size: 12px;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+      box-shadow: 0 3px 15px rgba(255, 68, 68, 0.7);
+      border: 2px solid white;
+      z-index: 100;
+      white-space: nowrap;
+      line-height: 1.2;
+      transform: rotate(-5deg);
+    }
+    
+    /* 決済モーダル */
+    .payment-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
+    }
+    
+    .payment-modal.hidden {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
+    
+    .payment-modal-content {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 2px solid rgba(255, 215, 0, 0.3);
+      animation: slideUp 0.3s ease;
+    }
+    
+    .payment-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .payment-header h2 {
+      color: #ffd700;
+      margin: 0;
+      font-size: 1.4rem;
+    }
+    
+    .payment-close {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 5px;
+      width: 40px;
+      height: 40px;
+      position: relative;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .payment-close:hover {
+      color: #ffd700;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+    
+    .payment-summary {
+      padding: 20px;
+      background: rgba(255, 215, 0, 0.1);
+      margin: 0 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    
+    .campaign-highlight {
+      text-align: center;
+    }
+    
+    .campaign-text {
+      background: linear-gradient(45deg, #ff4444, #ff6666);
+      color: white;
+      padding: 5px 15px;
+      border-radius: 15px;
+      font-size: 14px;
+      font-weight: bold;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    
+    .price-breakdown {
+      margin: 10px 0;
+    }
+    
+    .original-price {
+      text-decoration: line-through;
+      color: rgba(255, 255, 255, 0.6);
+      margin-right: 15px;
+    }
+    
+    .campaign-price {
+      color: #ffd700;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    
+    .next-month {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 12px;
+      margin: 5px 0 0 0;
+    }
+    
+    .payment-methods {
+      padding: 20px;
+    }
+    
+    .payment-methods h3 {
+      color: white;
+      margin-bottom: 15px;
+      font-size: 1.1rem;
+    }
+    
+    .payment-option {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      color: white;
+    }
+    
+    .payment-option:hover {
+      background: rgba(255, 215, 0, 0.2);
+      border-color: #ffd700;
+      transform: translateY(-2px);
+    }
+    
+    .payment-icon {
+      font-size: 1.5rem;
+      margin-right: 15px;
+      width: 40px;
+      text-align: center;
+    }
+    
+    .payment-info {
+      flex: 1;
+      text-align: left;
+    }
+    
+    .payment-name {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    
+    .payment-desc {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+    
+    .payment-arrow {
+      font-size: 1.2rem;
+      color: #ffd700;
+    }
+    
+    .payment-footer {
+      padding: 20px;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .security-note {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .payment-cancel {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 10;
+      min-width: 100px;
+      min-height: 40px;
+    }
+    
+    .payment-cancel:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    /* キャンペーンバッジ用アニメーション強化 */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 2px 10px rgba(255, 68, 68, 0.5);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 4px 20px rgba(255, 68, 68, 0.8);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 2px 10px rgba(255, 68, 68, 0.5);
+      }
+    }
+  </style>
+</head>
+<body class="premium-container">
+  <!-- パンくずリスト -->
+  <nav class="breadcrumb">
+    <a href="../omikuji/index.html">🏠 トップ</a>
+    <span class="breadcrumb-separator">›</span>
+    <a href="index.html">mini星座占い</a>
+    <span class="breadcrumb-separator">›</span>
+    <span class="breadcrumb-current">プレミアム版</span>
+  </nav>
+
+  <button class="back-btn" onclick="history.back()">← 戻る</button>
+  
+  <div class="premium-content">
+    <header class="premium-header">
+      <h1>✨ プレミアム星座占い ✨</h1>
+      <p>あなただけの特別な鑑定をお届けします</p>
+    </header>
+    
+    <!-- プレミアムバッジ -->
+    <div style="text-align: center; margin: 20px 0;">
+      <span id="premium-badge-main" style="background: #ffd700; color: #2d1b69; font-weight: bold; font-size: 16px; font-family: Arial, sans-serif; padding: 12px 25px; border-radius: 25px; display: inline-block; text-align: center; box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3); border: 2px solid #ffb347; line-height: 1.2; white-space: nowrap;">💎 PREMIUM MEMBER</span>
+    </div>
+    
+    <!-- ログインが必要な場合 -->
+    <div id="login-required" class="login-required hidden">
+      <h2>🔒 プレミアム会員限定コンテンツ</h2>
+      
+      <!-- 価格を上部に表示 -->
+      <div style="text-align: center; margin: 15px 0; padding: 12px; background: rgba(255, 215, 0, 0.2); border-radius: 10px;">
+        <div style="margin-bottom: 8px;">
+          <span style="text-decoration: line-through; color: rgba(255,255,255,0.6); font-size: 16px;">月額380円</span>
+          <span style="color: #ffd700; font-size: 28px; font-weight: bold; margin-left: 15px;">初月100円</span>
+        </div>
+        <p style="color: rgba(255,255,255,0.8); font-size: 12px; margin: 0;">いつでも解約可能</p>
+      </div>
+      
+      <!-- ボタンを上部に移動 -->
+      <div class="controls" style="margin: 25px 0; position: relative; overflow: visible;">
+        <button type="button" class="premium-btn test-btn" id="test-premium" style="margin: 8px; font-size: 18px;">🎯 テスト体験してみる</button>
+        <button type="button" class="premium-btn" id="payment-btn" style="margin: 8px; position: relative; overflow: visible;">
+          <span class="campaign-badge">初月100円!</span>
+          💎 月額380円で申し込む
+        </button>
+      </div>
+      
+      <p style="font-size: 14px; color: rgba(255,255,255,0.8); margin: 15px 0;">
+        詳細な鑑定をご覧いただくには、プレミアム会員登録が必要です。<br>
+        <strong>「🎯 テスト体験してみる」</strong>で実際のコンテンツをお試しください。
+      </p>
+      
+      <!-- コンパクトに内容説明 -->
+      <div style="margin: 15px 0; padding: 12px; background: rgba(255, 215, 0, 0.1); border-radius: 10px; text-align: left;">
+        <h4 style="margin: 0 0 8px 0; color: #ffd700; font-size: 16px;">✨ プレミアム版の内容</h4>
+        <div style="color: rgba(255,255,255,0.9); line-height: 1.4; font-size: 14px;">
+          📋 <strong>今月の詳細鑑定書</strong>（総合運・恋愛運・仕事運・金運・健康運）<br>
+          💫 <strong>今日の特別メッセージ</strong>（あなた専用の個別メッセージ）<br>
+          📅 <strong>過去7日間の履歴</strong>（見逃したメッセージも確認可能）
+        </div>
+      </div>
+    </div>
+    
+    <!-- プレミアムコンテンツ -->
+    <div id="premium-content" class="hidden">
+      <!-- ボタンを上部に移動してコンパクトに -->
+      <div style="text-align: center; margin-bottom: 20px; padding: 15px; background: rgba(255, 215, 0, 0.1); border-radius: 15px;">
+        <h3 style="color: #ffd700; margin: 0 0 15px 0; font-size: 20px;">🎉 プレミアム体験モード</h3>
+        
+        <!-- メインボタンを上部に -->
+        <div class="controls" style="margin: 0;">
+          <button class="premium-btn" id="daily-message-btn" style="margin: 5px; font-size: 16px;">💫 今日のメッセージ</button>
+          <button class="premium-btn" id="monthly-reading-btn" style="margin: 5px; font-size: 16px;">📋 詳細鑑定書</button>
+        </div>
+        
+        <div style="margin-top: 15px;">
+          <button class="premium-btn test-btn" id="logout-btn" style="margin: 5px; font-size: 14px;">❌ 体験終了</button>
+        </div>
+      </div>
+      
+      <!-- 今日の特別メッセージ -->
+      <div id="daily-message" class="special-message hidden">
+        <h3>💫 今日の特別メッセージ</h3>
+        <p id="daily-message-content">メッセージを読み込み中...</p>
+        <small id="message-date"></small>
+      </div>
+      
+      <!-- 今月の詳細鑑定書 -->
+      <div id="monthly-reading" class="detailed-reading hidden">
+        <h2 style="text-align: center; color: #ffd700; margin-bottom: 30px;">
+          📋 <span id="selected-sign-name">星座</span> 今月の詳細鑑定書
+        </h2>
+        
+        <div class="reading-section">
+          <h3>🌟 総合運</h3>
+          <p id="general-fortune">今月のあなたは、新しい可能性に満ちています。これまで努力してきたことが実を結び始める時期です。特に月の中旬以降は、運気が大きく上昇し、思いがけない幸運が舞い込むでしょう。ただし、感情的になりやすい時期でもあるので、冷静な判断を心がけることが重要です。人間関係では、過去の縁が復活したり、新しい出会いがあったりと、変化に富んだ月となりそうです。</p>
+        </div>
+        
+        <div class="reading-section">
+          <h3>💕 恋愛運</h3>
+          <p id="love-fortune">恋愛面では、あなたの魅力が最大限に発揮される月です。シングルの方は、思いがけない場所で運命的な出会いがあるかもしれません。特に仕事関係や友人の紹介がきっかけとなりそう。パートナーがいる方は、お互いの理解が深まり、関係がより安定します。ただし、過去の恋人からの連絡には注意が必要。現在の関係を大切にすることで、愛情運がさらに高まります。コミュニケーションを大切にしてください。</p>
+        </div>
+        
+        <div class="reading-section">
+          <h3>💼 仕事運</h3>
+          <p id="work-fortune">仕事運は絶好調です。あなたのアイデアや提案が高く評価され、昇進や昇格のチャンスが訪れるかもしれません。新しいプロジェクトへの参加や、責任ある役職への抜擢の可能性も。ただし、忙しくなる分、体調管理には十分注意してください。同僚との協力関係を築くことで、さらに大きな成果を上げることができるでしょう。転職を考えている方にとっても、良いタイミングです。直感を信じて行動してください。</p>
+        </div>
+        
+        <div class="reading-section">
+          <h3>💰 金運</h3>
+          <p id="money-fortune">金運は安定しており、臨時収入の可能性もあります。投資や副業に興味がある方は、情報収集を始める良い時期です。ただし、衝動的な大きな買い物は避けた方が賢明。計画的な貯蓄や投資を心がけることで、将来的な安定につながります。特に月末には、金銭面での良いニュースが舞い込む可能性が高いです。</p>
+        </div>
+        
+        <div class="reading-section">
+          <h3>🏃‍♀️ 健康運</h3>
+          <p id="health-fortune">健康面では、全体的に安定していますが、ストレスには注意が必要です。仕事が忙しくなる分、十分な睡眠と栄養バランスの取れた食事を心がけてください。特に肩こりや目の疲れが出やすい時期なので、適度な運動やストレッチを取り入れることをお勧めします。リラックスできる時間を意識的に作ることが、健康維持の鍵となります。</p>
+        </div>
+        
+        <div class="reading-section">
+          <h3>🍀 今月のラッキーポイント</h3>
+          <p id="lucky-points">ラッキーカラーは深いブルーとゴールド。身につけることで運気がアップします。ラッキーナンバーは7と23。重要な決断をする際の参考にしてください。また、東の方角での活動が特に良い結果をもたらします。</p>
+        </div>
+      </div>
+      
+      <!-- 履歴セクション -->
+      <div id="history-section" class="history-section hidden">
+        <h3 style="color: #ffd700; margin-bottom: 20px;">📅 過去7日間のメッセージ履歴</h3>
+        <div id="history-list"></div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 決済方法選択モーダル -->
+  <div id="payment-modal" class="payment-modal hidden">
+    <div class="payment-modal-content">
+      <div class="payment-header">
+        <h2>💎 決済方法を選択</h2>
+        <button type="button" class="payment-close">&times;</button>
+      </div>
+      
+      <div class="payment-summary">
+        <div class="campaign-highlight">
+          <span class="campaign-text">🎉 初月100円キャンペーン適用</span>
+          <div class="price-breakdown">
+            <span class="original-price">通常: 月額380円</span>
+            <span class="campaign-price">初月のみ: 100円</span>
+          </div>
+          <p class="next-month">2ヶ月目以降: 月額380円（いつでも解約可能）</p>
+        </div>
+      </div>
+      
+      <div class="payment-methods">
+        <h3>お支払い方法を選択してください</h3>
+        
+        <button class="payment-option" data-method="stripe">
+          <div class="payment-icon">💳</div>
+          <div class="payment-info">
+            <span class="payment-name">クレジットカード</span>
+            <span class="payment-desc">Visa・MasterCard・JCB・AMEX</span>
+          </div>
+          <div class="payment-arrow">→</div>
+        </button>
+        
+        <button class="payment-option" data-method="paypal">
+          <div class="payment-icon">🅿️</div>
+          <div class="payment-info">
+            <span class="payment-name">PayPal</span>
+            <span class="payment-desc">安全・簡単決済</span>
+          </div>
+          <div class="payment-arrow">→</div>
+        </button>
+        
+        <button class="payment-option" data-method="googlepay">
+          <div class="payment-icon">📱</div>
+          <div class="payment-info">
+            <span class="payment-name">Google Pay</span>
+            <span class="payment-desc">ワンタップ決済</span>
+          </div>
+          <div class="payment-arrow">→</div>
+        </button>
+      </div>
+      
+      <div class="payment-footer">
+        <p class="security-note">🔒 SSL暗号化により安全に決済処理されます</p>
+        <button type="button" class="payment-cancel" id="payment-cancel-btn">❌ キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="premium.js"></script>
+</body>
+</html>

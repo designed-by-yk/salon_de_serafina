@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salon de Serafina - 無料占い＆星詠みシステムで運命を変える！</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="Salon de Serafinaで人生を変える！無料占い＋星詠みシステム鑑定で詳細な運勢とアドバイスをお届け。夏休み特別キャンペーン実施中！">
+  <meta name="keywords" content="占い, AI鑑定, タロット, 星座占い, 個人鑑定, セラフィナ, 無料占い, 本格鑑定">
+  <meta name="author" content="Salon de Serafina">
+  
+  <!-- OGP Meta Tags -->
+  <meta property="og:title" content="Salon de Serafina - 無料で今日の運勢をチェック！">
+  <meta property="og:description" content="無料のおみくじ、miniタロット、星座占いで今日の運勢と迷いを解決しましょう。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://serafina-fortune.com">
+  <meta property="og:image" content="https://serafina-fortune.com/images/og-image.jpg">
+  <meta property="og:site_name" content="Salon de Serafina">
+  <meta property="og:locale" content="ja_JP">
+  
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Salon de Serafina">
+  <meta name="twitter:description" content="無料で今日の運勢をチェック！おみくじ、タロット、星座占いで迷いを解決。">
+  <meta name="twitter:image" content="https://serafina-fortune.com/images/twitter-card.jpg">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://serafina-fortune.com">
+  
+  <!-- Webフォントの読み込み（提案） -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Kiwi+Maru:wght@500&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- 夏休み特別キャンペーンバナー -->
+  <div class="campaign-banner">
+    <div class="banner-content">
+      <span class="banner-icon">🌻</span>
+      <span class="banner-text">夏休み特別キャンペーン実施中！</span>
+      <span class="banner-period">8月31日まで</span>
+      <span class="banner-icon">🌻</span>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- メインタイトル -->
+    <div class="main-title">
+      <div class="title-line subtitle-line">占いサロン</div>
+      <div class="title-line main-title-line">Salon de Séra&shy;fina</div>
+      <div class="title-line subtitle-line">へようこそ</div>
+    </div>
+    
+    <div class="button-area">
+      <!-- 神託システムによる魂の鑑定へ -->
+      <div class="oracle-system-label">「神託システム」による魂の鑑定へ</div>
+
+      <!-- 今日の運勢 -->
+      <button id="omikuji-btn" class="btn omikuji-btn">
+        <span class="main-text"><span class="free-label">無料</span> 今日の運勢を占う</span>
+        <span class="sub-text">ラッキー度をチェック！</span>
+      </button>
+
+      <!-- miniタロット -->
+      <a href="../mini-tarot/index.html" id="mini-tarot-link">
+        <button id="mini-tarot-btn" class="btn mini-tarot-btn">
+          <span class="main-text"><span class="free-label">無料</span> miniタロット占い</span>
+          <span class="sub-text">迷いを1枚で断つ！</span>
+        </button>
+      </a>
+
+      <!-- Mini星座占い -->
+      <a href="../mini-horoscope/index.html" id="mini-horoscope-link">
+        <button id="mini-birthday-btn" class="btn mini-birthday-btn">
+          <span class="main-text"><span class="free-label">無料</span> mini星座占い</span>
+          <span class="sub-text">今日の3大チャンス！</span>
+        </button>
+      </a>
+
+      <!-- 神託システムタロット占い -->
+      <a href="../divine-tarot/tarot-detail.html" id="divine-tarot-link">
+        <button id="pro-tarot-btn" class="btn pro-tarot-btn">
+          <span class="main-text">神託システムタロット占い</span>
+          <span class="sub-text">本格的なタロット鑑定</span>
+        </button>
+      </a>
+      
+      <!-- プレミアム星座占い -->
+      <a href="../mini-horoscope/star-yomi-detail.html" id="premium-zodiac-link">
+        <button id="pro-birthday-btn" class="btn pro-birthday-btn">
+          <span class="main-text">星詠みシステム星座占い</span>
+          <span class="sub-text">詳細な運勢と開運法</span>
+        </button>
+      </a>
+
+      <!-- 個人鑑定 -->
+      <button id="personal-reading-btn" class="btn personal-reading-btn">
+        <span class="main-text">セラフィナの個人鑑定</span>
+        <span class="sub-text">完全オーダーメイド鑑定</span>
+      </button>
+
+    </div>
+  </div>
+
+  <!-- 結果表示エリア -->
+  <div id="result-container" class="hidden">
+    <div id="result-content">
+      <!--ここにJSで結果が挿入される-->
+    </div>
+    <div class="result-buttons">
+      <button id="close-btn">閉じる</button>
+      <button id="item-link-btn">関連アイテムを見る</button>
+    </div>
+  </div>
+
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>神託システム デバッグテスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a0033;
+            color: white;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            color: #4caf50;
+            background: rgba(76, 175, 80, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .card-count {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+        button {
+            background: #ffd700;
+            color: #1a0033;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 神託システム デバッグテスト</h1>
+    
+    <div class="test-section">
+        <h2>1. カードデータ確認</h2>
+        <div id="card-data-test"></div>
+        <button onclick="testCardData()">カードデータをテスト</button>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Oracle System確認</h2>
+        <div id="oracle-test"></div>
+        <button onclick="testOracleSystem()">Oracle Systemをテスト</button>
+    </div>
+
+    <div class="test-section">
+        <h2>3. 鑑定実行テスト</h2>
+        <div id="reading-test"></div>
+        <button onclick="testReading()">鑑定をテスト</button>
+    </div>
+
+    <script src="js/tarot-cards.js"></script>
+    <script src="js/oracle-system.js"></script>
+    <script>
+        function testCardData() {
+            const result = document.getElementById('card-data-test');
+            try {
+                console.log('🃏 カードデータテスト開始');
+                
+                // 大アルカナの確認
+                const majorCount = TAROT_CARDS.majorArcana ? TAROT_CARDS.majorArcana.length : 0;
+                console.log('大アルカナ数:', majorCount);
+                
+                // 小アルカナの確認
+                const wandsCount = TAROT_CARDS.wands ? TAROT_CARDS.wands.length : 0;
+                const cupsCount = TAROT_CARDS.cups ? TAROT_CARDS.cups.length : 0;
+                const swordsCount = TAROT_CARDS.swords ? TAROT_CARDS.swords.length : 0;
+                const pentaclesCount = TAROT_CARDS.pentacles ? TAROT_CARDS.pentacles.length : 0;
+                
+                console.log('小アルカナ - ワンド:', wandsCount);
+                console.log('小アルカナ - カップ:', cupsCount);
+                console.log('小アルカナ - ソード:', swordsCount);
+                console.log('小アルカナ - ペンタクル:', pentaclesCount);
+                
+                // getAllCards関数の確認
+                let allCards = [];
+                if (typeof getAllCards === 'function') {
+                    allCards = getAllCards();
+                    console.log('getAllCards():', allCards.length, '枚');
+                } else {
+                    console.error('getAllCards関数が見つかりません');
+                }
+                
+                const total = majorCount + wandsCount + cupsCount + swordsCount + pentaclesCount;
+                
+                result.innerHTML = `
+                    <div class="card-count">📊 カードデータ統計:</div>
+                    <div>大アルカナ: ${majorCount}枚</div>
+                    <div>ワンド: ${wandsCount}枚</div>
+                    <div>カップ: ${cupsCount}枚</div>
+                    <div>ソード: ${swordsCount}枚</div>
+                    <div>ペンタクル: ${pentaclesCount}枚</div>
+                    <div><strong>合計: ${total}枚</strong></div>
+                    <div>getAllCards(): ${allCards.length}枚</div>
+                    ${total === 78 ? '<div class="success">✅ 全78枚揃っています</div>' : '<div class="error">❌ カードが不足しています（期待値: 78枚）</div>'}
+                `;
+                
+            } catch (error) {
+                console.error('カードデータテストエラー:', error);
+                result.innerHTML = `<div class="error">❌ エラー: ${error.message}</div>`;
+            }
+        }
+
+        function testOracleSystem() {
+            const result = document.getElementById('oracle-test');
+            try {
+                console.log('🔮 Oracle Systemテスト開始');
+                
+                if (typeof OracleSystem === 'undefined') {
+                    throw new Error('OracleSystemクラスが見つかりません');
+                }
+                
+                const oracle = new OracleSystem();
+                console.log('Oracle System作成成功:', oracle);
+                
+                // メソッドの確認
+                        const methods = [
+            'buildSystemPrompt',
+            'generateReading',
+            'extractKeywords',
+            'generatePersonalInsights',
+            'calculateAge',
+            'getZodiacSign',
+            'getRandomItem'
+        ];
+                
+                let methodResults = '';
+                methods.forEach(method => {
+                    if (typeof oracle[method] === 'function') {
+                        methodResults += `<div class="success">✅ ${method}</div>`;
+                    } else {
+                        methodResults += `<div class="error">❌ ${method}</div>`;
+                    }
+                });
+                
+                result.innerHTML = `
+                    <div class="success">✅ OracleSystemクラス作成成功</div>
+                    <div>メソッド確認:</div>
+                    ${methodResults}
+                `;
+                
+            } catch (error) {
+                console.error('Oracle Systemテストエラー:', error);
+                result.innerHTML = `<div class="error">❌ エラー: ${error.message}</div>`;
+            }
+        }
+
+        function testReading() {
+            const result = document.getElementById('reading-test');
+            try {
+                console.log('📖 鑑定テスト開始');
+                
+                const oracle = new OracleSystem();
+                const testData = {
+                    name: 'テストユーザー',
+                    birthdate: '1990-06-15',
+                    consultation: '恋愛について悩んでいます。今の関係をどう進めていけばいいでしょうか。',
+                    focusArea: 'love'
+                };
+                
+                console.log('テストデータ:', testData);
+                
+                // フォールバック鑑定のテスト
+                oracle.generateReading(testData).then(readingResult => {
+                    console.log('鑑定結果:', readingResult);
+                    
+                    result.innerHTML = `
+                        <div class="success">✅ 鑑定実行成功</div>
+                        <div>選ばれたカード: ${readingResult.cards ? readingResult.cards.length : 0}枚</div>
+                        <div>鑑定文字数: ${readingResult.reading ? readingResult.reading.length : 0}文字</div>
+                        <div>アクションプラン: ${readingResult.actionPlan ? readingResult.actionPlan.length : 0}項目</div>
+                        <div style="margin-top: 10px;"><strong>選ばれたカード:</strong></div>
+                        ${readingResult.cards ? readingResult.cards.map(card => `<div>- ${card.name} (${card.position})</div>`).join('') : ''}
+                    `;
+                }).catch(error => {
+                    console.error('鑑定エラー:', error);
+                    result.innerHTML = `<div class="error">❌ 鑑定エラー: ${error.message}</div>`;
+                });
+                
+            } catch (error) {
+                console.error('鑑定テストエラー:', error);
+                result.innerHTML = `<div class="error">❌ エラー: ${error.message}</div>`;
+            }
+        }
+
+        // ページ読み込み時に自動テスト
+        document.addEventListener('DOMContentLoaded', function() {
+            testCardData();
+        });
+    </script>
+</body>
+</html>

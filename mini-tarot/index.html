@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>miniタロット占い</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- パンくずリスト -->
+  <nav class="breadcrumb">
+    <a href="../omikuji/index.html">🏠 トップ</a>
+    <span class="breadcrumb-separator">›</span>
+    <span class="breadcrumb-current">miniタロット占い</span>
+  </nav>
+
+  <div class="container">
+    <header>
+      <h1>YES/NO mini TAROT</h1>
+      <p class="description">選択したいことを頭に浮かべながら<br>カードを引くボタンを押してください</p>
+    </header>
+    <main>
+      <div id="pre-draw">
+        <div id="card-roulette">
+          <!-- カードがここに動的に追加される -->
+        </div>
+        <button id="draw-button">カードを引く</button>
+      </div>
+      <div id="result" class="hidden">
+        <img id="result-card-image" src="" alt="占いの結果のカード">
+        <div id="result-message"></div>
+        <div class="result-buttons">
+          <button id="reset-button">もう一度占う</button>
+          <button id="close-button">閉じる</button>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

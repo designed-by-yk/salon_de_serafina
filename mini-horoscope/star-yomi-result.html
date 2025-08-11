@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星詠みシステム - 鑑定結果 | Salon de Serafina</title>
+    <link rel="stylesheet" href="../divine-tarot/css/oracle-style.css">
+    <style>
+        .result-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0033, #2d1b69, #4a69bd);
+            padding: 20px;
+            color: white;
+        }
+        
+        .result-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .result-header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ffb347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .user-info {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .reading-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+        
+        .lucky-days-section {
+            background: rgba(255,215,0,0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .lucky-days {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .lucky-day {
+            background: linear-gradient(45deg, #ffd700, #ffb347);
+            color: #1a0033;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .action-plan {
+            background: rgba(108, 92, 231, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .action-plan h3 {
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .action-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .action-item {
+            background: rgba(255,255,255,0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #ffd700;
+        }
+        
+        .upsell-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .upsell-button {
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 15px 10px;
+        }
+        
+        .upsell-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 25px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: #ffd700;
+        }
+        
+        .breadcrumb {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .breadcrumb a:hover {
+            color: #ffd700;
+        }
+        
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0 8px;
+        }
+        
+        .loading-animation {
+            text-align: center;
+            padding: 50px;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 4px solid #ffd700;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .reading-content {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .result-header h1 {
+                font-size: 1.8em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .lucky-days {
+                justify-content: center;
+            }
+        }
+        
+        /* 個人鑑定アップセル */
+        .personal-upsell {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 40px 0;
+            text-align: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .personal-upsell h3 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .personal-upsell p {
+            font-size: 1.1em;
+            margin-bottom: 25px;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        .personal-upsell-btn {
+            background: linear-gradient(45deg, #ffd700, #ffb347, #ffd700);
+            background-size: 300% 300%;
+            color: #1a0033;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            animation: sparkle-upsell 3s infinite;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .personal-upsell-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: rotate(45deg);
+            animation: shine-upsell 4s infinite;
+        }
+
+        .personal-upsell-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.8);
+            animation: sparkle-upsell 1.5s infinite;
+        }
+
+        /* 追加質問オプション */
+        .additional-question {
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 30px 0;
+            text-align: center;
+            backdrop-filter: blur(8px);
+        }
+        .additional-question h3 {
+            color: #ffd700;
+            margin-bottom: 12px;
+        }
+        .additional-question .offer-box {
+            background: rgba(255, 215, 0, 0.12);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        .additional-question .time-limit { color: #ffd700; font-weight: bold; }
+        .additional-question .price { font-weight: bold; }
+        .additional-question button {
+            background: linear-gradient(45deg, #ffd700, #ffb347, #ffd700);
+            background-size: 300% 300%;
+            color: #1a0033;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 0 18px rgba(255, 215, 0, 0.55);
+            margin: 8px 0 14px 0;
+        }
+        .additional-question button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 32px rgba(255, 215, 0, 0.75);
+        }
+        .additional-question .how-to { font-size: 0.95em; color: rgba(255,255,255,0.9); }
+        .additional-question .how-to ol { display: inline-block; text-align: left; margin: 6px 0 0; }
+
+        @keyframes sparkle-upsell {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes shine-upsell {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        /* 印刷用スタイル */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+                font-family: "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif;
+            }
+            
+            .result-container {
+                background: white !important;
+                color: black !important;
+                padding: 20px !important;
+            }
+            
+            .result-header {
+                color: #333 !important;
+                border-bottom: 2px solid #666;
+                padding-bottom: 10px;
+                margin-bottom: 20px;
+            }
+            
+            .user-info {
+                background: #f8f8f8 !important;
+                border: 1px solid #ddd;
+                color: black !important;
+            }
+            
+            .reading-content {
+                background: white !important;
+                color: black !important;
+                box-shadow: none !important;
+                border: 1px solid #ddd;
+            }
+            
+            .action-buttons {
+                display: none !important;
+            }
+            
+            .upsell-section {
+                display: none !important;
+            }
+            
+            .personal-upsell {
+                display: none !important;
+            }
+            
+            /* ページ設定 */
+            @page {
+                margin: 2cm;
+                size: A4;
+            }
+        }
+        
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            .personal-upsell {
+                padding: 20px;
+                margin: 30px 0;
+            }
+            
+            .personal-upsell h3 {
+                font-size: 1.3em;
+            }
+            
+            .personal-upsell p {
+                font-size: 1em;
+            }
+            
+            .personal-upsell-btn {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body class="result-container">
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb">
+        <a href="../omikuji/index.html">🏠 トップ</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="premium-zodiac.html">プレミアム星座占い</a>
+        <span class="breadcrumb-separator">›</span>
+        <span style="color: #ffd700; font-weight: bold;">鑑定結果</span>
+    </nav>
+    
+    <div class="result-header">
+        <h1>⭐ 星詠みシステム星座占い結果</h1>
+        <p style="font-size: 1.1em; color: rgba(255,255,255,0.9);">
+            あなただけの特別な鑑定をお届けします
+        </p>
+    </div>
+    
+    <!-- ローディング表示 -->
+    <div id="loading" class="loading-animation">
+        <div class="spinner"></div>
+        <p>🔮 AI が詳細鑑定を生成中です...</p>
+        <p style="font-size: 0.9em; color: rgba(255,255,255,0.7);">しばらくお待ちください</p>
+    </div>
+    
+    <!-- 結果表示エリア -->
+    <div id="result-content" style="display: none;">
+        <!-- ユーザー情報 -->
+        <div class="user-info">
+            <h2>📋 鑑定者様情報</h2>
+            <p><strong id="user-name"></strong> 様</p>
+            <p>生年月日: <span id="user-birthdate"></span> (<span id="user-zodiac"></span>)</p>
+            <p id="user-consultation"></p>
+        </div>
+        
+        <!-- 鑑定結果本文 -->
+        <div class="reading-content">
+            <div id="reading-text"></div>
+        </div>
+        
+        <!-- 鑑定文に全ての内容が含まれているため、個別セクションは不要 -->
+        
+        <!-- 個人鑑定への誘導 -->
+        <div class="upsell-section">
+            <h3>✨ さらに深い鑑定をお求めの方へ</h3>
+            <p>今回の星詠みシステム星座占いで今月の運勢をお伝えしました。</p>
+            <p>より個人的で具体的なお悩みについては、セラフィナの個人鑑定もご利用いただけます。</p>
+            
+            <button class="upsell-button" onclick="alert('個人鑑定のご案内ページに移動します')">
+                💎 セラフィナの個人鑑定を見る
+            </button>
+        </div>
+        
+        <!-- 個人鑑定アップセル -->
+        <div class="personal-upsell">
+            <h3>🌟 もっと深く知りたい方へ</h3>
+            <p>システム鑑定では物足りない方は、セラフィナが直接鑑定する個人鑑定をどうぞ</p>
+            <button class="personal-upsell-btn" onclick="location.href='../personal-reading-detail.html'">
+                ✨ 個人鑑定の詳細を見る
+            </button>
+        </div>
+
+        <!-- 追加質問オプション -->
+        <div class="additional-question">
+            <h3>💭 もっと詳しく知りたい方へ</h3>
+            
+            <div class="offer-box">
+                <p>鑑定を読んで浮かんだ疑問にお答えします</p>
+                <p class="time-limit">⏰ 24時間限定価格</p>
+                <p class="price">追加質問：500円（1質問）</p>
+            </div>
+            
+            <button onclick="location.href='https://square.link/u/Tp6cc26W'">
+                追加質問を申し込む
+            </button>
+            
+            <div class="how-to">
+                <p>【ご利用方法】</p>
+                <ol>
+                    <li>決済完了</li>
+                    <li>公式LINEで質問送信</li>
+                    <li>24時間以内に回答</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- アクションボタン -->
+        <div class="action-buttons">
+            <a href="star-yomi-detail.html" class="btn-secondary">🔄 もう一度鑑定する</a>
+            <a href="../omikuji/index.html" class="btn-secondary">🏠 トップに戻る</a>
+            <button class="btn-secondary" onclick="window.print()">🖨️ 結果を印刷</button>
+        </div>
+    </div>
+    
+    <!-- API設定ファイルを最初に読み込み -->
+    <script src="../api-config.js"></script>
+    <script src="js/star-yomi-system.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🌟 星詠みシステム結果ページ読み込み');
+            
+            try {
+                // ローカルストレージからデータを取得
+                const userData = JSON.parse(localStorage.getItem('premiumZodiacData') || '{}');
+                const readingData = JSON.parse(localStorage.getItem('premiumZodiacReading') || '{}');
+                
+                console.log('📋 ユーザーデータ:', userData);
+                console.log('🔮 鑑定データ:', readingData);
+                
+                if (!userData.name) {
+                    console.error('❌ ユーザーデータが見つかりません');
+                    alert('鑑定データが見つかりません。最初からやり直してください。');
+                    window.location.href = 'star-yomi-detail.html';
+                    return;
+                }
+                
+                // 鑑定結果の表示
+                if (readingData.success && readingData.reading) {
+                    displayResult(userData, readingData);
+                } else if (readingData.error) {
+                    // エラーメッセージの表示
+                    document.getElementById('reading-content').innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <h3>🙏 ${readingData.error}</h3>
+                            <button onclick="window.location.href='star-yomi-detail.html'" class="btn-primary" style="margin-top: 20px;">
+                                もう一度申し込む
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    // データが不完全な場合
+                    alert('鑑定データが不完全です。最初からやり直してください。');
+                    window.location.href = 'star-yomi-detail.html';
+                }
+                
+            } catch (error) {
+                console.error('💥 エラー:', error);
+                alert('結果の表示中にエラーが発生しました。');
+                window.location.href = 'star-yomi-detail.html';
+            }
+        });
+        
+        function displayResult(userData, readingData) {
+            console.log('📺 結果表示開始');
+            
+            // ローディングを非表示、結果を表示
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('result-content').style.display = 'block';
+            
+            // ユーザー情報を表示
+            const zodiacSystem = new StarYomiSystem();
+            const zodiacSign = zodiacSystem.getZodiacSign(userData.birthdate);
+            
+            document.getElementById('user-name').textContent = userData.name;
+            document.getElementById('user-birthdate').textContent = formatDate(userData.birthdate);
+            document.getElementById('user-zodiac').textContent = zodiacSign;
+            
+            const consultationElement = document.getElementById('user-consultation');
+            if (userData.consultation) {
+                consultationElement.innerHTML = `<strong>ご相談内容:</strong> ${userData.consultation}`;
+            } else {
+                consultationElement.innerHTML = `<strong>鑑定内容:</strong> 総合運勢`;
+            }
+            
+            // AI生成された鑑定結果を表示
+            document.getElementById('reading-text').innerHTML = formatReading(readingData.reading);
+            
+            // 鑑定文にすべての内容が含まれているため、抽出表示は不要
+            
+            console.log('✨ 結果表示完了');
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`;
+        }
+        
+        function formatReading(text) {
+            // 改行を適切に処理
+            return text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        }
+        
+        function extractAndDisplayDetails(readingText) {
+            // ラッキーデーを抽出
+            const luckyDaysMatch = readingText.match(/ラッキーデー[：:\s]*([^。]+)/i);
+            const luckyDaysDisplay = document.getElementById('lucky-days-display');
+            
+            if (luckyDaysMatch && luckyDaysDisplay) {
+                const luckyDaysText = luckyDaysMatch[1];
+                // 日付を抽出（8月X日、X日の形式）
+                const dates = luckyDaysText.match(/\d+日/g);
+                if (dates) {
+                    luckyDaysDisplay.innerHTML = dates
+                        .map(date => `<div class="lucky-day">🌟 ${date}</div>`)
+                        .join('');
+                } else {
+                    luckyDaysDisplay.innerHTML = '<div class="lucky-day">鑑定文をご確認ください</div>';
+                }
+            }
+            
+            // 開運アクションを抽出
+            const actionPlanDisplay = document.getElementById('action-plan-display');
+            if (actionPlanDisplay) {
+                const actionMatch = readingText.match(/開運アクション[：:\s]*([^]+?)(?=\n\n|\n[^\n]|$)/i);
+                if (actionMatch) {
+                    const actionText = actionMatch[1];
+                    // 番号付きリストまたは箇条書きを抽出
+                    const actions = actionText.match(/[1-9１-９].+?(?=\n[1-9１-９]|\n\n|$)/g) ||
+                                   actionText.match(/[・•]\s*.+?(?=\n[・•]|\n\n|$)/g) ||
+                                   actionText.split('\n').filter(line => line.trim().length > 0);
+                    
+                    if (actions && actions.length > 0) {
+                        actionPlanDisplay.innerHTML = actions
+                            .slice(0, 5) // 最大5つまで
+                            .map(action => `<li class="action-item">🎯 ${action.replace(/^[1-9１-９・•\s]*/, '')}</li>`)
+                            .join('');
+                    } else {
+                        actionPlanDisplay.innerHTML = '<li class="action-item">鑑定文をご確認ください</li>';
+                    }
+                } else {
+                    actionPlanDisplay.innerHTML = '<li class="action-item">鑑定文をご確認ください</li>';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
+

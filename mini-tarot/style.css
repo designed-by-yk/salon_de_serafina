@@ -1,0 +1,174 @@
+/* パンくずリスト */
+.breadcrumb {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+  color: #ffd700;
+}
+
+.breadcrumb-separator {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 8px;
+}
+
+.breadcrumb-current {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+/* 基本設定 */
+body {
+  font-family: 'Kiwi Maru', sans-serif;
+  background-color: #1a1a2e; /* 黒に近いネイビー */
+  color: #333; /* デフォルトの文字色を調整 */
+  text-align: center;
+  margin: 0;
+  padding: 20px;
+  padding-top: 80px; /* パンくずリスト分のスペース */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 90%;
+  max-width: 600px;
+  margin: auto;
+  background: #f8e3b4; /* ベージュの背景色 */
+  padding: 20px;
+  border-radius: 15px;
+  border: 2px solid #847d61;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+header {
+  margin-bottom: 15px; /* ヘッダー全体の下マージンを追加 */
+}
+
+header h1 {
+  color: #5c4846; /* おみくじと色を合わせる */
+  margin-bottom: 8px;
+  margin-top: 0; /* 上マージンをリセット */
+}
+
+.description {
+  font-size: 14px;
+  color: #5c4846;
+  line-height: 1.5;
+  margin-top: 0;
+  margin-bottom: 20px; /* 説明文の下マージンを増加 */
+}
+
+/* 画面切り替え用 */
+#pre-draw.hidden,
+#result.hidden {
+  display: none;
+}
+
+/* カードルーレット */
+#card-roulette {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 220px;
+  margin: 20px 0 26px 0; /* 下マージンを調整して点線との適切な距離を確保 */
+  perspective: 1000px;
+}
+
+.card {
+  width: 100px;
+  height: 150px;
+  border: 2px solid #ffd700;
+  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  background-color: #2a2a5e; /* フォールバック色 */
+}
+
+/* ボタン */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 2px solid #5c4846;
+  background-color: #fff;
+  color: #5c4846;
+  border-radius: 30px;
+  margin: 5px;
+  font-family: 'Kiwi Maru', sans-serif;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+button:hover {
+  background-color: #5c4846;
+  color: white;
+}
+
+/* 結果表示 */
+#result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0 20px 0; /* パディングを元に戻す */
+  /* border-top: 2px dashed #847d61; 点線を削除 */
+  margin-top: -30px; /* 結果表示エリア全体を上に移動 */
+}
+
+#result-card-image {
+  width: 150px; 
+  height: auto;
+  margin-bottom: 10px; 
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#result-message {
+  font-size: 16px;
+  color: #5c4846;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+#result-message h2 {
+    font-size: 2.0em;
+    color: #ff6a87;
+    margin: 3px 0;
+}
+#result-message h3 {
+    font-size: 1.2em;
+    margin: 3px 0;
+}
+#result-message p {
+    font-size: 0.85em;
+    line-height: 1.4;
+    margin: 8px 0;
+}
+
+.result-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}

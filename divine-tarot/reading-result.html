@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鑑定結果 - Salon de Sérafina</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="神託システムによるあなたへの鑑定結果。タロットカードが示すメッセージと具体的なアドバイスをお届けします。">
+    <meta name="keywords" content="鑑定結果, タロット, 神託システム, 占い結果, セラフィナ">
+    
+    <link rel="stylesheet" href="css/oracle-style.css">
+    <style>
+        .additional-question {
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 30px 0;
+            text-align: center;
+            backdrop-filter: blur(8px);
+        }
+        .additional-question h3 {
+            color: #ffd700;
+            margin-bottom: 12px;
+        }
+        .additional-question .offer-box {
+            background: rgba(255, 215, 0, 0.12);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 14px;
+        }
+        .additional-question .time-limit { color: #ffd700; font-weight: bold; }
+        .additional-question .price { font-weight: bold; }
+        .additional-question button {
+            background: linear-gradient(45deg, #ffd700, #ffb347, #ffd700);
+            background-size: 300% 300%;
+            color: #1a0033;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s;
+            box-shadow: 0 0 18px rgba(255, 215, 0, 0.55);
+            margin: 8px 0 14px 0;
+        }
+        .additional-question button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 32px rgba(255, 215, 0, 0.75);
+        }
+        .additional-question .how-to { font-size: 0.95em; color: rgba(255,255,255,0.9); }
+        .additional-question .how-to ol { display: inline-block; text-align: left; margin: 6px 0 0; }
+        @media (max-width: 768px) {
+            .additional-question { padding: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb">
+        <a href="../omikuji/index.html">🏠 トップ</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="tarot-detail.html">神託システムタロット占い</a>
+        <span class="breadcrumb-separator">›</span>
+        <span class="breadcrumb-current">鑑定結果</span>
+    </nav>
+
+    <div class="container">
+        <header class="result-header">
+            <h1>🔮 あなたへの神託</h1>
+            <p class="result-subtitle">神託システムが導き出したあなただけのメッセージ</p>
+            <div class="user-info">
+                <span id="user-name"></span>さんへの鑑定結果
+            </div>
+        </header>
+
+        <section class="consultation-summary">
+            <h2>📝 ご相談内容</h2>
+            <div class="consultation-display" id="consultation-display"></div>
+        </section>
+        
+        <section class="cards-section">
+            <h2><img src="images/card-back-1.jpg" alt="カード" style="width: 24px; height: 40px; object-fit: cover; border-radius: 3px; vertical-align: middle; margin-right: 8px;"> 選ばれたカード</h2>
+            <div id="cards-display" class="cards-container">
+                <!-- カードがJavaScriptで動的に表示されます -->
+            </div>
+        </section>
+
+        <section class="reading-section">
+            <h2>✨ 神託からのメッセージ</h2>
+            <div id="reading-text" class="reading-content">
+                <!-- 鑑定結果がJavaScriptで動的に表示されます -->
+            </div>
+        </section>
+
+        <section class="action-steps">
+            <h2>🎯 具体的なアクションプラン</h2>
+            <div id="action-plan" class="action-content">
+                <!-- アクションプランがJavaScriptで動的に表示されます -->
+            </div>
+        </section>
+
+        <!-- 追加質問オプション -->
+        <div class="additional-question">
+            <h3>💭 もっと詳しく知りたい方へ</h3>
+            
+            <div class="offer-box">
+                <p>鑑定を読んで浮かんだ疑問にお答えします</p>
+                <p class="time-limit">⏰ 24時間限定価格</p>
+                <p class="price">追加質問：500円（1質問）</p>
+            </div>
+            
+            <button onclick="location.href='https://square.link/u/Tp6cc26W'">
+                追加質問を申し込む
+            </button>
+            
+            <div class="how-to">
+                <p>【ご利用方法】</p>
+                <ol>
+                    <li>決済完了</li>
+                    <li>公式LINEで質問送信</li>
+                    <li>24時間以内に回答</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 個人鑑定への誘導 -->
+        <div class="personal-upsell">
+            <h3>🌟 もっと深く知りたい方へ</h3>
+            <p>システム鑑定では物足りない方は、セラフィナが直接鑑定する個人鑑定をどうぞ</p>
+            <button class="personal-upsell-btn" onclick="location.href='../personal-reading-detail.html'">
+                ✨ 個人鑑定の詳細を見る
+            </button>
+        </div>
+
+        <section class="feedback-section">
+            <h2>📝 鑑定はいかがでしたか？</h2>
+            <div class="feedback-buttons">
+                <button class="feedback-btn satisfied" onclick="submitFeedback('satisfied')">
+                    😊 とても満足
+                </button>
+                <button class="feedback-btn good" onclick="submitFeedback('good')">
+                    👍 満足
+                </button>
+                <button class="feedback-btn normal" onclick="submitFeedback('normal')">
+                    😐 普通
+                </button>
+            </div>
+            <p class="feedback-thanks" id="feedback-thanks" style="display: none;">
+                ✨ フィードバックありがとうございます！
+            </p>
+        </section>
+
+        <div class="navigation-buttons">
+            <a href="tarot-detail.html" class="nav-btn secondary">
+                🔄 もう一度鑑定する
+            </a>
+            <a href="../omikuji/index.html" class="nav-btn primary">
+                🏠 トップページに戻る
+            </a>
+        </div>
+    </div>
+    
+    <script src="js/tarot-cards.js"></script>
+    <script src="js/oracle-system.js"></script>
+    <script>
+        // ページ読み込み時に鑑定結果を表示
+        document.addEventListener('DOMContentLoaded', function() {
+            displayReading();
+        });
+
+        function displayReading() {
+            console.log('🎯 鑑定結果ページを読み込み中...');
+            const consultationData = JSON.parse(localStorage.getItem('consultationData') || '{}');
+            console.log('📋 相談データ確認:', consultationData);
+            
+            if (!consultationData.name) {
+                console.error('❌ 相談データが見つかりません');
+                alert('鑑定データが見つかりません。最初からやり直してください。');
+                window.location.href = 'tarot-detail.html';
+                return;
+            }
+
+            // ユーザー情報表示
+            console.log('👤 ユーザー情報を表示:', consultationData.name);
+            document.getElementById('user-name').textContent = consultationData.name;
+            document.getElementById('consultation-display').textContent = consultationData.consultation;
+
+            // 神託システムによる鑑定実行
+            console.log('🔮 神託システムを初期化...');
+            const oracle = new OracleSystem();
+            
+            // テスト用：グローバルに公開してコンソールでテスト可能にする
+            window.oracleTest = oracle;
+            console.log('🧪 テスト用: window.oracleTest でシステムにアクセス可能');
+            console.log('🔬 API動作確認用コマンド:');
+            console.log('   window.testAPI() - 簡単なAPI接続テスト');
+            console.log('   window.testFullReading() - 完全な鑑定テスト');
+            
+            // API動作確認用のテスト関数を追加
+            window.testAPI = async function() {
+                console.log('🧪 API接続テストを開始...');
+                const testData = {
+                    name: "テストユーザー",
+                    consultation: "今後の人生について相談があります。",
+                    focusArea: "future",
+                    birthdate: "1990-01-01"
+                };
+                
+                try {
+                    const result = await oracle.generateWithAPI(testData);
+                    console.log('✅ API接続テスト成功！', result);
+                    return result;
+                } catch (error) {
+                    console.error('❌ API接続テスト失敗:', error);
+                    return null;
+                }
+            };
+            
+            window.testFullReading = async function() {
+                console.log('🔮 完全鑑定テストを開始...');
+                const testData = {
+                    name: "テストユーザー",
+                    consultation: "恋愛について悩んでいます。今の関係をどう進めていけばいいでしょうか。",
+                    focusArea: "love",
+                    birthdate: "1990-06-15"
+                };
+                
+                try {
+                    const result = await oracle.generateReading(testData);
+                    console.log('✅ 完全鑑定テスト完了！');
+                    console.log('📊 鑑定結果:', result);
+                    console.log('📝 鑑定文字数:', result.reading.length);
+                    console.log('🃏 選ばれたカード:', result.cards.map(c => c.name));
+                    return result;
+                } catch (error) {
+                    console.error('❌ 完全鑑定テスト失敗:', error);
+                    return null;
+                }
+            };
+            
+            console.log('⏳ 鑑定を開始します...');
+            oracle.generateReading(consultationData).then(result => {
+                console.log('✅ 鑑定完了!', result);
+                displayCards(result.cards);
+                displayReadingText(result.reading);
+                displayActionPlan(result.actionPlan);
+            }).catch(error => {
+                console.error('💥 鑑定処理でエラーが発生:', error);
+                alert('鑑定処理中にエラーが発生しました。再度お試しください。');
+            });
+        }
+
+        function displayCards(cards) {
+            const cardsContainer = document.getElementById('cards-display');
+            cardsContainer.innerHTML = cards.map(card => `
+                <div class="card-item">
+                    <div class="card-position">${card.position}</div>
+                    <div class="card-image-container">
+                        ${getCardImageHTML(card)}
+                        ${card.isUpright ? '' : '<div class="reversed-indicator">逆位置</div>'}
+                    </div>
+                    <div class="card-name">${card.name}${card.isUpright ? '' : ' (逆位置)'}</div>
+                    <div class="card-meaning">${card.meaning}</div>
+                </div>
+            `).join('');
+        }
+
+        function getCardImageHTML(card) {
+            // カード画像が存在する場合は画像を表示、そうでなければフォールバック
+            const imagePath = card.imagePath || `images/cards/${String(card.id).padStart(2, '0')}_${card.englishName.toLowerCase().replace(/\s+/g, '_')}.jpg`;
+            
+            return `
+                <img 
+                    src="${imagePath}" 
+                    alt="${card.name}" 
+                    class="card-image"
+                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                >
+                <div class="card-image-fallback" style="display: none;">
+                    <img src="images/card-back-1.jpg" alt="タロットカード" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">
+                </div>
+            `;
+        }
+
+        function displayReadingText(reading) {
+            const readingContainer = document.getElementById('reading-text');
+            readingContainer.innerHTML = `
+                <div class="reading-paragraph">
+                    ${reading.split('\n').map(p => p.trim() ? `<p>${p}</p>` : '').join('')}
+                </div>
+            `;
+        }
+
+        function displayActionPlan(actionPlan) {
+            const actionContainer = document.getElementById('action-plan');
+            actionContainer.innerHTML = `
+                <div class="action-list">
+                    ${actionPlan.map(action => `
+                        <div class="action-item">
+                            <div class="action-icon">✨</div>
+                            <div class="action-text">${action}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function submitFeedback(rating) {
+            const feedbackThanks = document.getElementById('feedback-thanks');
+            feedbackThanks.style.display = 'block';
+            
+            // フィードバックボタンを無効化
+            const buttons = document.querySelectorAll('.feedback-btn');
+            buttons.forEach(btn => btn.disabled = true);
+
+            // フィードバックデータを保存（実際の運用では送信）
+            const feedback = {
+                rating: rating,
+                timestamp: new Date().toISOString(),
+                consultation: JSON.parse(localStorage.getItem('consultationData') || '{}')
+            };
+            
+            localStorage.setItem('feedback', JSON.stringify(feedback));
+        }
+
+        // 個人鑑定申し込み
+        document.getElementById('upgrade-btn').addEventListener('click', function() {
+            alert('個人鑑定のお申込みページに移動します。\n実際の運用時は決済システムに接続されます。');
+            // 実際の運用時は個人鑑定の申し込みページにリダイレクト
+            // window.location.href = 'personal-reading-order.html';
+        });
+    </script>
+</body>
+</html>

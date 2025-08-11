@@ -1,0 +1,896 @@
+/* ----------------------------------
+ * 基本設定 & Webフォント
+ * ---------------------------------- */
+
+:root {
+  --base-width: 1920;
+  --base-height: 1080;
+  --font-yutoriro: 'Kiwi Maru', sans-serif; 
+  --font-tt-tsars: 'Cormorant Garamond', serif;
+  --font-mincho: 'Shippori Mincho', serif;
+  --color-text-main: #5c4846;
+  --color-text-sub: #ff6a87;
+  --color-text-comingsoon: #b5948e;
+  --color-text-pro1: #b29563;
+  --color-text-pro2: #baaaff;
+  --color-btn-bg: #f8e3b4;
+  --color-border-main: #847d61;
+  --color-border-pro1: #ebcf66;
+  --color-border-pro2: #c8ffff;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  font-family: var(--font-yutoriro);
+}
+
+/* ----------------------------------
+ * メインタイトル
+ * ---------------------------------- */
+.main-title {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 10;
+}
+
+.title-line {
+  margin: 0;
+  line-height: 1.2;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.subtitle-line {
+  font-family: var(--font-mincho);
+  font-size: calc(36 / var(--base-width) * 100vw);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: calc(4 / var(--base-width) * 100vw);
+  animation: gentleGlow 3s ease-in-out infinite alternate;
+}
+
+.main-title-line {
+  font-family: var(--font-tt-tsars);
+  font-size: calc(96 / var(--base-width) * 100vw);
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: calc(4 / var(--base-width) * 100vw);
+  animation: titleSparkle 4s ease-in-out infinite;
+  background: linear-gradient(45deg, #ffffff, #f0f0f0, #e8e8e8, #ffffff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes gentleGlow {
+  0%, 100% { 
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    opacity: 0.9;
+  }
+  50% { 
+    text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 255, 255, 0.6);
+    opacity: 1;
+  }
+}
+
+@keyframes titleSparkle {
+  0%, 100% { 
+    background-position: 0% 50%;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+  }
+  25% { 
+    background-position: 100% 50%;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 215, 0, 0.4);
+  }
+  50% { 
+    background-position: 100% 100%;
+    text-shadow: 0 0 25px rgba(255, 255, 255, 1), 0 0 40px rgba(255, 215, 0, 0.6);
+  }
+  75% { 
+    background-position: 0% 100%;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 1), 0 0 30px rgba(255, 215, 0, 0.4);
+  }
+}
+
+/* ----------------------------------
+ * レスポンシブレイアウトの土台
+ * ---------------------------------- */
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: url('../top-page/top-10.jpg') no-repeat center center;
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 40px; /* キャンペーンバナー分のスペース（縮小） */
+  box-sizing: border-box;
+}
+
+.button-area {
+  position: relative;
+  aspect-ratio: var(--base-width) / var(--base-height); 
+  width: 100%;
+  max-width: 1920px;
+}
+
+/* ----------------------------------
+ * ボタンの共通スタイル & 個別配置
+ * ---------------------------------- */
+.btn {
+  position: absolute;
+  border-style: solid;
+  cursor: pointer;
+  box-sizing: border-box;
+  border-radius: 30px;
+}
+
+/* 夏休み特別キャンペーンバナー */
+.campaign-banner {
+  background: linear-gradient(45deg, #ff9500, #ffdd00, #00bfff, #ff9500);
+  background-size: 300% 300%;
+  animation: gradientShift 4s ease infinite;
+  padding: 8px 0;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+/* コンテナ調整済み（上記で統合） */
+
+.banner-content {
+  color: white;
+  font-weight: bold;
+  font-size: calc(14 / var(--base-width) * 100vw);
+  font-family: var(--font-yutoriro);
+}
+
+.banner-icon {
+  margin: 0 8px;
+  animation: bounce 2s infinite;
+}
+
+.banner-period {
+  font-size: calc(12 / var(--base-width) * 100vw);
+  margin-left: 10px;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-5px); }
+  60% { transform: translateY(-3px); }
+}
+
+/* メインヘッダー */
+.main-header {
+  text-align: center;
+  margin: 80px 0 40px 0; /* バナー分のマージン追加 */
+}
+
+.main-header h1 {
+  font-family: var(--font-garamond);
+  font-size: calc(48 / var(--base-width) * 100vw);
+  color: var(--color-title);
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+  font-family: var(--font-mincho);
+  font-size: calc(18 / var(--base-width) * 100vw);
+  color: var(--color-text-sub);
+  margin: 0;
+}
+
+/* ゾーンタイトル */
+.zone-title {
+  font-family: var(--font-yutoriro);
+  font-size: calc(28 / var(--base-width) * 100vw);
+  color: var(--color-title);
+  text-align: center;
+  margin: 40px 0 30px 0;
+  padding: 15px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+  border-radius: 20px;
+  border: 2px solid rgba(255,215,0,0.3);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* プレミアムグリッド */
+.premium-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin: 30px 0;
+}
+
+/* プレミアムカード */
+.premium-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+  border-radius: 20px;
+  padding: 25px;
+  border: 2px solid rgba(255,215,0,0.4);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  border-color: rgba(255,215,0,0.6);
+}
+
+.premium-card.personal-reading {
+  background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,140,0,0.1));
+  border: 3px solid #ffd700;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.card-header h3 {
+  font-family: var(--font-yutoriro);
+  font-size: calc(22 / var(--base-width) * 100vw);
+  color: var(--color-title);
+  margin: 0;
+}
+
+.discount-badge {
+  background: linear-gradient(45deg, #ff4444, #ff6666);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: calc(14 / var(--base-width) * 100vw);
+  font-weight: bold;
+  box-shadow: 0 3px 10px rgba(255,68,68,0.4);
+  animation: pulse 2s infinite;
+}
+
+.discount-badge.premium-badge {
+  background: linear-gradient(45deg, #ffd700, #ffb347);
+  color: #2d1b69;
+  font-size: calc(16 / var(--base-width) * 100vw);
+}
+
+/* 価格セクション */
+.price-section {
+  text-align: center;
+  margin: 20px 0;
+  padding: 15px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 15px;
+}
+
+.original-price {
+  color: rgba(255,255,255,0.6);
+  text-decoration: line-through;
+  font-size: calc(16 / var(--base-width) * 100vw);
+  display: block;
+  margin-bottom: 5px;
+}
+
+.sale-price {
+  color: #ffd700;
+  font-size: calc(32 / var(--base-width) * 100vw);
+  font-weight: bold;
+  font-family: var(--font-yutoriro);
+  display: block;
+  margin-bottom: 5px;
+}
+
+.sale-price.premium {
+  font-size: calc(36 / var(--base-width) * 100vw);
+  color: #ffd700;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.savings {
+  color: #ff6b6b;
+  font-size: calc(14 / var(--base-width) * 100vw);
+  font-weight: bold;
+  background: rgba(255,107,107,0.2);
+  padding: 4px 12px;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.description {
+  color: var(--color-text-sub);
+  font-size: calc(16 / var(--base-width) * 100vw);
+  margin: 15px 0;
+  text-align: center;
+  font-family: var(--font-mincho);
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.features li {
+  color: rgba(255,255,255,0.9);
+  font-size: calc(14 / var(--base-width) * 100vw);
+  margin: 8px 0;
+  padding-left: 20px;
+  position: relative;
+}
+
+.features li::before {
+  content: "✓";
+  color: #ffd700;
+  font-weight: bold;
+  position: absolute;
+  left: 0;
+}
+
+/* プレミアムボタン */
+.premium-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #ffd700, #ffb347);
+  color: #2d1b69;
+  border: none;
+  border-radius: 15px;
+  padding: 15px;
+  font-size: calc(16 / var(--base-width) * 100vw);
+  font-weight: bold;
+  font-family: var(--font-yutoriro);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255,215,0,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+.premium-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255,215,0,0.6);
+}
+
+.premium-btn.ultimate {
+  background: linear-gradient(135deg, #ffd700, #ff8c00, #ffd700);
+  background-size: 200% 200%;
+  animation: goldShimmer 3s ease infinite;
+  font-size: calc(18 / var(--base-width) * 100vw);
+  padding: 20px;
+}
+
+@keyframes goldShimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.btn-text {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.campaign-text {
+  display: block;
+  font-size: calc(12 / var(--base-width) * 100vw);
+  opacity: 0.8;
+}
+
+/* 注意書き */
+.notice {
+  text-align: center;
+  margin: 40px 0 20px 0;
+  padding: 15px;
+  background: rgba(255,107,107,0.1);
+  border: 1px solid rgba(255,107,107,0.3);
+  border-radius: 10px;
+}
+
+.notice p {
+  color: #ff6b6b;
+  font-size: calc(12 / var(--base-width) * 100vw);
+  margin: 0;
+  font-weight: bold;
+}
+
+/* 無料ラベルの共通スタイル */
+.free-label {
+  background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+  color: white;
+  font-family: var(--font-yutoriro);
+  font-size: calc(18 / var(--base-width) * 100vw);
+  font-weight: bold;
+  padding: calc(4 / var(--base-width) * 100vw) calc(12 / var(--base-width) * 100vw);
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+  margin-right: calc(8 / var(--base-width) * 100vw);
+  display: inline-block;
+  line-height: 1;
+}
+
+/* 神託システムによる魂の鑑定へ ラベル */
+.oracle-system-label {
+  position: absolute;
+  top: 67vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mincho);
+  font-size: 28px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  animation: gentleGlow 3s ease-in-out infinite alternate;
+  z-index: 10;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* 有料ボタンの価格表示 */
+.original-price {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: line-through;
+  font-size: calc(14 / var(--base-width) * 100vw);
+  margin-right: calc(8 / var(--base-width) * 100vw);
+}
+
+.sale-price {
+  color: #ffd700;
+  font-weight: bold;
+  font-size: calc(16 / var(--base-width) * 100vw);
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+/* 神託システムタロット占いボタン */
+.pro-tarot-btn {
+  background: linear-gradient(135deg, rgba(75, 0, 130, 0.9), rgba(128, 0, 128, 0.9));
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  box-shadow: 0 8px 25px rgba(128, 0, 128, 0.4);
+  flex-direction: column;
+  padding-top: 1%;
+}
+
+.pro-tarot-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(128, 0, 128, 0.6);
+  border-color: #ffd700;
+}
+
+.pro-tarot-btn .main-text {
+  color: #ffd700;
+  font-family: var(--font-tt-tsars);
+  font-size: calc(26 / var(--base-width) * 100vw);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.pro-tarot-btn .sub-text {
+  color: #e6e6fa;
+  font-family: var(--font-mincho);
+  font-size: calc(16 / var(--base-width) * 100vw);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+  margin-top: -2px;
+}
+
+/* 本格星座占いボタン */
+.pro-birthday-btn {
+  background: linear-gradient(135deg, rgba(25, 25, 112, 0.9), rgba(72, 61, 139, 0.9));
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  box-shadow: 0 8px 25px rgba(72, 61, 139, 0.4);
+  flex-direction: column;
+  padding-top: 1%;
+}
+
+.pro-birthday-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(72, 61, 139, 0.6);
+  border-color: #ffd700;
+}
+
+.pro-birthday-btn .main-text {
+  color: #ffd700;
+  font-family: var(--font-tt-tsars);
+  font-size: calc(26 / var(--base-width) * 100vw);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.pro-birthday-btn .sub-text {
+  color: #ffffff;
+  font-family: var(--font-mincho);
+  font-size: calc(16 / var(--base-width) * 100vw);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+  margin-top: -2px;
+}
+
+/* 個人鑑定ボタン */
+.personal-reading-btn {
+  background: 
+    linear-gradient(135deg, rgba(75, 57, 130, 0.95), rgba(102, 75, 145, 0.95)),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.3), transparent 50%),
+    radial-gradient(circle at 70% 70%, rgba(95, 70, 125, 0.4), transparent 50%);
+  border: 3px solid #6b4791;
+  box-shadow: 
+    0 10px 30px rgba(95, 70, 125, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 20px rgba(75, 57, 130, 0.5);
+  position: relative;
+  overflow: hidden;
+  animation: purpleGlow 3s ease-in-out infinite alternate;
+}
+
+.personal-reading-btn::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.2) 25%, 
+    rgba(95, 70, 125, 0.5) 50%, 
+    rgba(255, 255, 255, 0.3) 75%, 
+    transparent 100%
+  );
+  animation: luxuryShimmer 4s infinite;
+}
+
+.personal-reading-btn::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(95, 70, 125, 0.2) 30%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  animation: sparkle 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+@keyframes luxuryShimmer {
+  0% { 
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% { 
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+    opacity: 0.3;
+  }
+}
+
+@keyframes purpleGlow {
+  0% {
+    box-shadow: 
+      0 10px 30px rgba(95, 70, 125, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      0 0 20px rgba(75, 57, 130, 0.5);
+  }
+  100% {
+    box-shadow: 
+      0 15px 40px rgba(95, 70, 125, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4),
+      0 0 30px rgba(75, 57, 130, 0.7);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8) rotate(0deg);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.2) rotate(180deg);
+  }
+}
+
+.personal-reading-btn:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 20px 50px rgba(95, 70, 125, 0.9),
+    inset 0 2px 0 rgba(255, 255, 255, 0.5),
+    0 0 40px rgba(75, 57, 130, 0.8);
+  border-color: #7a5ba8;
+  animation: purpleGlow 1.5s ease-in-out infinite alternate;
+}
+
+.personal-reading-btn .main-text {
+  color: #ffffff;
+  font-family: var(--font-tt-tsars);
+  font-size: calc(28 / var(--base-width) * 100vw);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+  position: relative;
+  z-index: 1;
+}
+
+.personal-reading-btn .sub-text {
+  color: #e6e6fa;
+  font-family: var(--font-mincho);
+  font-size: calc(16 / var(--base-width) * 100vw);
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+  margin-top: -2px;
+  position: relative;
+  z-index: 1;
+}
+
+.omikuji-btn {
+  left: calc(755 / var(--base-width) * 100%);
+  top: calc(345 / var(--base-height) * 100%);
+  width: calc(400 / var(--base-width) * 100%);
+  height: calc(95 / var(--base-height) * 100%);
+  background-color: var(--color-btn-bg);
+  border-color: var(--color-border-main);
+  border-width: calc(1 / var(--base-width) * 100vw);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 1%;
+}
+.omikuji-btn .main-text {
+  font-family: var(--font-mincho);
+  color: var(--color-text-main);
+  font-size: calc(28 / var(--base-width) * 100vw);
+  line-height: 1.2;
+}
+.omikuji-btn .sub-text {
+  font-family: var(--font-mincho);
+  color: var(--color-text-sub);
+  font-size: calc(17 / var(--base-width) * 100vw);
+  line-height: 1.2;
+}
+
+.mini-tarot-btn,
+.mini-birthday-btn,
+.pro-tarot-btn,
+.pro-birthday-btn,
+.personal-reading-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mini-tarot-btn {
+  left: calc(530 / var(--base-width) * 100%);
+  top: calc(475 / var(--base-height) * 100%);
+  width: calc(400 / var(--base-width) * 100%);
+  height: calc(95 / var(--base-height) * 100%);
+  background-color: var(--color-btn-bg);
+  border-color: var(--color-border-main);
+  border-width: calc(1 / var(--base-width) * 100vw);
+  flex-direction: column;
+  padding-top: 1%;
+}
+.mini-tarot-btn .main-text {
+  font-family: var(--font-tt-tsars);
+  color: var(--color-text-main);
+  font-size: calc(28 / var(--base-width) * 100vw);
+  line-height: 1.2;
+}
+.mini-tarot-btn .sub-text {
+  font-family: var(--font-mincho);
+  color: var(--color-text-sub);
+  font-size: calc(18 / var(--base-width) * 100vw);
+  line-height: 1.2;
+}
+.mini-birthday-btn {
+  left: calc(987.5 / var(--base-width) * 100%);
+  top: calc(475 / var(--base-height) * 100%);
+  width: calc(400 / var(--base-width) * 100%);
+  height: calc(95 / var(--base-height) * 100%);
+  background-color: var(--color-btn-bg);
+  border-color: var(--color-border-main);
+  border-width: calc(1 / var(--base-width) * 100vw);
+  flex-direction: column;
+  padding-top: 1%;
+}
+.mini-birthday-btn .main-text {
+  font-family: var(--font-tt-tsars);
+  color: var(--color-text-main);
+  font-size: calc(28 / var(--base-width) * 100vw);
+  line-height: 1.2;
+}
+.mini-birthday-btn .sub-text {
+  font-family: var(--font-mincho);
+  color: var(--color-text-sub);
+  font-size: calc(18 / var(--base-width) * 100vw);
+  line-height: 1.2;
+}
+
+.pro-tarot-btn {
+  left: calc(567.5 / var(--base-width) * 100%);
+  top: calc(700 / var(--base-height) * 100%);
+  width: calc(375 / var(--base-width) * 100%);
+  height: calc(87.5 / var(--base-height) * 100%);
+  background: url('../top-page/button-imag/button-1.jpg') no-repeat center center;
+  background-size: cover;
+  border-color: var(--color-border-pro1);
+  border-width: calc(1 / var(--base-width) * 100vw);
+}
+
+.pro-birthday-btn {
+  left: calc(980 / var(--base-width) * 100%);
+  top: calc(700 / var(--base-height) * 100%);
+  width: calc(375 / var(--base-width) * 100%);
+  height: calc(87.5 / var(--base-height) * 100%);
+  background: url('../top-page/button-imag/button-2.jpg') no-repeat center center;
+  background-size: cover;
+  border-color: var(--color-border-pro2);
+  border-width: calc(1 / var(--base-width) * 100vw);
+}
+
+.personal-reading-btn {
+  left: calc(773.75 / var(--base-width) * 100%);
+  top: calc(820 / var(--base-height) * 100%);
+  width: calc(375 / var(--base-width) * 100%);
+  height: calc(87.5 / var(--base-height) * 100%);
+  flex-direction: column;
+  padding-top: 1%;
+}
+
+.coming-soon-text {
+  font-family: var(--font-tt-tsars);
+  color: var(--color-text-comingsoon);
+  font-size: calc(23.9 / var(--base-width) * 100vw);
+}
+.coming-soon-text-pro {
+    font-family: var(--font-tt-tsars);
+    font-size: calc(23.3 / var(--base-width) * 100vw);
+}
+.pro-tarot-btn .coming-soon-text-pro {
+    color: var(--color-text-pro1);
+}
+.pro-birthday-btn .coming-soon-text-pro {
+    color: var(--color-text-pro2);
+}
+
+
+/* ----------------------------------
+ * 結果表示画面
+ * ---------------------------------- */
+
+#result-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1a1a2e; /* 黒に近いネイビー */
+  display: flex;
+  justify-content: center;
+  align-items: center; /* 垂直方向の中央寄せ */
+  z-index: 1000;
+}
+
+#result-container.hidden {
+  display: none;
+}
+
+#result-content {
+  position: relative;
+  bottom: 5%; /* 垂直方向の中央から5%分、上に移動 */
+  width: 80%;
+  max-width: 700px;
+  padding: 3vw 4vw;
+  background-color: var(--color-btn-bg); /* ベージュの背景色 */
+  border: 2px solid var(--color-border-main); /* 枠線 */
+  border-radius: 15px; /* 角丸 */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  color: var(--color-text-main);
+  font-family: var(--font-mincho);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+/* 運勢の見出し */
+#result-content h2 {
+  font-size: clamp(28px, calc(52 / var(--base-width) * 100vw), 52px);
+  margin: 0.5em 0;
+  color: var(--color-text-sub); /* ご指定のピンク色に統一 */
+  display: flex;
+  align-items: center;
+  gap: 0.2em;
+}
+
+/* 運勢のテキスト部分にのみ縁取りを適用 */
+.fortune-text {
+  text-shadow: 
+    -1.5px -1.5px 0 #fff, 1.5px -1.5px 0 #fff,
+    -1.5px 1.5px 0 #fff, 1.5px 1.5px 0 #fff;
+}
+
+/* 絵文字には縁取りを適用しない */
+.fortune-emoji {
+  text-shadow: none;
+}
+
+/* ラッキーカラーなどの項目行 */
+#result-content .item-line {
+  font-size: clamp(18px, calc(26 / var(--base-width) * 100vw), 26px);
+  margin: 0.3em 0; /* 上下の余白を少し詰める */
+  color: var(--color-text-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+}
+/* カラーチップのスタイル */
+.color-chip {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.2);
+}
+
+/* アドバイス本文 */
+#result-content .advice {
+  font-size: clamp(16px, calc(22 / var(--base-width) * 100vw), 22px);
+  margin-top: 1em;
+  padding: 1em;
+  background-color: rgba(255, 255, 255, 0.6);
+  border-radius: 10px;
+  max-width: 80%;
+  color: var(--color-text-main);
+  text-shadow: none;
+  line-height: 1.6;
+}
+
+.result-buttons {
+  position: absolute;
+  bottom: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+}
+
+#close-btn, #item-link-btn {
+  padding: 10px 30px;
+  font-size: 1.2rem;
+  font-family: var(--font-yutoriro);
+  background-color: var(--color-btn-bg);
+  border: 1px solid var(--color-border-main);
+  color: var(--color-text-main);
+  border-radius: 20px;
+  cursor: pointer;
+}

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>占い結果 - mini星座占い</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>✨ 占い結果 ✨</h1>
+      <p class="description">あなたの今日の運勢</p>
+    </header>
+    
+    <main>
+      <div class="result-card">
+        <h2 id="result-sign">星座名</h2>
+        <div class="fortune-items">
+          <div class="fortune-item">
+            <span class="fortune-label">最強運の時間帯</span>
+            <span class="fortune-value" id="result-lucky-time">--:--</span>
+          </div>
+          <div class="fortune-item">
+            <span class="fortune-label">決断力レベル</span>
+            <span class="fortune-value" id="result-decision-level">★★★</span>
+          </div>
+          <div class="fortune-item">
+            <span class="fortune-label">金運指数</span>
+            <span class="fortune-value" id="result-money-index">85%</span>
+          </div>
+        </div>
+        <div class="advice-section">
+          <h3>今日のアドバイス</h3>
+          <p id="result-daily-advice">今日はあなたにとって特別な一日になりそうです。</p>
+        </div>
+      </div>
+      
+      <div class="action-buttons">
+        <button onclick="history.back()" class="secondary-btn">戻る</button>
+        <button onclick="window.location.href='index.html'" class="secondary-btn">他の星座を見る</button>
+        <button onclick="alert('💎 詳細な占いは現在準備中です。お楽しみに！')" class="premium-btn">💎 詳細な運勢を見る</button>
+        <button onclick="window.location.href='../omikuji/index.html'" class="close-btn">閉じる</button>
+      </div>
+    </main>
+  </div>
+  
+  <script>
+    // URLパラメータから星座情報を取得して表示
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const sign = urlParams.get('sign');
+      const name = urlParams.get('name');
+      const symbol = urlParams.get('symbol');
+      const luckyTime = urlParams.get('luckyTime');
+      const decisionLevel = urlParams.get('decisionLevel');
+      const moneyIndex = urlParams.get('moneyIndex');
+      const advice = urlParams.get('advice');
+      
+      if (sign) {
+        document.getElementById('result-sign').textContent = `${symbol} ${name}`;
+        document.getElementById('result-lucky-time').textContent = luckyTime;
+        document.getElementById('result-decision-level').textContent = decisionLevel;
+        document.getElementById('result-money-index').textContent = moneyIndex;
+        document.getElementById('result-daily-advice').textContent = decodeURIComponent(advice);
+      }
+    });
+  </script>
+</body>
+</html>
+

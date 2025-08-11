@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星詠みシステム - 鑑定情報入力 | Salon de Serafina</title>
+    <link rel="stylesheet" href="../divine-tarot/css/oracle-style.css">
+    <style>
+        .premium-form-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0033, #2d1b69, #4a69bd);
+            padding: 20px;
+            color: white;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ffb347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .success-badge {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #ffd700;
+            font-size: 1.1em;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1em;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(255,255,255,0.15);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .form-note {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.7);
+            margin-top: 5px;
+            line-height: 1.4;
+        }
+        
+        .submit-button {
+            background: linear-gradient(45deg, #ffd700, #ffb347, #ffd700);
+            background-size: 300% 300%;
+            color: #1a0033;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+            animation: sparkle 2s infinite;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+        }
+        
+        .submit-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+        
+        .submit-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.8);
+            animation: sparkle 1s infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.1);
+            font-size: 0.9em;
+        }
+        
+        .step.completed {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+        
+        .step.current {
+            background: linear-gradient(45deg, #ffd700, #ffb347);
+            color: #1a0033;
+            font-weight: bold;
+        }
+        
+        .breadcrumb {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        
+        .breadcrumb a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .breadcrumb a:hover {
+            color: #ffd700;
+        }
+        
+        .breadcrumb-separator {
+            color: rgba(255, 255, 255, 0.6);
+            margin: 0 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .progress-steps {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .form-header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body class="premium-form-container">
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb">
+        <a href="../omikuji/index.html">🏠 トップ</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="premium-zodiac.html">プレミアム星座占い</a>
+        <span class="breadcrumb-separator">›</span>
+        <span style="color: #ffd700; font-weight: bold;">鑑定情報入力</span>
+    </nav>
+    
+    <!-- 進行状況 -->
+    <div class="progress-steps">
+        <div class="step completed">
+            <span>✅</span>
+            <span>決済完了</span>
+        </div>
+        <div class="step current">
+            <span>📝</span>
+            <span>情報入力</span>
+        </div>
+        <div class="step">
+            <span>🌟</span>
+            <span>鑑定結果</span>
+        </div>
+    </div>
+    
+    <div class="form-header">
+        <div class="success-badge">
+            ✨ 決済が完了しました！
+        </div>
+        <h1>⭐ 星詠みシステム星座占い</h1>
+        <p style="font-size: 1.1em; color: rgba(255,255,255,0.9);">
+            詳細な鑑定のために、以下の情報をご入力ください
+        </p>
+    </div>
+    
+    <div class="form-container">
+        <form id="consultation-form">
+            <div class="form-group">
+                <label for="name">🌸 お名前</label>
+                <input type="text" id="name" name="name" required
+                       placeholder="例：山田 花子">
+                <div class="form-note">鑑定文に使用するお名前をご入力ください</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="birthdate">🎂 生年月日</label>
+                <input type="date" id="birthdate" name="birthdate" required>
+                <div class="form-note">星座と詳細な運勢分析に使用します</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="consultation">💭 今月特に知りたいこと（任意）</label>
+                <textarea id="consultation" name="consultation" 
+                          placeholder="例：転職を検討しているので仕事運について詳しく知りたい、新しい恋愛について、金運アップの方法など...">
+                </textarea>
+                <div class="form-note">
+                    特定のテーマがあればお聞かせください。より具体的なアドバイスをお伝えできます。<br>
+                    空欄でも総合的な月間運勢を鑑定いたします。
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-button" id="submit-btn">
+                🔮 星詠み鑑定を開始する
+            </button>
+        </form>
+    </div>
+    
+    <!-- API設定ファイルを最初に読み込み -->
+    <script src="../api-config.js"></script>
+    <script src="js/star-yomi-system.js"></script>
+    <script>
+        // URLパラメータをチェックしてテストモード表示
+        (function(){
+            const urlParams = new URLSearchParams(window.location.search);
+            const isTestMode = urlParams.get('test') === 'true';
+            if (isTestMode) {
+                document.body.insertAdjacentHTML('afterbegin',
+                    '<div style="background: yellow; padding: 10px; text-align: center; font-weight: bold;">⚠️ テストモード</div>'
+                );
+            } else {
+                // 本番モードでは決済確認のコードをここに実装
+            }
+        })();
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('consultation-form');
+            const submitBtn = document.getElementById('submit-btn');
+            
+            // フォーム送信処理
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // ボタンを無効化
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '🔮 鑑定中... しばらくお待ちください';
+                
+                // フォームデータを取得
+                const formData = new FormData(form);
+                const consultationData = {
+                    name: formData.get('name'),
+                    birthdate: formData.get('birthdate'),
+                    consultation: formData.get('consultation') || ''
+                };
+                
+                console.log('📋 相談データ:', consultationData);
+                
+                // バリデーション
+                if (!consultationData.name || !consultationData.birthdate) {
+                    alert('お名前と生年月日は必須項目です。');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '🔮 星詠み鑑定を開始する';
+                    return;
+                }
+                
+                try {
+                    // プレミアム星座占いシステムを初期化
+                    const zodiacSystem = new StarYomiSystem();
+                    
+                    // データをローカルストレージに保存
+                    localStorage.setItem('premiumZodiacData', JSON.stringify(consultationData));
+                    
+                    // 鑑定実行
+                    console.log('🌟 星詠みシステム鑑定を開始...');
+                    const reading = await zodiacSystem.generateReading(
+                        consultationData.birthdate, 
+                        consultationData.name, 
+                        consultationData.consultation
+                    );
+                    
+                    // 結果を保存
+                    localStorage.setItem('premiumZodiacReading', JSON.stringify(reading));
+                    
+                    // 結果ページに移動
+                    window.location.href = 'star-yomi-result.html';
+                    
+                } catch (error) {
+                    console.error('鑑定エラー:', error);
+                    alert('鑑定中にエラーが発生しました。もう一度お試しください。');
+                    
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '🔮 星詠み鑑定を開始する';
+                }
+            });
+            
+            // 生年月日の最大値を今日に設定
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('birthdate').max = today;
+            
+            // 最小値を100年前に設定
+            const minDate = new Date();
+            minDate.setFullYear(minDate.getFullYear() - 100);
+            document.getElementById('birthdate').min = minDate.toISOString().split('T')[0];
+        });
+    </script>
+</body>
+</html>
+

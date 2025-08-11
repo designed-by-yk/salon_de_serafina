@@ -1,0 +1,769 @@
+/* 基本設定 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* パンくずリスト */
+.breadcrumb {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  font-size: 14px;
+  backdrop-filter: blur(10px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.breadcrumb a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.breadcrumb a:hover {
+  color: #ffd700;
+}
+
+.breadcrumb-separator {
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 8px;
+}
+
+.breadcrumb-current {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+body {
+  font-family: 'Kiwi Maru', sans-serif;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  padding-top: 60px; /* パンくずリスト分のスペース */
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* 星の背景アニメーション */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2px 2px at 160px 30px, #fff, transparent);
+  background-repeat: repeat;
+  background-size: 200px 100px;
+  animation: sparkle 20s linear infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes sparkle {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(200px); }
+}
+
+.container {
+  max-width: 800px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 30px;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* ヘッダー */
+header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+header h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(45deg, #ffd700, #ff69b4, #00bfff);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.description {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+}
+
+/* 非表示クラス */
+.hidden {
+  display: none;
+}
+
+/* 星座選択グリッド */
+.zodiac-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.zodiac-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 15px;
+  padding: 20px 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: white;
+  font-family: inherit;
+}
+
+.zodiac-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: #ffd700;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.3);
+}
+
+.zodiac-symbol {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.zodiac-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.zodiac-period {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  display: block;
+}
+
+/* 結果表示セクション */
+.result-card {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 25px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.result-card h2 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 30px;
+  color: #ffd700;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.fortune-items {
+  display: grid;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.fortune-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  border-left: 5px solid #ffd700;
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.fortune-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
+}
+
+.fortune-label {
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+}
+
+.fortune-value {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 1px 5px rgba(255, 215, 0, 0.5);
+}
+
+.advice-section {
+  text-align: center;
+  padding: 25px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.advice-section h3 {
+  color: #ff69b4;
+  margin-bottom: 15px;
+  font-size: 1.3rem;
+  text-shadow: 0 1px 5px rgba(255, 105, 180, 0.5);
+}
+
+.advice-section p {
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+}
+
+/* ボタン */
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.secondary-btn, .premium-btn, .close-btn {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 25px;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.secondary-btn {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+}
+
+.premium-btn {
+  background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+  color: white;
+  box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+  font-size: 1.1rem;
+  padding: 15px 35px;
+}
+
+.premium-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* プレミアムモーダル */
+.premium-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border-radius: 25px;
+  padding: 0;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease;
+  position: relative;
+}
+
+/* スクロール可能インジケーター */
+.modal-content::after {
+  content: '';
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: linear-gradient(to top, rgba(26, 26, 46, 0.9) 0%, rgba(26, 26, 46, 0.7) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.scroll-indicator {
+  position: sticky;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 11;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.2rem;
+  animation: bounceDown 2s infinite;
+  pointer-events: none;
+  text-align: center;
+}
+
+@keyframes bounceDown {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  40% {
+    transform: translateX(-50%) translateY(-8px);
+  }
+  60% {
+    transform: translateX(-50%) translateY(-4px);
+  }
+}
+
+/* スクロール時にインジケーターを非表示 */
+.modal-content.scrolled .scroll-indicator {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.modal-content.scrolled::after {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* カスタムスクロールバー */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #ff5252, #ffcc02);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+  padding: 25px 30px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  color: #ffd700;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.modal-body {
+  padding: 25px 30px;
+}
+
+.premium-features {
+  margin-bottom: 25px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  margin-right: 15px;
+  width: 30px;
+  text-align: center;
+}
+
+.feature-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.pricing {
+  text-align: center;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+.price-highlight {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.original-price {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: line-through;
+  font-size: 1rem;
+}
+
+.discount-price {
+  color: #ffd700;
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.price-note {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.modal-footer {
+  padding: 20px 30px 30px;
+  display: flex;
+  gap: 15px;
+  flex-direction: column;
+}
+
+.premium-signup-btn {
+  background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 25px;
+  font-family: inherit;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 20px rgba(255, 107, 107, 0.4);
+}
+
+.premium-signup-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+}
+
+.modal-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 12px 25px;
+  border-radius: 20px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-cancel:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  header h1 {
+    font-size: 2rem;
+  }
+  
+  .zodiac-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  
+  .zodiac-btn {
+    padding: 15px 10px;
+  }
+  
+  .zodiac-symbol {
+    font-size: 2rem;
+  }
+  
+  .zodiac-name {
+    font-size: 1rem;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .secondary-btn, .premium-btn, .close-btn {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 20px;
+  }
+  
+  .modal-header {
+    padding: 20px 25px 10px;
+  }
+  
+  .modal-body {
+    padding: 20px 25px;
+  }
+  
+  .modal-footer {
+    padding: 15px 25px 25px;
+  }
+  
+  /* 追加のモバイル最適化 */
+  .zodiac-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .zodiac-btn {
+    padding: 20px 15px;
+    font-size: 16px;
+    min-height: 120px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .action-buttons button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    min-height: 50px;
+    touch-action: manipulation;
+  }
+  
+  .breadcrumb {
+    font-size: 12px;
+    padding: 8px 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .zodiac-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .fortune-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 5px;
+  }
+  
+  .fortune-label, .fortune-value {
+    font-size: 1rem;
+  }
+}
+
+/* アニメーション */
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* プレミアム誘導セクション */
+.premium-upsell {
+    margin-top: 40px;
+    padding: 30px;
+    background: linear-gradient(135deg, #1a0033, #2d1b69);
+    border-radius: 20px;
+    text-align: center;
+    color: white;
+}
+
+.premium-upsell h2 {
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.premium-features {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+}
+
+.premium-features h3 {
+    margin-bottom: 15px;
+    color: #ffd700;
+}
+
+.premium-features ul {
+    list-style: none;
+    text-align: left;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.premium-features li {
+    margin: 10px 0;
+    padding-left: 10px;
+}
+
+.price-section {
+    margin: 20px 0;
+}
+
+.original-price {
+    text-decoration: line-through;
+    color: rgba(255,255,255,0.6);
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.special-price {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.special-price .price {
+    color: #ff6b6b;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.special-price .badge {
+    background: #ff6b6b;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.comparison {
+    font-size: 14px;
+    margin: 20px 0;
+    line-height: 1.6;
+}
+
+.btn-premium {
+    background: linear-gradient(45deg, #4a69bd, #6c5ce7);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 30px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin: 20px 0;
+}
+
+.btn-premium:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(108, 92, 231, 0.4);
+}
+
+.note {
+    font-size: 12px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 15px;
+    line-height: 1.4;
+}

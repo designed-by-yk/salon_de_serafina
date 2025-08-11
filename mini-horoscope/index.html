@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mini星座占い - 今日の3大チャンス！| Salon de Serafina</title>
+  
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="あなたの星座で今日の運勢をチェック！最強運の時間帯、決断力レベル、金運指数を無料で占います。">
+  <meta name="keywords" content="星座占い, 今日の運勢, 無料占い, 金運, 決断力, セラフィナ">
+  
+  <!-- OGP Meta Tags -->
+  <meta property="og:title" content="mini星座占い - 今日の3大チャンス！">
+  <meta property="og:description" content="あなたの星座で今日の運勢をチェック！最強運の時間帯、決断力レベル、金運指数を無料で占います。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://serafina-fortune.com/mini-horoscope/">
+  <meta property="og:image" content="https://serafina-fortune.com/images/horoscope-og.jpg">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://serafina-fortune.com/mini-horoscope/">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- パンくずリスト -->
+  <nav class="breadcrumb">
+    <a href="../omikuji/index.html">🏠 トップ</a>
+    <span class="breadcrumb-separator">›</span>
+    <span class="breadcrumb-current">mini星座占い</span>
+  </nav>
+
+  <div class="container">
+    <header>
+      <h1>✨ mini HOROSCOPE ✨</h1>
+      <p class="description">あなたの星座を選んで<br>今日の運勢をチェック！</p>
+    </header>
+    
+    <main>
+      <div id="zodiac-selection">
+        <div class="zodiac-grid">
+          <button class="zodiac-btn" data-sign="aries">
+            <span class="zodiac-symbol">♈</span>
+            <span class="zodiac-name">牡羊座</span>
+            <span class="zodiac-period">3/21-4/19</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="taurus">
+            <span class="zodiac-symbol">♉</span>
+            <span class="zodiac-name">牡牛座</span>
+            <span class="zodiac-period">4/20-5/20</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="gemini">
+            <span class="zodiac-symbol">♊</span>
+            <span class="zodiac-name">双子座</span>
+            <span class="zodiac-period">5/21-6/21</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="cancer">
+            <span class="zodiac-symbol">♋</span>
+            <span class="zodiac-name">蟹座</span>
+            <span class="zodiac-period">6/22-7/22</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="leo">
+            <span class="zodiac-symbol">♌</span>
+            <span class="zodiac-name">獅子座</span>
+            <span class="zodiac-period">7/23-8/22</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="virgo">
+            <span class="zodiac-symbol">♍</span>
+            <span class="zodiac-name">乙女座</span>
+            <span class="zodiac-period">8/23-9/22</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="libra">
+            <span class="zodiac-symbol">♎</span>
+            <span class="zodiac-name">天秤座</span>
+            <span class="zodiac-period">9/23-10/23</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="scorpio">
+            <span class="zodiac-symbol">♏</span>
+            <span class="zodiac-name">蠍座</span>
+            <span class="zodiac-period">10/24-11/22</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="sagittarius">
+            <span class="zodiac-symbol">♐</span>
+            <span class="zodiac-name">射手座</span>
+            <span class="zodiac-period">11/23-12/21</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="capricorn">
+            <span class="zodiac-symbol">♑</span>
+            <span class="zodiac-name">山羊座</span>
+            <span class="zodiac-period">12/22-1/19</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="aquarius">
+            <span class="zodiac-symbol">♒</span>
+            <span class="zodiac-name">水瓶座</span>
+            <span class="zodiac-period">1/20-2/18</span>
+          </button>
+          
+          <button class="zodiac-btn" data-sign="pisces">
+            <span class="zodiac-symbol">♓</span>
+            <span class="zodiac-name">魚座</span>
+            <span class="zodiac-period">2/19-3/20</span>
+          </button>
+        </div>
+      </div>
+      
+      <div id="result-section" class="hidden">
+        <div class="result-card">
+          <h2 id="selected-sign">星座名</h2>
+          <div class="fortune-items">
+            <div class="fortune-item">
+              <span class="fortune-label">最強運の時間帯</span>
+              <span class="fortune-value" id="lucky-time">--:--</span>
+            </div>
+            <div class="fortune-item">
+              <span class="fortune-label">決断力レベル</span>
+              <span class="fortune-value" id="decision-level">★★★</span>
+            </div>
+            <div class="fortune-item">
+              <span class="fortune-label">金運指数</span>
+              <span class="fortune-value" id="money-index">85%</span>
+            </div>
+          </div>
+          <div class="advice-section">
+            <h3>今日のアドバイス</h3>
+            <p id="daily-advice">今日はあなたにとって特別な一日になりそうです。</p>
+          </div>
+        </div>
+        
+        <!-- ボタンを今日のアドバイス直下に移動 -->
+        <div class="action-buttons">
+          <button id="reset-btn" class="secondary-btn">他の星座を見る</button>
+          <button id="close-btn" class="close-btn">閉じる</button>
+        </div>
+        
+        <!-- プレミアムボタンを基本ボタンのすぐ下に配置 -->
+        <div style="text-align: center; margin: 20px 0;">
+          <button class="btn-premium" onclick="location.href='star-yomi-detail.html'" style="margin: 0;">
+            ⭐ 星詠みシステムの詳細を見る
+          </button>
+        </div>
+        
+        <!-- 新しいプレミアム誘導セクション -->
+        <div class="premium-upsell">
+          <h2>✨ もっと詳しく知りたい方へ</h2>
+          
+          <p>今日の3大チャンスは、あくまで簡易的な診断です。<br>
+          星詠みシステムでは、項目だけでなく、ちょっと気になることや特に知りたいことなどを詳しくお尋ねすることもできます。</p>
+          
+          <div class="premium-features">
+            <h3>⭐ 星詠みシステムでは</h3>
+            <ul>
+              <li>📅 今月の重要な転機日（ラッキーデー・注意日）</li>
+              <li>🌙 新月・満月のパワーを活かす方法</li>
+              <li>📊 月間運勢グラフ（恋愛・仕事・金運）</li>
+              <li>💫 今月のテーマとメッセージ</li>
+              <li>🎯 具体的な開運アクション5つ</li>
+            </ul>
+          </div>
+          
+          <div class="price-section">
+            <p class="original-price">通常価格 1,280円</p>
+            <p class="special-price">
+              今なら <span class="price">980円</span>
+              <span class="badge">期間限定価格</span>
+            </p>
+          </div>
+          
+          <p class="comparison">
+            「神託システムタロット占い」とは違い、<br>
+            古来の星詠み技法により、あなたの生まれ持った運命を詳しく分析します。
+          </p>
+          
+
+          
+          <p class="note">
+            ※ まずは無料の結果をお楽しみください<br>
+            ※ 必要を感じた時にお申し込みください
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

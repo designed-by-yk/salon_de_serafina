@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>セラフィナ個人鑑定 - Salon de Serafina</title>
+    <meta name="description" content="セラフィナが直接執筆する特別な個人鑑定。3,000文字以上の詳細鑑定書とフォローアップ付き">
+    <meta property="og:title" content="セラフィナ個人鑑定 - Salon de Serafina">
+    <meta property="og:description" content="セラフィナが直接執筆する特別な個人鑑定。3,000文字以上の詳細鑑定書とフォローアップ付き">
+    <meta property="og:type" content="website">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', sans-serif;
+            background: linear-gradient(135deg, #1a0033, #4a0080, #6a0dad);
+            min-height: 100vh;
+            color: white;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #fff, #ffd700);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .difference {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .difference h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #ffd700;
+            font-size: 1.5em;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        th {
+            background: rgba(255, 215, 0, 0.2);
+            font-weight: bold;
+            color: #ffd700;
+        }
+        
+        td:first-child {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: bold;
+        }
+        
+        td:nth-child(2) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        td:nth-child(3) {
+            background: rgba(255, 215, 0, 0.1);
+            color: #ffd700;
+            font-weight: bold;
+        }
+        
+        .what-you-get {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .what-you-get h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .what-you-get ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .what-you-get li {
+            padding: 10px 0;
+            font-size: 1.1em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .what-you-get li:last-child {
+            border-bottom: none;
+        }
+        
+        .pricing {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .original-price {
+            font-size: 1.2em;
+            text-decoration: line-through;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 10px;
+        }
+        
+        .special-price {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        
+        .price {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+        
+        .process {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .process h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .process ol {
+            padding-left: 20px;
+        }
+        
+        .process li {
+            padding: 10px 0;
+            font-size: 1.1em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .process li:last-child {
+            border-bottom: none;
+        }
+        
+        .apply-button {
+            background: linear-gradient(45deg, #ffd700, #ffb347, #ffd700);
+            background-size: 300% 300%;
+            color: #1a0033;
+            padding: 25px 50px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.4em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 500px;
+            margin: 30px auto;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            animation: sparkle-apply 2s infinite;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.8);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+        }
+        
+        .apply-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.5), transparent);
+            transform: rotate(45deg);
+            animation: shine-apply 3s infinite;
+        }
+        
+        .apply-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 30px 60px rgba(255, 215, 0, 1);
+            animation: sparkle-apply 1s infinite;
+        }
+        
+        @keyframes sparkle-apply {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes shine-apply {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+        
+        .note {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .note p {
+            margin: 5px 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+        }
+        
+        /* 受付情報 */
+        .availability-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 40px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .availability-info h3 {
+            color: #ffd700;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .limit-info {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 10px;
+        }
+
+        .highlight {
+            color: #ffd700;
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .schedule {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+        }
+
+        .schedule p {
+            margin: 8px 0;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .two-types {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .type-card {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            text-align: center;
+        }
+
+        .type-card h4 {
+            color: #ffd700;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .type-card p {
+            margin: 10px 0;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .type-card .price {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 15px 0;
+        }
+
+        .type-card button {
+            background: linear-gradient(45deg, #ffd700, #ffb347);
+            color: #1a0033;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .type-card button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.7);
+        }
+
+        .notice {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .notice p {
+            margin: 8px 0;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+        }
+
+        .line-link {
+            display: inline-block;
+            background: #00c300;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .line-link:hover {
+            background: #00a300;
+            transform: translateY(-2px);
+        }
+
+        /* 鑑定オプション */
+        .reading-options {
+            margin: 40px 0;
+        }
+
+        .reading-options h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #ffd700;
+            font-size: 1.8em;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .option-header h3 {
+            color: #ffd700;
+            font-size: 1.4em;
+            margin-bottom: 5px;
+        }
+
+        .option-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1em;
+            margin-bottom: 20px;
+        }
+
+        .option-features, .option-recommend {
+            margin-bottom: 20px;
+        }
+
+        .option-features h4, .option-recommend h4 {
+            color: #ffd700;
+            font-size: 1.1em;
+            margin-bottom: 10px;
+        }
+
+        .option-features ul, .option-recommend ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .option-features li, .option-recommend li {
+            padding: 5px 0;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95em;
+        }
+
+        .option-pricing {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .current-price {
+            font-size: 1.2em;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .option-button {
+            background: linear-gradient(45deg, #ffd700, #ffb347, #ffd700);
+            background-size: 300% 300%;
+            color: #1a0033;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            animation: sparkle-option 3s infinite;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .option-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: rotate(45deg);
+            animation: shine-option 4s infinite;
+        }
+
+        .option-button:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(255, 215, 0, 0.8);
+            animation: sparkle-option 1.5s infinite;
+        }
+
+        @keyframes sparkle-option {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes shine-option {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        /* セット割引 */
+        .bundle-offer {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 30px;
+            border-radius: 20px;
+            margin: 30px 0;
+            border: 3px solid rgba(255, 215, 0, 0.5);
+            text-align: center;
+        }
+
+        .bundle-offer h3 {
+            color: #ffd700;
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .bundle-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .bundle-description h4 {
+            color: #ffd700;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .bundle-description p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+        }
+
+        .bundle-description ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+            margin-left: 3.5cm;
+            margin-top: 8px;
+        }
+
+        .bundle-description li {
+            padding: 5px 0;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .bundle-pricing {
+            text-align: center;
+        }
+
+        .bundle-original {
+            text-decoration: line-through;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1em;
+        }
+
+        .bundle-price {
+            font-size: 1.5em;
+            color: #ffd700;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .bundle-savings {
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .bundle-button {
+            background: linear-gradient(45deg, #ff6b6b, #ffd700, #ff6b6b);
+            background-size: 300% 300%;
+            color: white;
+            padding: 20px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.3em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            animation: sparkle-bundle 2s infinite;
+            box-shadow: 0 0 25px rgba(255, 107, 107, 0.7);
+            border: 3px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .bundle-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.5), transparent);
+            transform: rotate(45deg);
+            animation: shine-bundle 3s infinite;
+        }
+
+        .bundle-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 25px 50px rgba(255, 107, 107, 0.9);
+            animation: sparkle-bundle 1s infinite;
+        }
+
+        @keyframes sparkle-bundle {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes shine-bundle {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        /* セット納期注意 */
+        .set-notice {
+            background: rgba(255, 255, 255, 0.06);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin: 14px auto 18px;
+            max-width: 520px;
+            text-align: center;
+        }
+        .set-notice p {
+            margin: 4px 0;
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        /* 人数制限の簡易表示 */
+        .limit-info {
+            text-align: center;
+            margin: 10px 0 25px;
+            padding: 12px 15px;
+            background: rgba(255, 215, 0, 0.12);
+            border-radius: 10px;
+        }
+        .limit-info .highlight { color: #ffd700; font-weight: bold; }
+
+        
+
+        /* モバイル対応 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+            
+            th, td {
+                padding: 10px 5px;
+            }
+            
+            .apply-button {
+                font-size: 1.2em;
+                padding: 20px 30px;
+            }
+            
+            .difference, .what-you-get, .process {
+                padding: 20px;
+            }
+
+            .two-types {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .type-card {
+                padding: 15px;
+            }
+
+            .availability-info {
+                padding: 20px;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .option-card {
+                padding: 20px;
+            }
+
+            .bundle-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .bundle-description {
+                text-align: center;
+            }
+
+            .bundle-description ul {
+                text-align: left;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✨ セラフィナ個人鑑定</h1>
+        <p class="subtitle">あなただけのための特別な鑑定書</p>
+        
+        <div class="difference">
+            <h2>🔮 システム鑑定との違い</h2>
+            <table>
+                <tr>
+                    <th></th>
+                    <th>システム鑑定</th>
+                    <th>個人鑑定</th>
+                </tr>
+                <tr>
+                    <td>鑑定方法</td>
+                    <td>自動生成</td>
+                    <td>セラフィナが直接執筆</td>
+                </tr>
+                <tr>
+                    <td>文字数</td>
+                    <td>2,000文字</td>
+                    <td>3,000文字以上</td>
+                </tr>
+                <tr>
+                    <td>納期</td>
+                    <td>即時</td>
+                    <td>3-7営業日</td>
+                </tr>
+                <tr>
+                    <td>質問対応</td>
+                    <td>なし</td>
+                    <td>1往復</td>
+                </tr>
+                <tr>
+                    <td>使用カード</td>
+                    <td>3枚</td>
+                    <td>状況に応じて最適枚数</td>
+                </tr>
+            </table>
+        </div>
+        
+        <div class="what-you-get">
+            <h2>✨ 含まれるもの</h2>
+            <ul>
+                <li>📝 3,000文字以上の詳細鑑定書</li>
+                <li>🎴 フルデッキ78枚から最適な展開</li>
+                <li>💬 鑑定後の質問1往復</li>
+                <li>📅 3ヶ月後のフォローアップ</li>
+                <li>🌟 守護カードの選定</li>
+            </ul>
+        </div>
+        
+        <div class="reading-options">
+            <h2>🎯 鑑定コースをお選びください</h2>
+
+            <div class="limit-info">
+                <p class="highlight">週2枠限定（各鑑定）</p>
+                <p>品質維持のため、少人数制で承っております</p>
+            </div>
+            
+            <div class="options-grid">
+                <!-- タロット個人鑑定 -->
+                <div class="option-card">
+                    <div class="option-header">
+                        <h3>🔮 タロット個人鑑定</h3>
+                        <p class="option-subtitle">カードが示す運命の道筋</p>
+                    </div>
+                    
+                    <div class="option-features">
+                        <h4>✨ 特徴</h4>
+                        <ul>
+                            <li>📚 78枚フルデッキから最適展開</li>
+                            <li>🎯 具体的な行動指針</li>
+                            <li>💡 問題解決のヒント</li>
+                            <li>🔄 現在の状況の詳細分析</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="option-recommend">
+                        <h4>🎪 こんな方におすすめ</h4>
+                        <ul>
+                            <li>📅 近い将来の決断を迫られている</li>
+                            <li>🤔 具体的な悩みがある</li>
+                            <li>💪 行動力を高めたい</li>
+                            <li>🎯 明確な答えが欲しい</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="option-pricing">
+                        <p class="original-price">通常 7,000円</p>
+                        <p class="current-price">初回限定 <span class="price">5,000円</span></p>
+                    </div>
+                    
+                    <button class="option-button tarot-btn" onclick="location.href='https://square.link/u/pr9IPpWD'">
+                        🔮 タロット鑑定を申し込む
+                    </button>
+                </div>
+                
+                <!-- 星詠み個人鑑定 -->
+                <div class="option-card">
+                    <div class="option-header">
+                        <h3>⭐ 星詠み個人鑑定</h3>
+                        <p class="option-subtitle">生まれ持った運命と潜在能力</p>
+                    </div>
+                    
+                    <div class="option-features">
+                        <h4>✨ 特徴</h4>
+                        <ul>
+                            <li>🌟 生年月日からの深層分析</li>
+                            <li>💎 隠された才能の発見</li>
+                            <li>🔮 運命の流れと転機日</li>
+                            <li>🌙 月のサイクルと開運法</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="option-recommend">
+                        <h4>🎪 こんな方におすすめ</h4>
+                        <ul>
+                            <li>🌟 自分の可能性を知りたい</li>
+                            <li>💼 人生の方向性を見直したい</li>
+                            <li>✨ 生まれ持った使命を知りたい</li>
+                            <li>🌙 長期的な運気の流れを把握したい</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="option-pricing">
+                        <p class="original-price">通常 7,000円</p>
+                        <p class="current-price">初回限定 <span class="price">5,000円</span></p>
+                    </div>
+                    
+                    <button class="option-button star-btn" onclick="location.href='https://square.link/u/og2lry9q'">
+                        ⭐ 星詠み鑑定を申し込む
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 両方申し込み割引 -->
+            <div class="bundle-offer">
+                <h3>🎁 セット割引プラン</h3>
+                <div class="bundle-content">
+                    <div class="bundle-description">
+                        <h4>タロット＋星詠み 両方セット</h4>
+                        <p>異なる角度から総合的にあなたを鑑定</p>
+                        <ul>
+                            <li>🔮 タロットで現在の状況分析</li>
+                            <li>⭐ 星詠みで生涯の運命把握</li>
+                            <li>💎 2つの視点で完全サポート</li>
+                        </ul>
+                    </div>
+                    <div class="bundle-pricing">
+                        <p class="bundle-original">単品合計 10,000円</p>
+                        <p class="bundle-price">セット価格 <span class="price">8,000円</span></p>
+                        <p class="bundle-savings">2,000円お得！</p>
+                    </div>
+                </div>
+                <div class="set-notice">
+                    <p>⚠️ セット鑑定の納期</p>
+                    <p>最大2週間いただく場合があります</p>
+                    <p>（2つの鑑定書を丁寧に作成するため）</p>
+                </div>
+
+                <button class="bundle-button" onclick="location.href='https://square.link/u/KFP9scSR'">
+                    セットで申し込む（2,000円お得）
+                </button>
+            </div>
+
+        </div>
+        
+        <div class="process">
+            <h2>📋 ご利用の流れ</h2>
+            <ol>
+                <li>🛒 決済完了</li>
+                <li>📱 公式LINE追加（@serafina）</li>
+                <li>💌 LINEで相談内容送信</li>
+                <li>📖 3-7日で鑑定書お届け</li>
+            </ol>
+        </div>
+        
+        <div class="note">
+            <p>※ 混雑状況により最大7営業日いただく場合があります</p>
+            <p>※ 公式LINE: @serafina で検索</p>
+        </div>
+        
+        <!-- トップ画面に戻るボタン -->
+        <div style="text-align: center; margin: 40px 0;">
+            <button onclick="location.href='omikuji/index.html'" style="
+                background: linear-gradient(45deg, #ff6b6b, #ffd93d);
+                color: white;
+                border: none;
+                padding: 15px 30px;
+                font-size: 18px;
+                border-radius: 25px;
+                cursor: pointer;
+                box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+                transition: all 0.3s ease;
+                font-weight: bold;
+            " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(255, 107, 107, 0.6)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(255, 107, 107, 0.4)'">
+                🏠 トップ画面に戻る
+            </button>
+        </div>
+    </div>
+</body>
+</html>

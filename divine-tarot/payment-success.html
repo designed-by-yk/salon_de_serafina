@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鑑定申込み - Salon de Sérafina</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="お支払いありがとうございます。あなたのお悩みをお聞かせください。神託システムがあなたに最適な鑑定を行います。">
+    <meta name="keywords" content="神託システム, タロット鑑定, 相談フォーム, 悩み相談, セラフィナ">
+    
+    <link rel="stylesheet" href="css/oracle-style.css">
+</head>
+<body>
+    <!-- パンくずリスト -->
+    <nav class="breadcrumb">
+        <a href="../omikuji/index.html">🏠 トップ</a>
+        <span class="breadcrumb-separator">›</span>
+        <a href="tarot-detail.html">神託システムタロット占い</a>
+        <span class="breadcrumb-separator">›</span>
+        <span class="breadcrumb-current">鑑定申込み</span>
+    </nav>
+
+    <div class="container">
+        <header class="success-header">
+            <div class="success-icon">✨</div>
+            <h1>お支払いありがとうございます</h1>
+            <p class="success-message">神託システムがあなたのお悩みを解決いたします</p>
+        </header>
+        
+        <section class="consultation-intro">
+            <h2>🔮 あなたのお悩みをお聞かせください</h2>
+            <p class="intro-text">
+                どんな小さなことでも構いません。<br>
+                心の奥にある想いを素直にお聞かせください。<br>
+                神託システムがあなたに最適な導きをお示しします。
+            </p>
+        </section>
+        
+        <form id="consultation-form" class="consultation-form">
+            <div class="form-group">
+                <label for="consultation">📝 ご相談内容</label>
+                <textarea 
+                    id="consultation" 
+                    name="consultation"
+                    required 
+                    rows="8"
+                    placeholder="例：
+・恋人との関係で悩んでいます...
+・転職を考えていますが迷っています...
+・人間関係がうまくいきません...
+
+どんなことでもお気軽にお書きください。あなたの気持ちをそのまま表現してください。"
+                    maxlength="1000"></textarea>
+                <div class="char-count">
+                    <span id="char-counter">0</span> / 1000文字
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">👤 お名前</label>
+                    <input 
+                        type="text" 
+                        id="name" 
+                        name="name"
+                        placeholder="ニックネームでも構いません" 
+                        required
+                        maxlength="50">
+                    <small>鑑定結果にお名前を含めてお届けします</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="birthdate">🎂 生年月日</label>
+                    <input 
+                        type="date" 
+                        id="birthdate" 
+                        name="birthdate"
+                        required
+                        max="2024-12-31">
+                    <small>より精密な鑑定のために必要です</small>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="focus-area">🎯 特に知りたいこと</label>
+                <select id="focus-area" name="focus-area" required>
+                    <option value="">選択してください</option>
+                    <option value="love">💕 恋愛・パートナーシップ</option>
+                    <option value="work">💼 仕事・キャリア</option>
+                    <option value="relationship">👥 人間関係</option>
+                    <option value="money">💰 金運・財運</option>
+                    <option value="health">🌿 健康・ライフスタイル</option>
+                    <option value="future">🔮 将来・人生の方向性</option>
+                    <option value="other">🌟 その他</option>
+                </select>
+            </div>
+
+            <div class="privacy-notice">
+                <div class="notice-icon">🔒</div>
+                <div class="notice-content">
+                    <h3>プライバシー保護について</h3>
+                    <ul>
+                        <li>ご入力いただいた情報は鑑定にのみ使用されます</li>
+                        <li>第三者に開示することは一切ありません</li>
+                        <li>鑑定終了後、一定期間経過後に安全に削除されます</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary submit-btn" id="submit-btn">
+                    <span class="btn-icon">🔮</span>
+                    <span class="btn-text">鑑定を開始する</span>
+                    <span class="btn-sub">神託システムが分析を開始します</span>
+                </button>
+            </div>
+        </form>
+
+        <div class="process-info">
+            <h3>📋 鑑定の流れ</h3>
+            <div class="process-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">フォーム送信後、神託システムが分析を開始</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">あなたに最適なタロットカードを選出</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">詳細な鑑定結果をお届け（約2-3分）</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // URLパラメータによるテストモード判定
+        (function(){
+            const urlParams = new URLSearchParams(window.location.search);
+            const isTestMode = urlParams.get('test') === 'true';
+            if (isTestMode) {
+                document.body.insertAdjacentHTML('afterbegin',
+                    '<div style="background: yellow; padding: 10px; text-align: center; font-weight: bold;">⚠️ テストモード</div>'
+                );
+            } else {
+                // 本番モード: ここに決済確認の処理を実装可能
+            }
+        })();
+        // 文字数カウンター
+        const consultationTextarea = document.getElementById('consultation');
+        const charCounter = document.getElementById('char-counter');
+        
+        consultationTextarea.addEventListener('input', function() {
+            const currentLength = this.value.length;
+            charCounter.textContent = currentLength;
+            
+            if (currentLength > 900) {
+                charCounter.style.color = '#ff6b6b';
+            } else {
+                charCounter.style.color = '#ffd700';
+            }
+        });
+
+        // 生年月日の制限設定
+        document.addEventListener('DOMContentLoaded', function() {
+            const birthdateInput = document.getElementById('birthdate');
+            const today = new Date();
+            const minDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate());
+            
+            birthdateInput.max = today.toISOString().split('T')[0];
+            birthdateInput.min = minDate.toISOString().split('T')[0];
+        });
+
+        // フォーム送信処理
+        document.getElementById('consultation-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 入力値の検証
+            const consultation = document.getElementById('consultation').value.trim();
+            const name = document.getElementById('name').value.trim();
+            const birthdate = document.getElementById('birthdate').value;
+            const focusArea = document.getElementById('focus-area').value;
+            
+            if (!consultation || !name || !birthdate || !focusArea) {
+                alert('すべての項目を入力してください。');
+                return;
+            }
+
+            if (consultation.length < 10) {
+                alert('ご相談内容をもう少し詳しくお聞かせください（10文字以上）。');
+                return;
+            }
+            
+            // 送信ボタンを無効化
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <span class="btn-icon">⏳</span>
+                <span class="btn-text">神託システム分析中...</span>
+                <span class="btn-sub">しばらくお待ちください</span>
+            `;
+            
+            // データを保存
+            const consultationData = {
+                consultation: consultation,
+                name: name,
+                birthdate: birthdate,
+                focusArea: focusArea,
+                timestamp: new Date().toISOString()
+            };
+            
+            localStorage.setItem('consultationData', JSON.stringify(consultationData));
+            
+            // 鑑定結果ページへリダイレクト（実際の分析時間をシミュレート）
+            setTimeout(() => {
+                window.location.href = 'reading-result.html';
+            }, 3000);
+        });
+    </script>
+    
+    <script src="js/oracle-system.js"></script>
+</body>
+</html>
+

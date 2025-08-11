@@ -1,0 +1,152 @@
+﻿const CHANNEL_ACCESS_TOKEN = ""; // 🔹 ここを変更すればOK！
+const TEST_MODE = true; // true: テストモードON / false: テストモードOFF
+
+//運勢によって文章を取得
+function getFortuneMessage(fortune) {
+  var messages = {
+    "大吉 🌟": "「最大級のチャンスが到来！ ゴールドの輝きが「富」と「自信」を引き寄せます✨ 自分へのご褒美に【18金ネックレス】を身につければ、さらに運気が加速！ 特別な一日を彩るアイテムをチェック👇」",
+    "吉 🍀": "「小さな幸せが連鎖する一日に💙 パステルブルーで「人間関係の波」を穏やかに！ 手元から香る【天然成分ハンドクリーム】で、大切な人との触れ合い運UP↑ プレゼントにも大人気のアイテムです🎁」",
+    "中吉 🌈": "「アイデアが光るチャンス日！ イエローが「集中力」をサポート🔆 オシャレな【USB充電式ライト】で作業効率が変わるかも？ 在宅ワーク派に響く一言添えて✨」",
+    "末吉 🕊️": "「穏やかな気持ちが開運のカギ🌿 ベージュで「日常の不安」を中和！ 【森林系アロマ】の香りでリラックス空間を演出すれば、思わぬ良い知らせが届くかも…？ 今なら詰め替え用オイル付き🎵」",
+    "凶 ⚠️": "「ピンチは好機に変えよう！ レッドのパワーで「悪い流れを遮断」🔥 天然石の【邪気払いブレスレット】を身につけて、ネガティブエネルギーをリセット！ 自分を守る習慣から始めてみて💪」"
+  };
+  return messages[fortune] || "運勢のデータがありません。";
+}
+//運勢によってラッキーカラーを取得
+function getLuckyColor(fortune) {
+  var colors = {
+    "大吉 🌟": "ゴールド",
+    "吉 🍀": "パステルブルー",
+    "中吉 🌈": "イエロー",
+    "末吉 🕊️": "ベージュ",
+    "凶 ⚠️": "レッド"
+  };
+  return colors[fortune] || "不明";
+}
+//運勢によってラッキーアイテムを取得
+function getLuckyItem(fortune) {
+  var items = {
+    "大吉 🌟": "高級ジュエリー",
+    "吉 🍀": "ハンドクリーム",
+    "中吉 🌈": "デスクライト",
+    "末吉 🕊️": "アロマディフューザー",
+    "凶 ⚠️": "パワーストーンブレス"
+  };
+  return items[fortune] || "不明";
+}
+//運勢によってURLを取得
+function getFortuneURL(fortune) {
+  var urls = {
+    "大吉 🌟": "https://example.com/dummy",
+    "吉 🍀": "https://example.com/dummy",
+    "中吉 🌈": "https://example.com/dummy",
+    "末吉 🕊️": "https://example.com/dummy",
+    "凶 ⚠️": "https://example.com/dummy"
+  };
+  // undefined の場合は 空文字を返す
+  return urls[fortune] !== undefined ? urls[fortune] : "";
+}
+function getSpecificFortune(fortune) {
+  var color = getLuckyColor(fortune);
+  var item = getLuckyItem(fortune);
+  var message = getFortuneMessage(fortune);
+  var url = getFortuneURL(fortune);
+
+  var result = ["✨ テスト用 運勢結果 ✨", `🔮運勢: ${fortune}`];
+
+  if (color) result.push(`🎨ラッキーカラー: ${color}`);
+  if (item) result.push(`🎁ラッキーアイテム: ${item}`);
+  if (message) result.push(`💡アドバイス: ${message}`);
+  if (url) result.push(`🔗 詳しい占い結果を知りたい場合は以下のリンクから！: ${url}`);
+
+  return result.join("\n");
+}
+
+function generateSeed(userId, dateString) {
+  var hash = 0;
+  var combinedString = userId + dateString;
+
+  for (var i = 0; i < combinedString.length; i++) {
+    hash = (hash * 31 + combinedString.charCodeAt(i)) % 1000000;
+  }
+
+  return hash;
+}
+
+function getDailyFortune(userId) {
+  var fortunes = ["大吉 🌟", "吉 🍀", "中吉 🌈", "末吉 🕊️", "凶 ⚠️"];
+
+  var today = new Date();
+  var dateString = today.getFullYear() + ("0" + (today.getMonth() + 1)).slice(-2) + ("0" + today.getDate()).slice(-2);
+
+  // ユーザーIDと日付を元にシード値を生成
+  var seed = generateSeed(userId, dateString);
+
+  // 運勢を決定（日ごとに変化）
+  var fortune = fortunes[seed % fortunes.length];
+
+  // 各項目を取得
+  var color = getLuckyColor(fortune);
+  var item = getLuckyItem(fortune);
+  var message = getFortuneMessage(fortune);
+  var url = getFortuneURL(fortune);
+
+  // メッセージを組み立てる（空の項目は表示しない）
+  var result = ["✨ 今日の運勢 ✨", `🔮運勢: ${fortune}`];
+
+  if (color) result.push(`🎨ラッキーカラー: ${color}`);
+  if (item) result.push(`🎁ラッキーアイテム: ${item}`);
+  if (message) result.push(`💡アドバイス: ${message}`);
+  if (url) result.push(`🔗 詳しくはこちら: ${url}`);
+
+  return result.join("\n");
+}
+
+function doPost(e) {
+  var json = JSON.parse(e.postData.contents);
+  var replyToken = json.events[0].replyToken;
+  var userId = json.events[0].source.userId;
+  var userMessage = json.events[0].message.text;
+
+  var replyText = "「今日の運勢」と送ると占いますよ！🔮";
+
+  // 特定の運勢を指定するテスト用キーワード（TEST_MODE が true の場合のみ）
+  if (TEST_MODE) {
+    var testFortunes = {
+      "大吉出して": "大吉 🌟",
+      "吉出して": "吉 🍀",
+      "中吉出して": "中吉 🌈",
+      "末吉出して": "末吉 🕊️",
+      "凶出して": "凶 ⚠️"
+    };
+
+    if (testFortunes[userMessage]) {
+      replyText = getSpecificFortune(testFortunes[userMessage]);
+    }
+  }
+
+  if (userMessage.includes("今日の運勢")) {
+    replyText = getDailyFortune(userId);
+  }
+
+  var url = "https://api.line.me/v2/bot/message/reply";
+  var headers = {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer " + CHANNEL_ACCESS_TOKEN
+  };
+
+  var postData = {
+    "replyToken": replyToken,
+    "messages": [{ "type": "text", "text": replyText }]
+  };
+
+  var options = {
+    "method": "post",
+    "headers": headers,
+    "payload": JSON.stringify(postData)
+  };
+
+  UrlFetchApp.fetch(url, options);
+
+  return ContentService.createTextOutput(JSON.stringify({ "status": "success" })).setMimeType(ContentService.MimeType.JSON);
+}
