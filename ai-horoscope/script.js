@@ -158,10 +158,11 @@ function showPurchaseModal() {
         </div>
         
         <div class="payment-methods">
-          <h3>お支払い方法を選択</h3>
+          <h3>お支払い方法：<br>クレジットカード・デビットカード<br>（Visa, Mastercard, JCB, Amex対応）</h3>
           <button class="payment-option" data-method="square">
             <span class="payment-icon">💳</span>
-            <span class="payment-name">クレジットカード</span>
+            <span class="payment-name">クレジットカード・デビットカード</span>
+            <span class="payment-desc">（Visa, Mastercard, JCB, Amex対応）</span>
           </button>
           <button class="payment-option" data-method="paypal">
             <span class="payment-icon">🅿️</span>
@@ -190,7 +191,7 @@ function showPurchaseModal() {
   paymentOptions.forEach(option => {
     option.addEventListener('click', (e) => {
       const method = e.currentTarget.dataset.method;
-      alert(`${method === 'square' ? 'クレジットカード' : 'PayPal'}決済を選択しました。\n\n${zodiac.name}の詳細鑑定結果は準備中のため、実際の決済は行われません。`);
+      alert(`${method === 'square' ? 'クレジットカード・デビットカード' : 'PayPal'}決済を選択しました。\n\n${zodiac.name}の詳細鑑定結果は準備中のため、実際の決済は行われません。`);
       document.body.removeChild(modal);
     });
   });
