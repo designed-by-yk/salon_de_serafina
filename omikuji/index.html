@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 21:30:00 -->
+<!-- Cache Buster: 2024-12-14 21:35:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -157,6 +157,10 @@
         // 全ボタンのスタイル統一
         const buttons = document.querySelectorAll('.btn');
         buttons.forEach(btn => {
+          // 上部3つのボタンかどうかを判定
+          const isTopButton = btn.id === 'omikuji-btn' || btn.id === 'mini-tarot-btn' || btn.id === 'mini-birthday-btn';
+          const topMargin = isTopButton ? '5mm' : '0';
+          
           btn.style.cssText = `
             position: static !important;
             left: auto !important;
@@ -165,7 +169,7 @@
             max-width: 350px !important;
             height: 70px !important;
             min-height: 70px !important;
-            margin: 0 auto !important;
+            margin: ${topMargin} auto 0 auto !important;
             border-radius: 15px !important;
             display: flex !important;
             flex-direction: column !important;
@@ -286,6 +290,12 @@
           const element = document.getElementById(id);
           if (element) {
             element.style.order = linkOrderMap[id];
+            
+            // 上部3つのリンクボタンにマージンを追加
+            const isTopLink = id === 'mini-tarot-link' || id === 'mini-horoscope-link';
+            if (isTopLink) {
+              element.style.marginTop = '5mm';
+            }
           }
         });
         
