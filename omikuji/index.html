@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 21:10:00 -->
+<!-- Cache Buster: 2024-12-14 21:15:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -197,9 +197,12 @@
           `;
         }
         
-        // メインタイトルのサイズ調整（スマホ用）
+        // メインタイトルのサイズ調整（スマホ用のみ）
+        console.log('Applying mobile title styles...');
+        
         const mainTitle = document.querySelector('.main-title');
         if (mainTitle) {
+          console.log('Main title element found:', mainTitle);
           mainTitle.style.cssText = `
             position: static !important;
             transform: none !important;
@@ -208,26 +211,53 @@
             margin: 30px 0 40px 0 !important;
             padding: 0 10px !important;
           `;
+        } else {
+          console.error('Main title element not found!');
         }
         
-        // 各タイトル行のサイズ調整
-        const subtitleLines = document.querySelectorAll('.subtitle-line');
-        subtitleLines.forEach(line => {
-          line.style.cssText = `
-            font-size: 24px !important;
-            line-height: 1.3 !important;
-            margin-bottom: 8px !important;
-          `;
+        // 各タイトル行のサイズ調整（より強力に）
+        const titleLines = document.querySelectorAll('.main-title .title-line');
+        console.log('Found title lines:', titleLines.length);
+        
+        titleLines.forEach((line, index) => {
+          console.log('Processing title line', index, ':', line.textContent);
+          
+          if (line.classList.contains('subtitle-line')) {
+            // 「占いサロン」と「へようこそ」
+            line.style.cssText = `
+              font-size: 28px !important;
+              line-height: 1.3 !important;
+              margin-bottom: 10px !important;
+              font-weight: normal !important;
+              color: rgba(255, 255, 255, 0.9) !important;
+              text-shadow: 0 0 10px rgba(255, 255, 255, 0.8) !important;
+            `;
+          } else if (line.classList.contains('main-title-line')) {
+            // 「Salon de Sérafina」
+            line.style.cssText = `
+              font-size: 40px !important;
+              line-height: 1.2 !important;
+              margin-bottom: 10px !important;
+              font-weight: bold !important;
+              color: #ffffff !important;
+              text-shadow: 0 0 15px rgba(255, 255, 255, 0.9) !important;
+            `;
+          }
         });
         
-        const mainTitleLine = document.querySelector('.main-title-line');
-        if (mainTitleLine) {
-          mainTitleLine.style.cssText = `
-            font-size: 36px !important;
-            line-height: 1.2 !important;
-            margin-bottom: 8px !important;
-            font-weight: bold !important;
-          `;
+        // 追加の確実性のために、クラス別でも指定
+        const subtitleElements = document.querySelectorAll('.subtitle-line');
+        subtitleElements.forEach(element => {
+          element.style.fontSize = '28px';
+          element.style.lineHeight = '1.3';
+        });
+        
+        const mainTitleElement = document.querySelector('.main-title-line');
+        if (mainTitleElement) {
+          mainTitleElement.style.fontSize = '40px';
+          mainTitleElement.style.lineHeight = '1.2';
+          mainTitleElement.style.fontWeight = 'bold';
+          console.log('Main title line styled successfully');
         }
         
         // ボタン内テキストの調整
@@ -295,6 +325,25 @@
         }
         
         console.log('Mobile styles applied successfully via JavaScript!');
+        
+        // 少し遅延してからタイトルスタイルを再適用（確実性のため）
+        setTimeout(() => {
+          if (window.innerWidth <= 768) {
+            console.log('Reapplying title styles after delay...');
+            document.querySelectorAll('.subtitle-line').forEach(element => {
+              element.style.fontSize = '28px';
+              element.style.lineHeight = '1.3';
+            });
+            
+            const mainTitleEl = document.querySelector('.main-title-line');
+            if (mainTitleEl) {
+              mainTitleEl.style.fontSize = '40px';
+              mainTitleEl.style.lineHeight = '1.2';
+              mainTitleEl.style.fontWeight = 'bold';
+            }
+          }
+        }, 500);
+        
       } else {
         console.log('Desktop view detected');
       }
@@ -304,6 +353,9 @@
     document.addEventListener('DOMContentLoaded', applyMobileStyles);
     window.addEventListener('resize', applyMobileStyles);
     window.addEventListener('load', applyMobileStyles);
+    
+    // 追加の確実性のために少し遅延して実行
+    setTimeout(applyMobileStyles, 100);
   </script>
 
 </head>
