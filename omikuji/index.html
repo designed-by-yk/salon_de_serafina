@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 20:35:00 -->
+<!-- Cache Buster: 2024-12-14 20:40:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -39,9 +39,9 @@
   <link rel="stylesheet" href="banner-styles.css?v=20241214_005">
   <link rel="stylesheet" href="mobile-order.css?v=20241214_005">
   
-  <!-- 強制的にスマホ順序を適用 - Updated: 2024-12-14 20:35:00 -->
+  <!-- 強制的にスマホ順序を適用 - Updated: 2024-12-14 20:40:00 -->
   <style>
-    /* Mobile Button Fix - 2024-12-14 20:35:00 */
+    /* Mobile Button Fix - 2024-12-14 20:40:00 */
     @media screen and (max-width: 768px) {
       .button-area {
         display: flex !important;
@@ -56,8 +56,8 @@
         position: static !important;
         left: auto !important;
         top: auto !important;
-        width: 95% !important;
-        max-width: 400px !important;
+        width: 90% !important;
+        max-width: 350px !important;
         height: 70px !important;
         min-height: 70px !important;
         margin: 0 auto !important;
@@ -66,7 +66,7 @@
         flex-direction: column !important;
         justify-content: center !important;
         align-items: center !important;
-        padding: 8px 16px !important;
+        padding: 8px 12px !important;
         box-sizing: border-box !important;
         font-size: 14px !important;
       }
@@ -77,6 +77,13 @@
         transform: none !important;
         text-align: center !important;
         margin: 20px 0 10px 0 !important;
+        font-size: 16px !important;
+        max-width: 90% !important;
+        width: 90% !important;
+        padding: 0 15px !important;
+        box-sizing: border-box !important;
+        line-height: 1.3 !important;
+        word-wrap: break-word !important;
       }
       .button-area .omikuji-btn,
       .button-area #omikuji-btn { order: 1 !important; }
@@ -98,17 +105,23 @@
       
       /* ボタン内テキストのサイズ統一 */
       .btn .main-text {
-        font-size: 15px !important;
+        font-size: 14px !important;
         line-height: 1.2 !important;
         font-weight: 500 !important;
         white-space: nowrap !important;
         text-align: center !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
       }
       .btn .sub-text {
         font-size: 11px !important;
         line-height: 1.1 !important;
         margin-top: 3px !important;
         text-align: center !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
       }
       .free-label {
         font-size: 10px !important;
