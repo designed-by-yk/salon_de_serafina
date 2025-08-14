@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 22:00:00 -->
+<!-- Cache Buster: 2024-12-14 22:05:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -34,10 +34,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Kiwi+Maru:wght@500&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css?v=20241214_214500">
-  <link rel="stylesheet" href="premium-styles.css?v=20241214_214500">
-  <link rel="stylesheet" href="banner-styles.css?v=20241214_214500">
-  <link rel="stylesheet" href="mobile-order.css?v=20241214_214500">
+  <link rel="stylesheet" href="style.css?v=20241214_220000">
+  <link rel="stylesheet" href="premium-styles.css?v=20241214_220000">
+  <link rel="stylesheet" href="banner-styles.css?v=20241214_220000">
+  <link rel="stylesheet" href="mobile-order.css?v=20241214_220000">
   
   <!-- 強制的にスマホ順序を適用 - Updated: 2024-12-14 20:40:00 -->
   <style>
@@ -177,6 +177,7 @@
             top: auto !important;
             width: ${referenceWidth} !important;
             max-width: ${referenceMaxWidth} !important;
+            min-width: 300px !important;
             height: 70px !important;
             min-height: 70px !important;
             margin: 0 auto 0 auto !important;
@@ -310,6 +311,7 @@
             // リンクボタンも同じ幅に統一
             element.style.setProperty('width', '95%', 'important');
             element.style.setProperty('max-width', '400px', 'important');
+            element.style.setProperty('min-width', '300px', 'important');
             element.style.setProperty('height', '70px', 'important');
             element.style.setProperty('min-height', '70px', 'important');
             element.style.setProperty('display', 'flex', 'important');
@@ -342,6 +344,42 @@
         }
         
         console.log('Mobile styles applied successfully via JavaScript!');
+        
+        // 遅延してもう一度ボタン幅を統一（確実性のため）
+        setTimeout(() => {
+          console.log('=== RE-APPLYING BUTTON WIDTH UNITY ===');
+          
+          // 全ボタンの幅を再統一
+          const allButtons = document.querySelectorAll('.btn');
+          allButtons.forEach((btn, index) => {
+            console.log('Re-unifying button', index, btn.id);
+            console.log('Before width:', getComputedStyle(btn).width);
+            
+            btn.style.setProperty('width', '95%', 'important');
+            btn.style.setProperty('max-width', '400px', 'important');
+            btn.style.setProperty('min-width', '300px', 'important');
+            
+            console.log('After width:', getComputedStyle(btn).width);
+          });
+          
+          // 全リンクボタンの幅を再統一
+          const allLinks = ['mini-tarot-link', 'mini-horoscope-link', 'divine-tarot-link', 'premium-zodiac-link'];
+          allLinks.forEach(linkId => {
+            const link = document.getElementById(linkId);
+            if (link) {
+              console.log('Re-unifying link', linkId);
+              console.log('Before width:', getComputedStyle(link).width);
+              
+              link.style.setProperty('width', '95%', 'important');
+              link.style.setProperty('max-width', '400px', 'important');
+              link.style.setProperty('min-width', '300px', 'important');
+              
+              console.log('After width:', getComputedStyle(link).width);
+            }
+          });
+          
+          console.log('Button width unity re-applied after delay');
+        }, 400);
         
       } else {
         console.log('Desktop view detected');
