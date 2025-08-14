@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 21:55:00 -->
+<!-- Cache Buster: 2024-12-14 22:00:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -155,17 +155,28 @@
           `;
         }
         
-        // 全ボタンのスタイル統一（マージンを明示的に0に）
+        // 全ボタンのスタイル統一（幅を統一）
         const buttons = document.querySelectorAll('.btn');
-        console.log('Resetting all button margins to 0');
+        console.log('Unifying all button widths');
+        
+        // 「今日の運勢を占う」ボタンの幅を基準にする
+        const omikujiBtn = document.getElementById('omikuji-btn');
+        let referenceWidth = '95%';
+        let referenceMaxWidth = '400px';
+        
+        if (omikujiBtn) {
+          const computedStyle = getComputedStyle(omikujiBtn);
+          console.log('Reference button (omikuji) width:', computedStyle.width);
+        }
+        
         buttons.forEach((btn, index) => {
-          console.log('Resetting button', index, btn.id);
+          console.log('Unifying width for button', index, btn.id);
           btn.style.cssText = `
             position: static !important;
             left: auto !important;
             top: auto !important;
-            width: 90% !important;
-            max-width: 350px !important;
+            width: ${referenceWidth} !important;
+            max-width: ${referenceMaxWidth} !important;
             height: 70px !important;
             min-height: 70px !important;
             margin: 0 auto 0 auto !important;
@@ -295,10 +306,22 @@
           const element = document.getElementById(id);
           if (element) {
             element.style.order = linkOrderMap[id];
+            
+            // リンクボタンも同じ幅に統一
+            element.style.setProperty('width', '95%', 'important');
+            element.style.setProperty('max-width', '400px', 'important');
+            element.style.setProperty('height', '70px', 'important');
+            element.style.setProperty('min-height', '70px', 'important');
+            element.style.setProperty('display', 'flex', 'important');
+            element.style.setProperty('align-items', 'center', 'important');
+            element.style.setProperty('justify-content', 'center', 'important');
+            element.style.setProperty('margin', '0 auto', 'important');
+            element.style.setProperty('box-sizing', 'border-box', 'important');
+            
             // 明示的にmargin-topを0に設定
             element.style.setProperty('margin-top', '0px', 'important');
             element.style.setProperty('margin-bottom', '0px', 'important');
-            console.log('Reset margin for link:', id);
+            console.log('Unified width for link:', id);
           }
         });
         
