@@ -52,9 +52,9 @@
     position: static !important;
     transform: none !important;
     font-size: clamp(14px, 3.5vw, 20px) !important;
-    margin: 20px 0 !important;
+    margin: 20px 0 10px 0 !important;
     white-space: normal !important;
-    order: 10 !important; /* フレックスボックスで順序制御 */
+    text-align: center !important;
   }
 
   /* 全ボタンの共通設定 */
@@ -78,13 +78,7 @@
     transition: all 0.3s ease !important;
   }
   
-  /* ボタンの順序調整 */
-  .omikuji-btn { order: 1 !important; }
-  .mini-tarot-btn { order: 2 !important; }
-  .mini-birthday-btn { order: 3 !important; }
-  .pro-tarot-btn { order: 11 !important; } /* 神託システムラベルの後 */
-  .pro-birthday-btn { order: 12 !important; }
-  .personal-reading-btn { order: 13 !important; }
+  /* ボタンの順序は自然な HTML 順序を使用 */
 
   /* 無料ボタンのスタイル */
   .omikuji-btn,
