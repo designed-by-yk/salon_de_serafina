@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テスト</title>
+  <style>
+    .hidden { display: none; }
+    .guidance-card {
+      background: linear-gradient(135deg, #f8f4f0, #f0e6d8);
+      padding: 25px;
+      margin: 25px auto;
+      border-radius: 20px;
+      text-align: center;
+      max-width: 480px;
+      border: 1px solid #e8d5c4;
+      box-shadow: 0 4px 15px rgba(139, 69, 19, 0.08);
+      font-family: 'Kiwi Maru', sans-serif;
+    }
+    .line-card {
+      text-align: center;
+      margin: 25px auto;
+      max-width: 480px;
+      font-family: 'Kiwi Maru', sans-serif;
+    }
+    .guidance-btn {
+      background: linear-gradient(135deg, #9B59B6, #8E44AD);
+      color: white;
+      padding: 12px 24px;
+      margin: 8px;
+      border-radius: 25px;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: 500;
+      font-family: 'Kiwi Maru', sans-serif;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(155, 89, 182, 0.3);
+      transition: all 0.3s ease;
+    }
+    .line-btn {
+      background: linear-gradient(135deg, #00B900, #00D400);
+      color: white;
+      padding: 14px 32px;
+      border-radius: 25px;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 500;
+      font-family: 'Kiwi Maru', sans-serif;
+      box-shadow: 0 3px 10px rgba(0, 185, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <button onclick="showResult()">結果を表示</button>
+  <button onclick="hideResult()">結果を隠す</button>
+
+  <div id="result-container" class="hidden">
+    <div>結果がここに表示されます</div>
+    <button onclick="hideResult()">閉じる</button>
+  </div>
+
+  <div id="guidance-section" class="hidden guidance-card">
+    <h3>✨ もっと詳しく知りたい方へ</h3>
+    <p>迷いを深く読み解く、本格的な鑑定もございます</p>
+    
+    <div>
+      <a href="#" class="guidance-btn">🔮 神託システムタロット</a>
+      <a href="#" class="guidance-btn">⭐ 星詠みシステム星座占い</a>
+    </div>
+  </div>
+
+  <div id="line-section" class="hidden line-card">
+    <a href="#" class="line-btn">
+      📱 LINE登録で特典をお届け<br>
+      <span>500円OFF＆優先予約</span>
+    </a>
+  </div>
+
+  <script>
+    function showResult() {
+      document.getElementById('result-container').classList.remove('hidden');
+      document.getElementById('guidance-section').classList.remove('hidden');
+      document.getElementById('line-section').classList.remove('hidden');
+    }
+    
+    function hideResult() {
+      document.getElementById('result-container').classList.add('hidden');
+      document.getElementById('guidance-section').classList.add('hidden');
+      document.getElementById('line-section').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

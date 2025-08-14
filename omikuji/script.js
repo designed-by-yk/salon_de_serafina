@@ -109,21 +109,21 @@ function displayFortune() {
   const fortuneText = fortune.name;
 
   resultContent.innerHTML = `
-    <h2>
-      <span class="fortune-text">${fortuneText}</span>
+    <h2 style="font-family: 'Kiwi Maru', sans-serif !important; font-size: clamp(28px, calc(52 / 1200 * 100vw), 52px); margin: 0.5em 0; color: #ff6a87; display: flex; align-items: center; gap: 0.2em; font-weight: bold; line-height: 1.2; text-align: center;">
+      <span class="fortune-text" style="font-family: 'Kiwi Maru', sans-serif !important; text-shadow: -1.5px -1.5px 0 #fff, 1.5px -1.5px 0 #fff, -1.5px 1.5px 0 #fff, 1.5px 1.5px 0 #fff; font-weight: bold; line-height: 1.2; text-align: center;">${fortuneText}</span>
     </h2>
-    <div class="item-line">
-      <p>
-        <strong>ラッキーカラー：</strong>
-        <span class="color-chip" style="background-color: ${fortune.colorCode};"></span>
-        <span>${fortune.colorName}</span>
+    <div class="item-line" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: clamp(18px, calc(26 / 1200 * 100vw), 26px); margin: 0.3em 0; color: #5c4846; display: flex; align-items: center; justify-content: center; gap: 0.5em; font-weight: 500; line-height: 1.4; text-align: center;">
+      <p style="font-family: 'Kiwi Maru', sans-serif !important; margin: 0; font-weight: 500; line-height: 1.4; text-align: center;">
+        <strong style="font-family: 'Kiwi Maru', sans-serif !important; font-weight: bold; line-height: 1.4; text-align: center;">ラッキーカラー：</strong>
+        <span class="color-chip" style="background-color: ${fortune.colorCode}; display: inline-block; width: 1em; height: 1em; border-radius: 50%; border: 1px solid rgba(0,0,0,0.2);"></span>
+        <span style="font-family: 'Kiwi Maru', sans-serif !important; font-weight: 500; line-height: 1.4; text-align: center;">${fortune.colorName}</span>
       </p>
     </div>
-    <div class="item-line">
-      <p><strong>ラッキーアイテム：</strong><span>${fortune.item}</span></p>
+    <div class="item-line" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: clamp(18px, calc(26 / 1200 * 100vw), 26px); margin: 0.3em 0; color: #5c4846; display: flex; align-items: center; justify-content: center; gap: 0.5em; font-weight: 500; line-height: 1.4; text-align: center;">
+      <p style="font-family: 'Kiwi Maru', sans-serif !important; margin: 0; font-weight: 500; line-height: 1.4; text-align: center;"><strong style="font-family: 'Kiwi Maru', sans-serif !important; font-weight: bold; line-height: 1.4; text-align: center;">ラッキーアイテム：</strong><span style="font-family: 'Kiwi Maru', sans-serif !important; font-weight: 500; line-height: 1.4; text-align: center;">${fortune.item}</span></p>
     </div>
-    <div class="advice">
-      <p>${fortune.message}</p>
+    <div class="advice" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: clamp(16px, calc(22 / 1200 * 100vw), 22px); margin-top: 1em; padding: 1em; background-color: rgba(255, 255, 255, 0.6); border-radius: 10px; max-width: 80%; color: #5c4846; text-shadow: none; line-height: 1.6; font-weight: 400; text-align: center;">
+      <p style="font-family: 'Kiwi Maru', sans-serif !important; margin: 0; font-weight: 400; line-height: 1.6; text-align: center;">${fortune.message}</p>
     </div>
   `;
   

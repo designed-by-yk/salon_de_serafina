@@ -19,6 +19,7 @@
   <!-- Canonical URL -->
   <link rel="canonical" href="https://serafina-fortune.com/mini-horoscope/">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="line-styles.css">
 </head>
 <body>
   <!-- パンくずリスト -->
@@ -137,7 +138,7 @@
         <!-- ボタンを今日のアドバイス直下に移動 -->
         <div class="action-buttons">
           <button id="reset-btn" class="secondary-btn">他の星座を見る</button>
-          <button id="close-btn" class="close-btn">閉じる</button>
+          <button id="close-btn" class="close-btn" onclick="window.location.href='../omikuji/index.html'">閉じる</button>
         </div>
         
         <!-- プレミアムボタンを基本ボタンのすぐ下に配置 -->
@@ -169,7 +170,7 @@
             <p class="original-price">通常価格 1,280円</p>
             <p class="special-price">
               今なら <span class="price">980円</span>
-              <span class="badge">期間限定価格</span>
+              <span class="badge">オープン記念特別価格</span>
             </p>
           </div>
           
@@ -184,6 +185,35 @@
             ※ まずは無料の結果をお楽しみください<br>
             ※ 必要を感じた時にお申し込みください
           </p>
+        </div>
+
+        <!-- LINE登録案内 -->
+        <div class="line-registration-section">
+          <div class="line-card">
+            <div class="line-header">
+              <h3>💚 LINEで特別な運勢をお届け</h3>
+              <p class="line-subtitle">セラフィナの秘密の占いを、あなただけに</p>
+            </div>
+            <div class="line-benefits">
+              <div class="benefit-item">
+                <span class="benefit-icon">🎁</span>
+                <span class="benefit-text">初回登録で500円OFF クーポンプレゼント</span>
+              </div>
+              <div class="benefit-item">
+                <span class="benefit-icon">⚡</span>
+                <span class="benefit-text">新しい鑑定サービスを一番最初にご案内</span>
+              </div>
+              <div class="benefit-item">
+                <span class="benefit-icon">🌙</span>
+                <span class="benefit-text">毎週金曜日に「今週の運勢」を無料配信</span>
+              </div>
+            </div>
+            <a href="https://lin.ee/BGqcCZB" class="line-register-btn">
+              <span class="line-btn-icon">📱</span>
+              <span class="line-btn-text">今すぐLINE友だち追加</span>
+              <span class="line-btn-arrow">▶</span>
+            </a>
+          </div>
         </div>
       </div>
     </main>

@@ -51,11 +51,11 @@ body {
   width: 90%;
   max-width: 600px;
   margin: auto;
-  background: #f8e3b4; /* ベージュの背景色 */
+  background: transparent; /* 背景色を透明に */
   padding: 20px;
   border-radius: 15px;
-  border: 2px solid #847d61;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  border: none; /* 枠線を削除 */
+  box-shadow: none; /* シャドウを削除 */
 }
 
 header {
@@ -78,8 +78,20 @@ header h1 {
 
 /* 画面切り替え用 */
 #pre-draw.hidden,
-#result.hidden {
+#result.hidden,
+#guidance-section.hidden,
+#line-section.hidden {
   display: none;
+}
+
+/* カードを引く画面のスタイル */
+#pre-draw {
+  background-color: #f8e3b4; /* アイボリー系の背景色 */
+  border: 2px solid #847d61; /* 枠線 */
+  border-radius: 15px; /* 角丸 */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* シャドウ */
+  padding: 20px; /* 内側の余白 */
+  margin-bottom: 20px; /* 下マージン */
 }
 
 /* カードルーレット */
@@ -132,9 +144,13 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 0 20px 0; /* パディングを元に戻す */
-  /* border-top: 2px dashed #847d61; 点線を削除 */
-  margin-top: -30px; /* 結果表示エリア全体を上に移動 */
+  padding: 20px; /* 結果全体を枠で囲むためのパディング */
+  margin-top: 0; /* マージンをリセット */
+  background-color: #f8e3b4; /* ベージュの背景色 */
+  border: 2px solid #847d61; /* 枠線 */
+  border-radius: 15px; /* 角丸 */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* シャドウ */
+  margin-bottom: 20px; /* 下マージンを追加 */
 }
 
 #result-card-image {
@@ -171,4 +187,100 @@ button:hover {
   display: flex;
   justify-content: center;
   gap: 10px;
+}
+
+/* 誘導部分のスタイル - 旧スタイル（無効化） */
+.guidance-card.old-style {
+  background: #1a1a2e; /* おみくじと同じ紺色の背景 */
+  padding: 25px;
+  margin: 20px auto;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 480px;
+  border: 2px solid #ffd700; /* ゴールドの縁 */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 100;
+  margin-top: 30px; /* 結果枠との間隔を確保 */
+}
+
+.guidance-card.old-style h3 {
+  color: #ffd700;
+  margin-bottom: 18px;
+  font-size: 18px;
+  font-weight: 500;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.guidance-card.old-style p {
+  margin-bottom: 25px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+}
+
+.guidance-buttons {
+  margin: 20px 0;
+}
+
+.guidance-btn {
+  background: linear-gradient(135deg, #9B59B6, #8E44AD);
+  color: white;
+  padding: 12px 24px;
+  margin: 8px;
+  border-radius: 25px;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(155, 89, 182, 0.3);
+  transition: all 0.3s ease;
+}
+
+.guidance-btn.horoscope-btn {
+  background: linear-gradient(135deg, #3498DB, #2980B9);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.guidance-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* LINE登録部分のスタイル - 旧スタイル（無効化） */
+.line-card.old-style {
+  text-align: center;
+  margin: 20px auto;
+  max-width: 480px;
+  background: #1a1a2e; /* おみくじと同じ紺色の背景 */
+  padding: 25px;
+  border-radius: 20px;
+  border: 2px solid #ffd700; /* ゴールドの縁 */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 100;
+  margin-top: 20px; /* 誘導部分との間隔を確保 */
+}
+
+.line-btn {
+  background: linear-gradient(135deg, #00B900, #00D400);
+  color: white;
+  padding: 14px 32px;
+  border-radius: 25px;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 500;
+  box-shadow: 0 3px 10px rgba(0, 185, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.line-btn span {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.line-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 185, 0, 0.3);
 }

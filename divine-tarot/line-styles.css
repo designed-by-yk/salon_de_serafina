@@ -1,0 +1,106 @@
+/* 神託システムタロット用LINE登録案内のスタイル */
+.line-registration {
+  margin: 40px auto;
+  max-width: 800px;
+}
+
+.line-card-divine {
+  background: linear-gradient(135deg, rgba(155, 89, 182, 0.1), rgba(142, 68, 173, 0.05));
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  border: 2px solid #9b59b6;
+  box-shadow: 0 8px 32px rgba(155, 89, 182, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.line-header-divine h2 {
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 10px;
+  font-size: 24px;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(155, 89, 182, 0.3);
+}
+
+.line-subtitle-divine {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 25px;
+  font-size: 16px;
+  font-style: italic;
+  font-weight: 400;
+}
+
+.line-benefits-divine {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.benefit-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.benefit-item-divine {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 15px;
+  border-radius: 12px;
+  border: 1px solid rgba(155, 89, 182, 0.2);
+}
+
+.benefit-icon-divine {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.benefit-text-divine {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.line-register-btn-divine {
+  background: linear-gradient(135deg, #9b59b6, #8e44ad);
+  color: white;
+  padding: 15px 30px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  display: inline-block;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+}
+
+.line-register-btn-divine:hover {
+  background: linear-gradient(135deg, #8e44ad, #9b59b6);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(155, 89, 182, 0.6);
+}
+
+/* スマホ対応 */
+@media (max-width: 768px) {
+  .line-card-divine {
+    padding: 20px;
+    margin: 0 15px;
+  }
+  
+  .line-header-divine h2 {
+    font-size: 20px;
+  }
+  
+  .benefit-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .line-register-btn-divine {
+    font-size: 14px;
+    padding: 12px 25px;
+  }
+}

@@ -19,6 +19,37 @@
   --color-border-pro2: #c8ffff;
 }
 
+/* おみくじの結果画面専用のフォント設定 - 最優先で強制適用 */
+#result-container,
+#result-container *,
+#result-content,
+#result-content *,
+#result-content h1,
+#result-content h2,
+#result-content h3,
+#result-content p,
+#result-content span,
+#result-content div,
+#result-content strong,
+#result-content em,
+#result-content button,
+#result-content a,
+.fortune-text,
+.item-line,
+.item-line *,
+.advice,
+.advice *,
+.result-buttons,
+.result-buttons *,
+#close-btn,
+#item-link-btn,
+.guidance-card,
+.guidance-card *,
+.line-card,
+.line-card * {
+  font-family: 'Kiwi Maru', sans-serif !important;
+}
+
 body, html {
   margin: 0;
   padding: 0;
@@ -107,7 +138,7 @@ body, html {
   position: relative;
   width: 100%;
   height: 100vh;
-  background: url('../top-page/top-10.jpg') no-repeat center center;
+  background: url('../top-page/top-11.jpg') no-repeat center center;
   background-size: cover;
   display: flex;
   justify-content: center;
@@ -664,7 +695,7 @@ body, html {
   padding-top: 1%;
 }
 .omikuji-btn .main-text {
-  font-family: var(--font-mincho);
+  font-family: var(--font-tt-tsars);
   color: var(--color-text-main);
   font-size: calc(28 / var(--base-width) * 100vw);
   line-height: 1.2;
@@ -793,9 +824,12 @@ body, html {
   height: 100%;
   background-color: #1a1a2e; /* 黒に近いネイビー */
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center; /* 垂直方向の中央寄せ */
   z-index: 1000;
+  overflow-y: auto;
+  padding: 20px;
 }
 
 #result-container.hidden {
@@ -804,7 +838,6 @@ body, html {
 
 #result-content {
   position: relative;
-  bottom: 5%; /* 垂直方向の中央から5%分、上に移動 */
   width: 80%;
   max-width: 700px;
   padding: 3vw 4vw;
@@ -813,12 +846,49 @@ body, html {
   border-radius: 15px; /* 角丸 */
   box-shadow: 0 5px 15px rgba(0,0,0,0.2);
   color: var(--color-text-main);
-  font-family: var(--font-mincho);
+  font-family: 'Kiwi Maru', sans-serif !important;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+/* 結果表示エリア内のすべての要素でフォントを統一 */
+#result-content *,
+#result-content h2,
+#result-content p,
+#result-content span,
+#result-content strong,
+#result-content div {
+  font-family: 'Kiwi Maru', sans-serif !important;
+}
+
+/* 結果表示エリア全体のフォントを強制適用 */
+#result-container {
+  font-family: 'Kiwi Maru', sans-serif !important;
+}
+
+#result-container * {
+  font-family: 'Kiwi Maru', sans-serif !important;
+}
+
+/* さらに強力なフォント強制適用 */
+#result-container,
+#result-container *,
+#result-container h1,
+#result-container h2,
+#result-container h3,
+#result-container p,
+#result-container span,
+#result-container div,
+#result-container strong,
+#result-container em,
+#result-container button,
+#result-container a {
+  font-family: 'Kiwi Maru', sans-serif !important;
 }
 
 /* 運勢の見出し */
@@ -829,6 +899,7 @@ body, html {
   display: flex;
   align-items: center;
   gap: 0.2em;
+  font-family: 'Kiwi Maru', sans-serif !important;
 }
 
 /* 運勢のテキスト部分にのみ縁取りを適用 */
@@ -836,6 +907,7 @@ body, html {
   text-shadow: 
     -1.5px -1.5px 0 #fff, 1.5px -1.5px 0 #fff,
     -1.5px 1.5px 0 #fff, 1.5px 1.5px 0 #fff;
+  font-family: 'Kiwi Maru', sans-serif !important;
 }
 
 /* 絵文字には縁取りを適用しない */
@@ -852,6 +924,7 @@ body, html {
   align-items: center;
   justify-content: center;
   gap: 0.5em;
+  font-family: 'Kiwi Maru', sans-serif !important;
 }
 /* カラーチップのスタイル */
 .color-chip {
@@ -873,24 +946,188 @@ body, html {
   color: var(--color-text-main);
   text-shadow: none;
   line-height: 1.6;
+  font-family: 'Kiwi Maru', sans-serif !important;
 }
 
 .result-buttons {
-  position: absolute;
-  bottom: 5%;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   gap: 20px;
+  margin-bottom: 20px;
 }
 
 #close-btn, #item-link-btn {
   padding: 10px 30px;
   font-size: 1.2rem;
-  font-family: var(--font-yutoriro);
+  font-family: 'Kiwi Maru', sans-serif !important;
   background-color: var(--color-btn-bg);
   border: 1px solid var(--color-border-main);
   color: var(--color-text-main);
   border-radius: 20px;
   cursor: pointer;
+}
+
+/* 誘導部分のスタイル */
+.guidance-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  padding: 25px;
+  margin: 20px auto;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 480px;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  font-family: 'Kiwi Maru', sans-serif !important;
+  position: relative;
+  z-index: 100;
+}
+
+.guidance-card h3 {
+  color: #ffd700;
+  margin-bottom: 18px;
+  font-size: 18px;
+  font-weight: 500;
+  font-family: 'Kiwi Maru', sans-serif !important;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.guidance-card p {
+  margin-bottom: 25px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  font-family: 'Kiwi Maru', sans-serif !important;
+}
+
+.guidance-buttons {
+  margin: 20px 0;
+}
+
+.guidance-btn {
+  background: linear-gradient(135deg, #9B59B6, #8E44AD);
+  color: white;
+  padding: 12px 24px;
+  margin: 8px;
+  border-radius: 25px;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 500;
+  font-family: 'Kiwi Maru', sans-serif !important;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(155, 89, 182, 0.3);
+  transition: all 0.3s ease;
+}
+
+.guidance-btn.horoscope-btn {
+  background: linear-gradient(135deg, #3498DB, #2980B9);
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+}
+
+.guidance-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* LINE登録部分のスタイル */
+.line-card {
+  text-align: center;
+  margin: 20px auto;
+  max-width: 480px;
+  font-family: 'Kiwi Maru', sans-serif !important;
+  position: relative;
+  z-index: 100;
+}
+
+.line-btn {
+  background: linear-gradient(135deg, #00B900, #00D400);
+  color: white;
+  padding: 14px 32px;
+  border-radius: 25px;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: 'Kiwi Maru', sans-serif !important;
+  box-shadow: 0 3px 10px rgba(0, 185, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.line-btn span {
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+.line-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 185, 0, 0.3);
+}
+
+/* 最終的なフォント強制適用 - すべての結果表示要素に適用 */
+#result-container,
+#result-container *,
+#result-content,
+#result-content *,
+#result-content h1,
+#result-content h2,
+#result-content h3,
+#result-content p,
+#result-content span,
+#result-content div,
+#result-content strong,
+#result-content em,
+#result-content button,
+#result-content a,
+.fortune-text,
+.item-line,
+.item-line *,
+.advice,
+.advice *,
+.result-buttons,
+.result-buttons *,
+#close-btn,
+#item-link-btn,
+.guidance-card,
+.guidance-card *,
+.line-card,
+.line-card * {
+  font-family: 'Kiwi Maru', sans-serif !important;
+}
+
+/* さらに強力なフォント強制適用 - 個別要素にも適用 */
+#result-container h1,
+#result-container h2,
+#result-container h3,
+#result-container p,
+#result-container span,
+#result-container div,
+#result-container strong,
+#result-container em,
+#result-container button,
+#result-container a,
+#result-content h1,
+#result-content h2,
+#result-content h3,
+#result-content p,
+#result-content span,
+#result-content div,
+#result-content strong,
+#result-content em,
+#result-content button,
+#result-content a,
+.fortune-text,
+.item-line,
+.item-line p,
+.item-line span,
+.item-line strong,
+.advice,
+.advice p,
+.result-buttons button,
+#close-btn,
+#item-link-btn,
+.guidance-card h3,
+.guidance-card p,
+.guidance-card a,
+.line-card a,
+.line-card span {
+  font-family: 'Kiwi Maru', sans-serif !important;
 }

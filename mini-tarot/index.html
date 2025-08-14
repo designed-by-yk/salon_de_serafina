@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>miniタロット占い</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="../omikuji/premium-styles.css">
 </head>
 <body>
   <!-- パンくずリスト -->
@@ -15,18 +16,16 @@
   </nav>
 
   <div class="container">
-    <header>
-      <h1>YES/NO mini TAROT</h1>
-      <p class="description">選択したいことを頭に浮かべながら<br>カードを引くボタンを押してください</p>
-    </header>
-    <main>
       <div id="pre-draw">
+        <h1>YES/NO mini TAROT</h1>
+        <p class="description">選択したいことを頭に浮かべながら<br>カードを引くボタンを押してください</p>
         <div id="card-roulette">
           <!-- カードがここに動的に追加される -->
         </div>
         <button id="draw-button">カードを引く</button>
       </div>
       <div id="result" class="hidden">
+        <h1>YES/NO mini TAROT</h1>
         <img id="result-card-image" src="" alt="占いの結果のカード">
         <div id="result-message"></div>
         <div class="result-buttons">
@@ -34,7 +33,81 @@
           <button id="close-button">閉じる</button>
         </div>
       </div>
-    </main>
+      
+      <!-- より深い鑑定のご案内 -->
+      <div id="guidance-section" class="premium-guidance-card hidden">
+        <div class="guidance-header">
+          <h3>🌟 さらに詳しい運命を知りたい方へ</h3>
+          <p class="guidance-subtitle">YES/NOだけでは物足りない、もっと深い答えを求めるあなたに</p>
+        </div>
+        <div class="premium-options">
+          <!-- 神託システムタロット -->
+          <div class="premium-option tarot-option">
+            <div class="option-icon">🔮</div>
+            <div class="option-content">
+              <h4>神託システムタロット占い</h4>
+              <p class="option-description">78枚のタロット全てを使った本格鑑定。深夜でも早朝でも、あなたの心に迷いが生まれた瞬間に即座に答えを受け取れます。鑑定結果はPDFで保存でき、人生の節目でいつでも読み返せる宝物になります</p>
+              <div class="option-features">
+                <span class="feature-tag">✨ 3カードスプレッド</span>
+                <span class="feature-tag">💎 プロ仕様</span>
+                <span class="feature-tag price-tag">🎯 オープン記念特別価格</span>
+              </div>
+              <a href="../divine-tarot/tarot-detail.html" class="premium-btn tarot-btn">詳細▶</a>
+            </div>
+          </div>
+          <!-- 星詠みシステム星座占い -->
+          <div class="premium-option horoscope-option">
+            <div class="option-icon">⭐</div>
+            <div class="option-content">
+              <h4>星詠みシステム星座占い</h4>
+              <p class="option-description">あなたの生年月日から導く1ヶ月の詳細運勢。忙しい毎日でも、通勤中やちょっとした隙間時間に今日の運勢をチェック。鑑定書はスマホに保存して、いつでもお守り代わりに読み返せます</p>
+              <div class="option-features">
+                <span class="feature-tag">🌙 月間詳細</span>
+                <span class="feature-tag">🍀 開運法付き</span>
+                <span class="feature-tag price-tag">🎯 オープン記念特別価格</span>
+              </div>
+              <a href="../mini-horoscope/star-yomi-detail.html" class="premium-btn horoscope-btn">詳細▶</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 特別なLINE会員のご案内 -->
+      <div id="line-section" class="premium-line-card hidden">
+        <div class="line-header">
+          <div class="line-icon-area">
+            <span class="line-icon">💚</span>
+            <h3>LINEで特別な運勢をお届け</h3>
+          </div>
+          <p class="line-subtitle">セラフィナの秘密の占いを、あなただけに</p>
+        </div>
+        <div class="line-benefits">
+          <div class="benefit-item">
+            <span class="benefit-icon">🎁</span>
+            <span class="benefit-text">初回登録で500円OFF クーポンプレゼント</span>
+          </div>
+          <div class="benefit-item">
+            <span class="benefit-icon">⚡</span>
+            <span class="benefit-text">新しい鑑定サービスを一番最初にご案内</span>
+          </div>
+          <div class="benefit-item">
+            <span class="benefit-icon">🌙</span>
+            <span class="benefit-text">毎週金曜日に「今週の運勢」を無料配信</span>
+          </div>
+          <div class="benefit-item">
+            <span class="benefit-icon">💎</span>
+            <span class="benefit-text">会員限定の特別鑑定に優先参加権</span>
+          </div>
+        </div>
+        <a href="https://lin.ee/BGqcCZB" class="premium-line-btn">
+          <span class="line-btn-icon">📱</span>
+          <span class="line-btn-text">
+            <span class="main-text">今すぐLINE友だち追加</span>
+            <span class="sub-text">無料登録で特典がもらえる</span>
+          </span>
+          <span class="line-btn-arrow">▶</span>
+        </a>
+      </div>
   </div>
   <script src="script.js"></script>
 </body>

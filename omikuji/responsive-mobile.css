@@ -1,0 +1,269 @@
+/* スマホ用レスポンシブデザイン専用CSS */
+
+/* ===== 重要：メタタグ確認 =====
+   HTMLの<head>内に以下があることを確認してください：
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+*/
+
+/* スマホ・タブレット専用（PCには適用しない） */
+@media (max-width: 1024px) {
+  /* コンテナの基本設定 */
+  .container {
+    padding-top: 80px !important;
+    padding-bottom: 40px !important;
+    min-height: 100vh !important;
+    height: auto !important;
+    display: block !important;
+  }
+
+  /* メインタイトルの調整 */
+  .main-title {
+    position: static !important;
+    transform: none !important;
+    margin-bottom: 30px !important;
+    padding: 0 20px !important;
+  }
+
+  .subtitle-line {
+    font-size: clamp(16px, 4vw, 24px) !important;
+    margin-bottom: 8px !important;
+  }
+
+  .main-title-line {
+    font-size: clamp(28px, 8vw, 48px) !important;
+    margin-bottom: 8px !important;
+  }
+
+  /* ボタンエリアの調整 */
+  .button-area {
+    position: static !important;
+    width: 100% !important;
+    max-width: none !important;
+    aspect-ratio: unset !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 20px !important;
+    padding: 0 20px !important;
+  }
+
+  /* 神託システムラベル */
+  .oracle-system-label {
+    position: static !important;
+    transform: none !important;
+    font-size: clamp(14px, 3.5vw, 20px) !important;
+    margin: 20px 0 !important;
+    white-space: normal !important;
+  }
+
+  /* 全ボタンの共通設定 */
+  .btn {
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: 350px !important;
+    height: auto !important;
+    min-height: 70px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 15px 20px !important;
+    margin: 0 !important;
+    border-radius: 25px !important;
+    border-width: 2px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+  }
+
+  /* 無料ボタンのスタイル */
+  .omikuji-btn,
+  .mini-tarot-btn,
+  .mini-birthday-btn {
+    background-color: var(--color-btn-bg) !important;
+    border-color: var(--color-border-main) !important;
+  }
+
+  /* 有料ボタンのスタイル調整 */
+  .pro-tarot-btn {
+    background: linear-gradient(135deg, rgba(75, 0, 130, 0.9), rgba(128, 0, 128, 0.9)) !important;
+    border-color: rgba(255, 215, 0, 0.6) !important;
+  }
+
+  .pro-birthday-btn {
+    background: linear-gradient(135deg, rgba(25, 25, 112, 0.9), rgba(72, 61, 139, 0.9)) !important;
+    border-color: rgba(255, 215, 0, 0.6) !important;
+  }
+
+  .personal-reading-btn {
+    background: linear-gradient(135deg, rgba(75, 57, 130, 0.95), rgba(102, 75, 145, 0.95)) !important;
+    border-color: #6b4791 !important;
+  }
+
+  /* テキストサイズの調整 */
+  .btn .main-text {
+    font-size: clamp(16px, 4vw, 22px) !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+    margin-bottom: 5px !important;
+  }
+
+  .btn .sub-text {
+    font-size: clamp(12px, 3vw, 16px) !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
+  }
+
+  /* 無料ラベルの調整 */
+  .free-label {
+    font-size: clamp(12px, 3vw, 16px) !important;
+    padding: 4px 8px !important;
+    margin-right: 8px !important;
+    display: inline-block !important;
+  }
+
+  /* ホバー効果の調整 */
+  .btn:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  /* 結果表示エリアの調整 */
+  #result-container {
+    padding: 20px 15px !important;
+  }
+
+  #result-content {
+    width: 95% !important;
+    max-width: none !important;
+    padding: 20px !important;
+    margin: 10px 0 !important;
+  }
+
+  #result-content h2 {
+    font-size: clamp(20px, 5vw, 32px) !important;
+  }
+
+  #result-content .item-line {
+    font-size: clamp(14px, 4vw, 20px) !important;
+  }
+
+  #result-content .advice {
+    font-size: clamp(13px, 3.5vw, 18px) !important;
+    max-width: 100% !important;
+  }
+
+  .result-buttons {
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  #close-btn, #item-link-btn {
+    width: 100% !important;
+    max-width: 200px !important;
+    padding: 12px 20px !important;
+    font-size: clamp(14px, 4vw, 18px) !important;
+  }
+
+  /* プレミアム誘導セクションの調整 */
+  .premium-guidance-card,
+  .premium-line-card {
+    width: 95% !important;
+    max-width: none !important;
+    margin: 15px auto !important;
+    padding: 20px !important;
+  }
+
+  .premium-guidance-card h3 {
+    font-size: clamp(16px, 4vw, 20px) !important;
+  }
+
+  .premium-option {
+    margin-bottom: 15px !important;
+  }
+
+  .premium-option h4 {
+    font-size: clamp(14px, 3.5vw, 18px) !important;
+  }
+
+  .option-description {
+    font-size: clamp(12px, 3vw, 14px) !important;
+  }
+
+  .premium-btn {
+    font-size: clamp(10px, 2.5vw, 12px) !important;
+    padding: 6px 10px !important;
+    max-width: 60px !important;
+  }
+
+  /* LINEセクションの調整 */
+  .premium-line-btn {
+    width: 100% !important;
+    max-width: 250px !important;
+    margin: 0 auto !important;
+    display: block !important;
+    text-align: center !important;
+    padding: 12px 15px !important;
+    font-size: clamp(12px, 3vw, 14px) !important;
+  }
+}
+
+/* スマホ専用メディアクエリ */
+@media (max-width: 768px) {
+  body {
+    overflow-x: hidden !important;
+  }
+  
+  .container {
+    width: 100vw !important;
+  }
+  
+  .button-area {
+    width: 100% !important;
+    padding: 0 15px !important;
+  }
+  
+  .btn {
+    max-width: 300px !important;
+    min-height: 60px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-title {
+    padding: 0 15px !important;
+  }
+  
+  .button-area {
+    padding: 0 10px !important;
+    gap: 15px !important;
+  }
+  
+  .btn {
+    max-width: 280px !important;
+    min-height: 55px !important;
+    padding: 12px 15px !important;
+  }
+  
+  .oracle-system-label {
+    font-size: clamp(12px, 3vw, 16px) !important;
+    margin: 15px 0 !important;
+  }
+  
+  #result-container {
+    padding: 15px 10px !important;
+  }
+  
+  #result-content {
+    padding: 15px !important;
+  }
+  
+  .premium-guidance-card,
+  .premium-line-card {
+    padding: 15px !important;
+  }
+}

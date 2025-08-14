@@ -1,0 +1,103 @@
+/* LINE登録案内のスタイル */
+.line-registration-section {
+  margin: 30px auto;
+  max-width: 600px;
+}
+
+.line-card {
+  background: linear-gradient(135deg, #1a1a2e, #16213e);
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+  border: 2px solid #ffd700;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.line-header h3 {
+  color: #ffd700;
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: 500;
+}
+
+.line-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.line-benefits {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.benefit-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.benefit-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  text-align: left;
+}
+
+.line-register-btn {
+  background: linear-gradient(135deg, #00c864, #00a850);
+  color: white;
+  padding: 12px 25px;
+  border-radius: 25px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 200, 100, 0.4);
+}
+
+.line-register-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 200, 100, 0.6);
+}
+
+.line-btn-icon {
+  font-size: 16px;
+}
+
+.line-btn-text {
+  font-size: 14px;
+}
+
+.line-btn-arrow {
+  font-size: 12px;
+}
+
+/* スマホ対応 */
+@media (max-width: 768px) {
+  .line-card {
+    padding: 20px;
+    margin: 0 15px;
+  }
+  
+  .line-header h3 {
+    font-size: 18px;
+  }
+  
+  .line-register-btn {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}

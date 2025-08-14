@@ -299,10 +299,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   premiumBtn.addEventListener('click', showPremiumModal);
 
-  closeBtn.addEventListener('click', () => {
-    // トップページに戻る
-    window.location.href = '../omikuji/index.html';
-  });
+  // 閉じるボタンのイベントリスナー
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => {
+      // トップページに戻る
+      window.location.href = '../omikuji/index.html';
+    });
+  }
 
   // CSSアニメーション追加
   const style = document.createElement('style');

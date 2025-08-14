@@ -25,12 +25,12 @@
     <span class="breadcrumb-current">AI星座詳細鑑定</span>
   </nav>
 
-  <!-- 年末特別キャンペーンバナー -->
+  <!-- オープン記念キャンペーンバナー -->
   <div class="campaign-banner">
     <div class="banner-content">
       <span class="banner-icon">🎊</span>
-      <span class="banner-text">年末特別キャンペーン実施中！</span>
-      <span class="banner-period">12月31日まで</span>
+      <span class="banner-text">オープン記念キャンペーン実施中！</span>
+      <span class="banner-period">9月30日まで</span>
       <span class="banner-icon">🎊</span>
     </div>
   </div>
@@ -42,10 +42,10 @@
       
       <!-- 特別価格表示 -->
       <div class="price-highlight">
-        <div class="discount-badge-large">期間限定300円OFF</div>
+        <div class="discount-badge-large">オープン記念特別価格300円OFF</div>
         <div class="price-section">
           <span class="original-price">通常価格 1,280円</span>
-          <span class="sale-price">特別価格 980円</span>
+          <span class="sale-price">オープン記念特別価格 980円</span>
           <span class="savings">300円もお得！</span>
         </div>
       </div>
@@ -194,7 +194,7 @@
       <div class="payment-card">
         <div class="payment-header">
           <h3>AI星座詳細鑑定</h3>
-          <div class="limited-offer">🔥 期間限定価格</div>
+          <div class="limited-offer">🔥 オープン記念特別価格</div>
         </div>
         
         <div class="selected-zodiac" id="selected-zodiac" style="display: none;">
@@ -211,7 +211,7 @@
             <span class="price-value original">¥1,280</span>
           </div>
           <div class="price-row featured">
-            <span class="price-label">特別価格</span>
+            <span class="price-label">オープン記念特別価格</span>
             <span class="price-value sale">¥980</span>
           </div>
           <div class="savings-row">
@@ -242,6 +242,76 @@
       </div>
     </section>
 
+    <!-- 鑑定結果表示セクション（決済後に表示） -->
+    <section class="reading-result-section" id="reading-result" style="display: none;">
+      <h2>⭐ あなたの詳細鑑定結果</h2>
+      <div class="result-container">
+        <div class="zodiac-header" id="result-zodiac-header">
+          <!-- 選択された星座情報が表示されます -->
+        </div>
+        
+        <div class="monthly-forecast" id="monthly-forecast">
+          <!-- 月間運勢が表示されます -->
+        </div>
+        
+        <div class="weekly-details" id="weekly-details">
+          <!-- 週別詳細が表示されます -->
+        </div>
+        
+        <div class="lucky-items" id="lucky-items">
+          <!-- ラッキー情報が表示されます -->
+        </div>
+        
+        <!-- 追加質問サービス -->
+        <div class="additional-question">
+          <h3>💭 もっと詳しく知りたい方へ</h3>
+          
+          <div class="offer-box">
+            <h4 style="color: #ffd700; margin-bottom: 10px; font-size: 1.2em;">【追加質問サービス】</h4>
+            <p style="margin-bottom: 8px;">この鑑定結果についてさらに詳しく知りたい方へ</p>
+            <p class="price" style="font-size: 1.1em; margin-bottom: 15px;">1回<span style="color: #ffd700; font-weight: bold; font-size: 1.2em;">500円</span>で追加質問を承ります</p>
+          </div>
+          
+          <div class="how-to" style="margin-bottom: 20px;">
+            <p style="font-weight: bold; margin-bottom: 10px;">▼ご利用方法</p>
+            <ol style="text-align: left; display: inline-block; margin: 0;">
+              <li>決済ページでお支払い（500円）</li>
+              <li>決済完了画面をスクショ</li>
+              <li>LINE公式アカウントへ送信</li>
+              <li>追加質問フォームをお送りします</li>
+              <li><span style="color: #ffd700; font-weight: bold;">1週間以内に回答</span></li>
+            </ol>
+          </div>
+          
+          <button onclick="location.href='https://square.link/u/Tp6cc26W'" style="margin-bottom: 15px;">
+            📝 追加質問を申し込む
+          </button>
+          
+          <div style="
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.4);
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 0.9em;
+          ">
+            <p style="color: #ffd700; font-weight: bold; margin: 0;">
+              ※決済後は必ずLINEでご連絡ください
+            </p>
+          </div>
+        </div>
+        
+        <!-- ナビゲーションボタン -->
+        <div class="result-navigation">
+          <button class="nav-btn" onclick="location.href='../omikuji/index.html'">
+            🏠 トップページに戻る
+          </button>
+          <button class="nav-btn secondary" onclick="scrollToTop()">
+            🔄 もう一度申し込む
+          </button>
+        </div>
+      </div>
+    </section>
+
     <!-- よくある質問 -->
     <section class="faq-section">
       <h2>❓ よくある質問</h2>
@@ -253,12 +323,12 @@
         
         <div class="faq-item">
           <h3>Q. 毎月購入する必要がありますか？</h3>
-          <p>A. いいえ、単発購入です。ご希望の月のみお申し込みいただけます。継続割引もご用意しています。</p>
+          <p>A. いいえ、単発購入です。ご希望の月のみお申し込みいただけます。継続される方向けのオープン記念特別価格もご用意しています。</p>
         </div>
         
         <div class="faq-item">
           <h3>Q. 他の星座の運勢も見たい場合は？</h3>
-          <p>A. 追加で他の星座をお申し込みいただくか、家族・パートナー向けのセット割引をご利用ください。</p>
+          <p>A. 追加で他の星座をお申し込みいただくか、家族・パートナー向けのオープン記念特別価格をご用意しています。</p>
         </div>
       </div>
     </section>

@@ -6,7 +6,7 @@
   <title>Salon de Serafina - 無料占い＆星詠みシステムで運命を変える！</title>
   
   <!-- SEO Meta Tags -->
-  <meta name="description" content="Salon de Serafinaで人生を変える！無料占い＋星詠みシステム鑑定で詳細な運勢とアドバイスをお届け。夏休み特別キャンペーン実施中！">
+      <meta name="description" content="Salon de Serafinaで人生を変える！無料占い＋星詠みシステム鑑定で詳細な運勢とアドバイスをお届け。オープン記念キャンペーン実施中！">
   <meta name="keywords" content="占い, AI鑑定, タロット, 星座占い, 個人鑑定, セラフィナ, 無料占い, 本格鑑定">
   <meta name="author" content="Salon de Serafina">
   
@@ -34,16 +34,31 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Kiwi+Maru:wght@500&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="premium-styles.css">
+  <link rel="stylesheet" href="banner-styles.css">
+  <link rel="stylesheet" href="responsive-mobile.css">
 </head>
 <body>
 
-  <!-- 夏休み特別キャンペーンバナー -->
-  <div class="campaign-banner">
-    <div class="banner-content">
-      <span class="banner-icon">🌻</span>
-      <span class="banner-text">夏休み特別キャンペーン実施中！</span>
-      <span class="banner-period">8月31日まで</span>
-      <span class="banner-icon">🌻</span>
+  <!-- オープン記念キャンペーン＆LINE統合バナー -->
+  <div class="unified-banner">
+    <div class="unified-banner-content">
+      <!-- 左側：キャンペーン情報 -->
+      <div class="campaign-section">
+        <span class="banner-icon">✨</span>
+        <span class="campaign-text">オープン記念キャンペーン 9月30日まで</span>
+      </div>
+      
+      <!-- 右側：LINE登録 -->
+      <div class="line-section">
+        <div class="line-info">
+          <span class="line-icon">💚</span>
+          <span class="line-text">LINE登録で500円OFF</span>
+        </div>
+        <a href="https://lin.ee/BGqcCZB" class="compact-line-btn">
+          📱 友だち追加
+        </a>
+      </div>
     </div>
   </div>
 
@@ -107,16 +122,95 @@
   </div>
 
   <!-- 結果表示エリア -->
-  <div id="result-container" class="hidden">
-    <div id="result-content">
+  <div id="result-container" class="hidden" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 16px; font-weight: normal;">
+    <div id="result-content" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 16px; font-weight: normal;">
       <!--ここにJSで結果が挿入される-->
     </div>
-    <div class="result-buttons">
-      <button id="close-btn">閉じる</button>
-      <button id="item-link-btn">関連アイテムを見る</button>
+    
+    <div class="result-buttons" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 16px; font-weight: normal;">
+      <button id="close-btn" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 16px; font-weight: normal;">閉じる</button>
+      <button id="item-link-btn" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 16px; font-weight: normal;">関連アイテムを見る</button>
+    </div>
+    
+    <!-- より深い鑑定のご案内 -->
+    <div id="guidance-section" class="premium-guidance-card" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 16px; font-weight: normal;">
+      <div class="guidance-header" style="font-family: 'Kiwi Maru', sans-serif !important;">
+        <h3 style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 20px; font-weight: normal; margin-bottom: 10px;">🌟 さらに詳しい運命を知りたい方へ</h3>
+        <p class="guidance-subtitle" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 14px; font-weight: normal; margin-bottom: 20px; opacity: 0.9;">今日の運勢だけでは物足りない、もっと深い答えを求めるあなたに</p>
+      </div>
+      
+      <div class="premium-options" style="font-family: 'Kiwi Maru', sans-serif !important;">
+        <!-- 神託システムタロット -->
+        <div class="premium-option tarot-option" style="font-family: 'Kiwi Maru', sans-serif !important; margin-bottom: 15px;">
+          <div class="option-icon" style="font-family: 'Kiwi Maru', sans-serif !important;">🔮</div>
+          <div class="option-content" style="font-family: 'Kiwi Maru', sans-serif !important;">
+            <h4 style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 16px; font-weight: normal; margin: 0 0 5px 0;">神託システムタロット占い</h4>
+            <p class="option-description" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 13px; font-weight: normal; margin: 0 0 8px 0; line-height: 1.4;">78枚のタロット全てを使った本格鑑定。深夜でも早朝でも、あなたの心に迷いが生まれた瞬間に即座に答えを受け取れます。鑑定結果はPDFで保存でき、人生の節目でいつでも読み返せる宝物になります</p>
+            <div class="option-features" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 12px; margin-bottom: 10px;">
+              <span class="feature-tag" style="font-family: 'Kiwi Maru', sans-serif !important;">✨ 3カードスプレッド</span>
+              <span class="feature-tag" style="font-family: 'Kiwi Maru', sans-serif !important;">💎 プロ仕様</span>
+              <span class="feature-tag price-tag" style="font-family: 'Kiwi Maru', sans-serif !important;">🎯 オープン記念特別価格</span>
+            </div>
+            <a href="../divine-tarot/tarot-detail.html" class="premium-btn tarot-btn" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 12px; font-weight: normal;">詳細▶</a>
+          </div>
+        </div>
+
+        <!-- 星詠みシステム星座占い -->
+        <div class="premium-option horoscope-option" style="font-family: 'Kiwi Maru', sans-serif !important;">
+          <div class="option-icon" style="font-family: 'Kiwi Maru', sans-serif !important;">⭐</div>
+          <div class="option-content" style="font-family: 'Kiwi Maru', sans-serif !important;">
+            <h4 style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 16px; font-weight: normal; margin: 0 0 5px 0;">星詠みシステム星座占い</h4>
+            <p class="option-description" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 13px; font-weight: normal; margin: 0 0 8px 0; line-height: 1.4;">あなたの生年月日から導く1ヶ月の詳細運勢。忙しい毎日でも、通勤中やちょっとした隙間時間に今日の運勢をチェック。鑑定書はスマホに保存して、いつでもお守り代わりに読み返せます</p>
+            <div class="option-features" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 12px; margin-bottom: 10px;">
+              <span class="feature-tag" style="font-family: 'Kiwi Maru', sans-serif !important;">🌙 月間詳細</span>
+              <span class="feature-tag" style="font-family: 'Kiwi Maru', sans-serif !important;">🍀 開運法付き</span>
+              <span class="feature-tag price-tag" style="font-family: 'Kiwi Maru', sans-serif !important;">🎯 オープン記念特別価格</span>
+            </div>
+            <a href="../mini-horoscope/star-yomi-detail.html" class="premium-btn horoscope-btn" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 12px; font-weight: normal;">詳細▶</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 特別なLINE会員のご案内 -->
+    <div id="line-section" class="premium-line-card" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 16px; font-weight: normal;">
+      <div class="line-header" style="font-family: 'Kiwi Maru', sans-serif !important;">
+        <div class="line-icon-area" style="font-family: 'Kiwi Maru', sans-serif !important;">
+          <span class="line-icon" style="font-family: 'Kiwi Maru', sans-serif !important;">💚</span>
+          <h3 style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 18px; font-weight: normal; margin: 0;">LINEで特別な運勢をお届け</h3>
+        </div>
+        <p class="line-subtitle" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 13px; font-weight: normal; margin: 5px 0 15px 0; opacity: 0.9;">セラフィナの秘密の占いを、あなただけに</p>
+      </div>
+      
+      <div class="line-benefits" style="font-family: 'Kiwi Maru', sans-serif !important;">
+        <div class="benefit-item" style="font-family: 'Kiwi Maru', sans-serif !important; margin-bottom: 8px;">
+          <span class="benefit-icon" style="font-family: 'Kiwi Maru', sans-serif !important;">🎁</span>
+          <span class="benefit-text" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 13px;">初回登録で500円OFF クーポンプレゼント</span>
+        </div>
+        <div class="benefit-item" style="font-family: 'Kiwi Maru', sans-serif !important; margin-bottom: 8px;">
+          <span class="benefit-icon" style="font-family: 'Kiwi Maru', sans-serif !important;">⚡</span>
+          <span class="benefit-text" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 13px;">新しい鑑定サービスを一番最初にご案内</span>
+        </div>
+        <div class="benefit-item" style="font-family: 'Kiwi Maru', sans-serif !important; margin-bottom: 8px;">
+          <span class="benefit-icon" style="font-family: 'Kiwi Maru', sans-serif !important;">🌙</span>
+          <span class="benefit-text" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 13px;">毎週金曜日に「今週の運勢」を無料配信</span>
+        </div>
+        <div class="benefit-item" style="font-family: 'Kiwi Maru', sans-serif !important; margin-bottom: 15px;">
+          <span class="benefit-icon" style="font-family: 'Kiwi Maru', sans-serif !important;">💎</span>
+          <span class="benefit-text" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 13px;">会員限定の特別鑑定に優先参加権</span>
+        </div>
+      </div>
+      
+      <a href="https://lin.ee/BGqcCZB" class="premium-line-btn" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 15px; font-weight: normal; text-decoration: none;">
+        <span class="line-btn-icon" style="font-family: 'Kiwi Maru', sans-serif !important;">📱</span>
+        <span class="line-btn-text" style="font-family: 'Kiwi Maru', sans-serif !important;">
+          <span class="main-text" style="font-family: 'Kiwi Maru', sans-serif !important;">今すぐLINE友だち追加</span>
+          <span class="sub-text" style="font-family: 'Kiwi Maru', sans-serif !important; font-size: 12px; opacity: 0.9;">無料登録で特典がもらえる</span>
+        </span>
+        <span class="line-btn-arrow" style="font-family: 'Kiwi Maru', sans-serif !important;">▶</span>
+      </a>
     </div>
   </div>
-
 
   <script src="script.js"></script>
 </body>

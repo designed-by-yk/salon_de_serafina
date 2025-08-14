@@ -98,6 +98,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultMessage = document.getElementById('result-message');
   const resetButton = document.getElementById('reset-button');
   const closeButton = document.getElementById('close-button');
+  const guidanceSection = document.getElementById('guidance-section');
+  const lineSection = document.getElementById('line-section');
 
   let intervalId;
 
@@ -117,6 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setupRoulette() {
     resultDiv.classList.add('hidden');
+    guidanceSection.classList.add('hidden');
+    lineSection.classList.add('hidden');
     preDrawDiv.classList.remove('hidden');
     cardRoulette.innerHTML = '';
     
@@ -148,6 +152,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function displayResult(card) {
     preDrawDiv.classList.add('hidden');
     resultDiv.classList.remove('hidden');
+    guidanceSection.classList.remove('hidden');
+    lineSection.classList.remove('hidden');
     
     resultCardImage.src = card.img;
     resultCardImage.alt = card.name;

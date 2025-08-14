@@ -468,5 +468,69 @@ const modalStyles = `
 // スタイルを動的に追加
 document.head.insertAdjacentHTML('beforeend', modalStyles);
 
+// 結果表示機能
+function showReadingResult(zodiacSign) {
+  const resultSection = document.getElementById('reading-result');
+  const zodiac = zodiacData[zodiacSign];
+  
+  // サンプル結果データを表示（実際の運用時はAPIから取得）
+  displaySampleResult(zodiac);
+  
+  // 結果セクションを表示
+  resultSection.style.display = 'block';
+  
+  // 結果セクションまでスクロール
+  setTimeout(() => {
+    resultSection.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+  }, 300);
+}
+
+function displaySampleResult(zodiac) {
+  // 実際の運用時はここでAPIから鑑定結果を取得して表示
+  const header = document.getElementById('result-zodiac-header');
+  const forecast = document.getElementById('monthly-forecast');
+  const weekly = document.getElementById('weekly-details');
+  const lucky = document.getElementById('lucky-items');
+  
+  header.innerHTML = `
+    <h3>${zodiac.symbol} ${zodiac.name}の詳細鑑定結果</h3>
+    <p>期間：${zodiac.period}</p>
+  `;
+  
+  forecast.innerHTML = `
+    <h4>📊 今月の総合運勢</h4>
+    <p>サンプル結果が表示されます。実際の鑑定結果は決済完了後にお届けします。</p>
+  `;
+  
+  weekly.innerHTML = `
+    <h4>📅 週別詳細運勢</h4>
+    <p>各週の詳細な運勢とアドバイスが表示されます。</p>
+  `;
+  
+  lucky.innerHTML = `
+    <h4>🍀 ラッキー情報</h4>
+    <ul>
+      <li>ラッキーカラー：サンプル</li>
+      <li>ラッキーナンバー：サンプル</li>
+      <li>ラッキーアイテム：サンプル</li>
+    </ul>
+  `;
+}
+
+// トップにスクロールする関数
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+  
+  // 結果セクションを非表示
+  const resultSection = document.getElementById('reading-result');
+  resultSection.style.display = 'none';
+}
+
 
 
