@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 20:40:00 -->
+<!-- Cache Buster: 2024-12-14 20:45:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -132,14 +132,145 @@
     }
   </style>
   
-  <!-- デバッグ用スクリプト -->
+  <!-- スマホ用JavaScript強制適用 -->
   <script>
     console.log('Mobile CSS loaded at:', new Date().toISOString());
-    if (window.innerWidth <= 768) {
-      console.log('Mobile view detected, applying mobile styles');
-    } else {
-      console.log('Desktop view detected');
+    
+    function applyMobileStyles() {
+      if (window.innerWidth <= 768) {
+        console.log('Mobile view detected, applying mobile styles via JavaScript');
+        
+        // button-areaをflexboxに変更
+        const buttonArea = document.querySelector('.button-area');
+        if (buttonArea) {
+          buttonArea.style.cssText = `
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            position: static !important;
+            aspect-ratio: unset !important;
+            padding: 20px !important;
+            gap: 15px !important;
+          `;
+        }
+        
+        // 全ボタンのスタイル統一
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(btn => {
+          btn.style.cssText = `
+            position: static !important;
+            left: auto !important;
+            top: auto !important;
+            width: 90% !important;
+            max-width: 350px !important;
+            height: 70px !important;
+            min-height: 70px !important;
+            margin: 0 auto !important;
+            border-radius: 15px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 8px 12px !important;
+            box-sizing: border-box !important;
+            font-size: 14px !important;
+          `;
+        });
+        
+        // 神託システムラベルの調整
+        const oracleLabel = document.querySelector('.oracle-system-label');
+        if (oracleLabel) {
+          oracleLabel.style.cssText = `
+            position: static !important;
+            left: auto !important;
+            top: auto !important;
+            transform: none !important;
+            text-align: center !important;
+            margin: 20px 0 10px 0 !important;
+            font-size: 16px !important;
+            max-width: 90% !important;
+            width: 90% !important;
+            padding: 0 15px !important;
+            box-sizing: border-box !important;
+            line-height: 1.3 !important;
+            word-wrap: break-word !important;
+          `;
+        }
+        
+        // ボタン内テキストの調整
+        const mainTexts = document.querySelectorAll('.btn .main-text');
+        mainTexts.forEach(text => {
+          text.style.cssText = `
+            font-size: 14px !important;
+            line-height: 1.2 !important;
+            font-weight: 500 !important;
+            white-space: nowrap !important;
+            text-align: center !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+          `;
+        });
+        
+        const subTexts = document.querySelectorAll('.btn .sub-text');
+        subTexts.forEach(text => {
+          text.style.cssText = `
+            font-size: 11px !important;
+            line-height: 1.1 !important;
+            margin-top: 3px !important;
+            text-align: center !important;
+            max-width: 100% !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+          `;
+        });
+        
+        // 順序設定
+        const orderMap = {
+          'omikuji-btn': 1,
+          'mini-tarot-btn': 2,
+          'mini-birthday-btn': 3,
+          'pro-tarot-btn': 5,
+          'pro-birthday-btn': 6,
+          'personal-reading-btn': 7
+        };
+        
+        Object.keys(orderMap).forEach(id => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.style.order = orderMap[id];
+          }
+        });
+        
+        // リンク要素の順序
+        const linkOrderMap = {
+          'mini-tarot-link': 2,
+          'mini-horoscope-link': 3,
+          'divine-tarot-link': 5,
+          'premium-zodiac-link': 6
+        };
+        
+        Object.keys(linkOrderMap).forEach(id => {
+          const element = document.getElementById(id);
+          if (element) {
+            element.style.order = linkOrderMap[id];
+          }
+        });
+        
+        if (oracleLabel) {
+          oracleLabel.style.order = '4';
+        }
+        
+        console.log('Mobile styles applied successfully via JavaScript!');
+      } else {
+        console.log('Desktop view detected');
+      }
     }
+    
+    // ページ読み込み後とリサイズ時に実行
+    document.addEventListener('DOMContentLoaded', applyMobileStyles);
+    window.addEventListener('resize', applyMobileStyles);
+    window.addEventListener('load', applyMobileStyles);
   </script>
 
 </head>
