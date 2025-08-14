@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 21:45:00 -->
+<!-- Cache Buster: 2024-12-14 21:50:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -34,10 +34,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Kiwi+Maru:wght@500&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css?v=20241214_213500">
-  <link rel="stylesheet" href="premium-styles.css?v=20241214_213500">
-  <link rel="stylesheet" href="banner-styles.css?v=20241214_213500">
-  <link rel="stylesheet" href="mobile-order.css?v=20241214_213500">
+  <link rel="stylesheet" href="style.css?v=20241214_214500">
+  <link rel="stylesheet" href="premium-styles.css?v=20241214_214500">
+  <link rel="stylesheet" href="banner-styles.css?v=20241214_214500">
+  <link rel="stylesheet" href="mobile-order.css?v=20241214_214500">
   
   <!-- 強制的にスマホ順序を適用 - Updated: 2024-12-14 20:40:00 -->
   <style>
@@ -143,6 +143,7 @@
         // button-areaをflexboxに変更
         const buttonArea = document.querySelector('.button-area');
         if (buttonArea) {
+          console.log('Resetting button area gap to normal (10px)');
           buttonArea.style.cssText = `
             display: flex !important;
             flex-direction: column !important;
@@ -150,13 +151,15 @@
             position: static !important;
             aspect-ratio: unset !important;
             padding: 20px !important;
-            gap: 15px !important;
+            gap: 10px !important;
           `;
         }
         
-        // 全ボタンのスタイル統一
+        // 全ボタンのスタイル統一（マージンを明示的に0に）
         const buttons = document.querySelectorAll('.btn');
-        buttons.forEach(btn => {
+        console.log('Resetting all button margins to 0');
+        buttons.forEach((btn, index) => {
+          console.log('Resetting button', index, btn.id);
           btn.style.cssText = `
             position: static !important;
             left: auto !important;
@@ -165,7 +168,7 @@
             max-width: 350px !important;
             height: 70px !important;
             min-height: 70px !important;
-            margin: 0 auto !important;
+            margin: 0 auto 0 auto !important;
             border-radius: 15px !important;
             display: flex !important;
             flex-direction: column !important;
@@ -175,6 +178,10 @@
             box-sizing: border-box !important;
             font-size: 14px !important;
           `;
+          
+          // 明示的にmargin-topを0に設定
+          btn.style.setProperty('margin-top', '0px', 'important');
+          btn.style.setProperty('margin-bottom', '0px', 'important');
         });
         
 
@@ -288,6 +295,10 @@
           const element = document.getElementById(id);
           if (element) {
             element.style.order = linkOrderMap[id];
+            // 明示的にmargin-topを0に設定
+            element.style.setProperty('margin-top', '0px', 'important');
+            element.style.setProperty('margin-bottom', '0px', 'important');
+            console.log('Reset margin for link:', id);
           }
         });
         
