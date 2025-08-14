@@ -33,10 +33,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Kiwi+Maru:wght@500&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css?v=20241214_004">
-  <link rel="stylesheet" href="premium-styles.css?v=20241214_004">
-  <link rel="stylesheet" href="banner-styles.css?v=20241214_004">
-  <link rel="stylesheet" href="mobile-order.css?v=20241214_004">
+  <link rel="stylesheet" href="style.css?v=20241214_005">
+  <link rel="stylesheet" href="premium-styles.css?v=20241214_005">
+  <link rel="stylesheet" href="banner-styles.css?v=20241214_005">
+  <link rel="stylesheet" href="mobile-order.css?v=20241214_005">
   
   <!-- 強制的にスマホ順序を適用 -->
   <style>
@@ -54,11 +54,19 @@
         position: static !important;
         left: auto !important;
         top: auto !important;
-        width: 90% !important;
-        max-width: 350px !important;
-        height: auto !important;
-        min-height: 60px !important;
+        width: 85% !important;
+        max-width: 320px !important;
+        height: 70px !important;
+        min-height: 70px !important;
         margin: 0 auto !important;
+        border-radius: 15px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        padding: 8px 12px !important;
+        box-sizing: border-box !important;
+        font-size: 14px !important;
       }
       .oracle-system-label {
         position: static !important;
@@ -85,6 +93,23 @@
       .button-area #mini-horoscope-link { order: 3 !important; }
       .button-area #divine-tarot-link { order: 5 !important; }
       .button-area #premium-zodiac-link { order: 6 !important; }
+      
+      /* ボタン内テキストのサイズ統一 */
+      .btn .main-text {
+        font-size: 14px !important;
+        line-height: 1.2 !important;
+        font-weight: 500 !important;
+      }
+      .btn .sub-text {
+        font-size: 11px !important;
+        line-height: 1.1 !important;
+        margin-top: 2px !important;
+      }
+      .free-label {
+        font-size: 10px !important;
+        padding: 2px 6px !important;
+        margin-right: 4px !important;
+      }
     }
   </style>
 
