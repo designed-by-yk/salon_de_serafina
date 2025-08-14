@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 21:25:00 -->
+<!-- Cache Buster: 2024-12-14 21:30:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -34,10 +34,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Kiwi+Maru:wght@500&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css?v=20241214_005">
-  <link rel="stylesheet" href="premium-styles.css?v=20241214_005">
-  <link rel="stylesheet" href="banner-styles.css?v=20241214_005">
-  <link rel="stylesheet" href="mobile-order.css?v=20241214_005">
+  <link rel="stylesheet" href="style.css?v=20241214_212500">
+  <link rel="stylesheet" href="premium-styles.css?v=20241214_212500">
+  <link rel="stylesheet" href="banner-styles.css?v=20241214_212500">
+  <link rel="stylesheet" href="mobile-order.css?v=20241214_212500">
   
   <!-- 強制的にスマホ順序を適用 - Updated: 2024-12-14 20:40:00 -->
   <style>
@@ -198,15 +198,36 @@
         }
         
         // メインタイトルのフォントサイズのみ少し調整（スマホ用）
+        console.log('=== TITLE SIZE UPDATE ===');
         const subtitleElements = document.querySelectorAll('.subtitle-line');
-        subtitleElements.forEach(element => {
-          element.style.fontSize = '18px';  // ボタンに被らないように小さく
+        console.log('Found subtitle elements:', subtitleElements.length);
+        
+        subtitleElements.forEach((element, index) => {
+          console.log('Before - Subtitle', index, 'font-size:', getComputedStyle(element).fontSize);
+          element.style.setProperty('font-size', '18px', 'important');
+          console.log('After - Subtitle', index, 'font-size:', getComputedStyle(element).fontSize);
         });
         
         const mainTitleElement = document.querySelector('.main-title-line');
         if (mainTitleElement) {
-          mainTitleElement.style.fontSize = '26px';  // Salon de Serafinaはそのまま
+          console.log('Before - Main title font-size:', getComputedStyle(mainTitleElement).fontSize);
+          mainTitleElement.style.setProperty('font-size', '26px', 'important');
+          console.log('After - Main title font-size:', getComputedStyle(mainTitleElement).fontSize);
+        } else {
+          console.error('Main title element not found!');
         }
+        
+        // さらに確実にするため、少し遅延して再実行
+        setTimeout(() => {
+          document.querySelectorAll('.subtitle-line').forEach(element => {
+            element.style.setProperty('font-size', '18px', 'important');
+          });
+          const mainEl = document.querySelector('.main-title-line');
+          if (mainEl) {
+            mainEl.style.setProperty('font-size', '26px', 'important');
+          }
+          console.log('Title sizes re-applied after delay');
+        }, 200);
         
         // ボタン内テキストの調整
         const mainTexts = document.querySelectorAll('.btn .main-text');
