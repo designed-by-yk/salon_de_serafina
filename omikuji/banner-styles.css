@@ -143,71 +143,91 @@
 /* スマホ対応 */
 @media (max-width: 768px) {
   .unified-banner {
-    padding: 6px 0;
+    padding: 8px 0;
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
+    min-height: auto;
   }
   
   .unified-banner-content {
-    gap: 15px;
-    padding: 0 10px;
-    justify-content: space-between;
+    gap: 10px;
+    padding: 0 8px;
+    justify-content: center;
     max-width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
   }
   
   .campaign-section {
     gap: 6px;
-  }
-  
-  .campaign-text {
-    font-size: 11px;
-    line-height: 1.1;
-  }
-  
-  .line-text {
-    font-size: 10px;
-  }
-  
-  .compact-line-btn {
-    font-size: 9px;
-    padding: 4px 6px;
-    border-radius: 12px;
-  }
-  
-  .banner-icon {
-    font-size: 14px;
-  }
-  
-  .line-icon {
-    font-size: 12px;
-  }
-  
-  .main-header {
-    margin-top: 60px !important;
-  }
-}
-
-/* 非常に小さな画面での縦並び対応 */
-@media (max-width: 480px) {
-  .unified-banner {
-    padding: 5px 0;
-  }
-  
-  .unified-banner-content {
-    gap: 8px;
-    padding: 0 8px;
+    flex: 1;
+    min-width: 140px;
     justify-content: center;
   }
   
+  .campaign-text {
+    font-size: 10px;
+    line-height: 1.1;
+    text-align: center;
+  }
+  
+  .line-section {
+    gap: 6px;
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+  
+  .line-text {
+    font-size: 9px;
+    text-align: center;
+  }
+  
+  .compact-line-btn {
+    font-size: 8px;
+    padding: 3px 5px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+  
+  .banner-icon {
+    font-size: 12px;
+  }
+  
+  .line-icon {
+    font-size: 10px;
+  }
+  
+  .main-header {
+    margin-top: 65px !important;
+  }
+}
+
+/* 非常に小さな画面での2行対応 */
+@media (max-width: 480px) {
+  .unified-banner {
+    padding: 6px 0;
+  }
+  
+  .unified-banner-content {
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 8px;
+    justify-content: center;
+    align-items: center;
+  }
+  
   .campaign-section {
+    width: 100%;
     justify-content: center;
     gap: 4px;
   }
   
   .line-section {
+    width: 100%;
     justify-content: center;
     gap: 4px;
   }
@@ -222,10 +242,10 @@
   
   .compact-line-btn {
     font-size: 8px;
-    padding: 3px 5px;
+    padding: 3px 6px;
   }
   
   .main-header {
-    margin-top: 55px !important;
+    margin-top: 70px !important; /* 2行になるので少し多めに */
   }
 }

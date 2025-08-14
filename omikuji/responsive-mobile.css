@@ -47,25 +47,14 @@
     padding: 0 20px !important;
   }
 
-  /* 神託システムラベル - モバイルでは非表示 */
+  /* 神託システムラベル */
   .oracle-system-label {
-    display: none !important;
-  }
-  
-  /* モバイル用神託システムラベル - 神託システムタロット占いの前に表示 */
-  .pro-tarot-btn::before {
-    content: "「神託システム」による魂の鑑定へ";
-    display: block !important;
-    font-family: var(--font-mincho) !important;
+    position: static !important;
+    transform: none !important;
     font-size: clamp(14px, 3.5vw, 20px) !important;
-    color: rgba(255, 255, 255, 0.9) !important;
-    text-align: center !important;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8) !important;
-    animation: gentleGlow 3s ease-in-out infinite alternate !important;
-    margin: 30px 0 15px 0 !important;
+    margin: 20px 0 !important;
     white-space: normal !important;
-    position: relative !important;
-    z-index: 10 !important;
+    order: 10 !important; /* フレックスボックスで順序制御 */
   }
 
   /* 全ボタンの共通設定 */
@@ -88,6 +77,14 @@
     cursor: pointer !important;
     transition: all 0.3s ease !important;
   }
+  
+  /* ボタンの順序調整 */
+  .omikuji-btn { order: 1 !important; }
+  .mini-tarot-btn { order: 2 !important; }
+  .mini-birthday-btn { order: 3 !important; }
+  .pro-tarot-btn { order: 11 !important; } /* 神託システムラベルの後 */
+  .pro-birthday-btn { order: 12 !important; }
+  .personal-reading-btn { order: 13 !important; }
 
   /* 無料ボタンのスタイル */
   .omikuji-btn,
@@ -169,20 +166,24 @@
   }
 
   .result-buttons {
+    display: flex !important;
     flex-direction: column !important;
     gap: 10px !important;
     width: 100% !important;
     align-items: center !important;
     justify-content: center !important;
+    text-align: center !important;
   }
 
   #close-btn, #item-link-btn {
-    width: 100% !important;
+    width: auto !important;
     max-width: 200px !important;
+    min-width: 150px !important;
     padding: 12px 20px !important;
     font-size: clamp(14px, 4vw, 18px) !important;
     margin: 0 auto !important;
     text-align: center !important;
+    display: block !important;
   }
 
   /* プレミアム誘導セクションの調整 */
