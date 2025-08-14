@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 21:35:00 -->
+<!-- Cache Buster: 2024-12-14 21:40:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -34,10 +34,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Kiwi+Maru:wght@500&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css?v=20241214_212500">
-  <link rel="stylesheet" href="premium-styles.css?v=20241214_212500">
-  <link rel="stylesheet" href="banner-styles.css?v=20241214_212500">
-  <link rel="stylesheet" href="mobile-order.css?v=20241214_212500">
+  <link rel="stylesheet" href="style.css?v=20241214_213500">
+  <link rel="stylesheet" href="premium-styles.css?v=20241214_213500">
+  <link rel="stylesheet" href="banner-styles.css?v=20241214_213500">
+  <link rel="stylesheet" href="mobile-order.css?v=20241214_213500">
   
   <!-- 強制的にスマホ順序を適用 - Updated: 2024-12-14 20:40:00 -->
   <style>
@@ -157,10 +157,6 @@
         // 全ボタンのスタイル統一
         const buttons = document.querySelectorAll('.btn');
         buttons.forEach(btn => {
-          // 上部3つのボタンかどうかを判定
-          const isTopButton = btn.id === 'omikuji-btn' || btn.id === 'mini-tarot-btn' || btn.id === 'mini-birthday-btn';
-          const topMargin = isTopButton ? '5mm' : '0';
-          
           btn.style.cssText = `
             position: static !important;
             left: auto !important;
@@ -169,7 +165,7 @@
             max-width: 350px !important;
             height: 70px !important;
             min-height: 70px !important;
-            margin: ${topMargin} auto 0 auto !important;
+            margin: 0 auto !important;
             border-radius: 15px !important;
             display: flex !important;
             flex-direction: column !important;
@@ -179,6 +175,21 @@
             box-sizing: border-box !important;
             font-size: 14px !important;
           `;
+        });
+        
+        // 上部3つのボタンに個別にマージンを追加（確実性のため）
+        console.log('=== ADDING TOP MARGIN TO BUTTONS ===');
+        const topButtons = ['omikuji-btn', 'mini-tarot-btn', 'mini-birthday-btn'];
+        topButtons.forEach(buttonId => {
+          const button = document.getElementById(buttonId);
+          if (button) {
+            console.log('Adding margin to button:', buttonId);
+            button.style.setProperty('margin-top', '15px', 'important');
+            button.style.setProperty('margin-bottom', '0px', 'important');
+            console.log('Applied margin-top: 15px to', buttonId);
+          } else {
+            console.error('Button not found:', buttonId);
+          }
         });
         
         // 神託システムラベルの調整
@@ -290,12 +301,17 @@
           const element = document.getElementById(id);
           if (element) {
             element.style.order = linkOrderMap[id];
-            
-            // 上部3つのリンクボタンにマージンを追加
-            const isTopLink = id === 'mini-tarot-link' || id === 'mini-horoscope-link';
-            if (isTopLink) {
-              element.style.marginTop = '5mm';
-            }
+          }
+        });
+        
+        // 上部のリンクボタンにマージンを追加（確実性のため）
+        const topLinks = ['mini-tarot-link', 'mini-horoscope-link'];
+        topLinks.forEach(linkId => {
+          const link = document.getElementById(linkId);
+          if (link) {
+            console.log('Adding margin to link:', linkId);
+            link.style.setProperty('margin-top', '15px', 'important');
+            console.log('Applied margin-top: 15px to', linkId);
           }
         });
         
@@ -304,6 +320,28 @@
         }
         
         console.log('Mobile styles applied successfully via JavaScript!');
+        
+        // 遅延してもう一度ボタンマージンを適用（確実性のため）
+        setTimeout(() => {
+          console.log('Re-applying button margins after delay...');
+          const delayTopButtons = ['omikuji-btn', 'mini-tarot-btn', 'mini-birthday-btn'];
+          delayTopButtons.forEach(buttonId => {
+            const button = document.getElementById(buttonId);
+            if (button) {
+              button.style.setProperty('margin-top', '15px', 'important');
+              console.log('Re-applied margin to', buttonId);
+            }
+          });
+          
+          const delayTopLinks = ['mini-tarot-link', 'mini-horoscope-link'];
+          delayTopLinks.forEach(linkId => {
+            const link = document.getElementById(linkId);
+            if (link) {
+              link.style.setProperty('margin-top', '15px', 'important');
+              console.log('Re-applied margin to', linkId);
+            }
+          });
+        }, 300);
         
       } else {
         console.log('Desktop view detected');
