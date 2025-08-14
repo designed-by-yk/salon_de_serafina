@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 21:50:00 -->
+<!-- Cache Buster: 2024-12-14 21:55:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -306,6 +306,16 @@
         
         if (oracleLabel) {
           oracleLabel.style.order = '4';
+        }
+        
+        // 上部3つのボタン全体を下に移動（最初のボタンにのみマージンを追加）
+        console.log('Adding top margin to first button only');
+        const firstButton = document.getElementById('omikuji-btn');
+        if (firstButton) {
+          firstButton.style.setProperty('margin-top', '15px', 'important');
+          console.log('Applied 15px top margin to omikuji-btn (first button)');
+        } else {
+          console.error('First button (omikuji-btn) not found!');
         }
         
         console.log('Mobile styles applied successfully via JavaScript!');
