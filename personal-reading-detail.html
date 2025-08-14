@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Cache Buster: 2024-12-14 21:05:00 -->
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -906,6 +907,39 @@
             <p>※ 上記リンクからLINE友だち追加してください</p>
         </div>
         
+        <!-- 安心・安全なお支払い情報 -->
+        <div style="
+            background: rgba(255,255,255,0.05) !important; 
+            padding: 15px !important; 
+            border-radius: 10px !important; 
+            margin: 30px auto !important; 
+            font-size: 0.9em !important;
+            display: block !important;
+            width: 100% !important;
+            max-width: 600px !important;
+            box-sizing: border-box !important;
+            border: 1px solid rgba(255,255,255,0.1) !important;
+            text-align: center !important;
+        ">
+            <h5 style="
+                color: #ffd700 !important; 
+                margin: 0 0 10px 0 !important; 
+                font-size: 1em !important;
+                font-weight: bold !important;
+                display: block !important;
+            ">🔒 安心・安全なお支払い</h5>
+            <p style="
+                margin: 0 !important; 
+                line-height: 1.5 !important; 
+                color: rgba(255,255,255,0.9) !important;
+                display: block !important;
+            ">
+                お支払いはSquare社の決済システムを使用。クレジットカード情報は暗号化され、当サイトには保存されません。<br>
+                <strong style="color: #ffffff !important;">お支払い方法：クレジットカード・デビットカード<br>
+                （Visa, Mastercard, JCB, Amex対応）</strong>
+            </p>
+        </div>
+        
         <!-- LINE登録案内 -->
         <div class="line-registration-personal" style="
             background: linear-gradient(135deg, #1a1a2e, #16213e);
@@ -973,5 +1007,25 @@
             </button>
         </div>
     </div>
+    
+    <!-- デバッグ用スクリプト -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Personal Reading page loaded:', new Date().toISOString());
+            
+            // 決済情報要素の確認
+            const paymentInfo = document.querySelector('div[style*="background: rgba(255,255,255,0.05)"]');
+            if (paymentInfo) {
+                console.log('Payment info element found:', paymentInfo);
+                // 一時的に赤い枠を追加してデバッグ
+                paymentInfo.style.border = '2px solid red !important';
+                setTimeout(() => {
+                    paymentInfo.style.border = '1px solid rgba(255,255,255,0.1) !important';
+                }, 3000);
+            } else {
+                console.error('Payment info element not found!');
+            }
+        });
+    </script>
 </body>
 </html>
