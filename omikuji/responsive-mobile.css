@@ -34,7 +34,7 @@
     margin-bottom: 8px !important;
   }
 
-  /* ボタンエリアの調整 */
+  /* ボタンエリアの調整 - スマホのみ */
   .button-area {
     position: static !important;
     width: 100% !important;
@@ -45,8 +45,6 @@
     align-items: center !important;
     gap: 20px !important;
     padding: 0 20px !important;
-    /* 順序を強制的に適用 */
-    order: initial !important;
   }
 
   /* 神託システムラベル */
@@ -59,7 +57,7 @@
     text-align: center !important;
   }
 
-  /* 全ボタンの共通設定 */
+  /* 全ボタンの共通設定 - スマホのみ絶対位置無効化 */
   .btn {
     position: static !important;
     left: auto !important;
