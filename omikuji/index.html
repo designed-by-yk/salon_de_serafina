@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 22:20:00 -->
+<!-- Cache Buster: 2024-12-14 22:25:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -34,13 +34,23 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Kiwi+Maru:wght@500&family=Shippori+Mincho:wght@400;700&display=swap" rel="stylesheet">
   
-  <link rel="stylesheet" href="style.css?v=20241214_221000">
-  <link rel="stylesheet" href="premium-styles.css?v=20241214_221000">
-  <link rel="stylesheet" href="banner-styles.css?v=20241214_221000">
-  <link rel="stylesheet" href="mobile-order.css?v=20241214_221000">
+  <link rel="stylesheet" href="style.css?v=20241214_222000">
+  <link rel="stylesheet" href="premium-styles.css?v=20241214_222000">
+  <link rel="stylesheet" href="banner-styles.css?v=20241214_222000">
+  <link rel="stylesheet" href="mobile-order.css?v=20241214_222000">
   
   <!-- 強制的にスマホ順序を適用 - Updated: 2024-12-14 20:40:00 -->
   <style>
+    /* Title Nowrap Fix - 2024-12-14 22:20:00 */
+    @media screen and (max-width: 768px) {
+      .subtitle-line {
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
+        word-wrap: normal !important;
+      }
+    }
+    
     /* Mobile Button Fix - 2024-12-14 20:40:00 */
     @media screen and (max-width: 768px) {
       .button-area {
@@ -229,9 +239,16 @@
           
           // 「〜天使の導きをあなたに〜」の改行を防ぐ
           if (element.textContent.includes('天使の導き')) {
-            element.style.setProperty('white-space', 'nowrap', 'important');
-            element.style.setProperty('overflow', 'visible', 'important');
-            console.log('Applied nowrap to angel guidance line');
+            console.log('Found angel guidance line, applying nowrap styles');
+            element.style.cssText += `
+              white-space: nowrap !important;
+              overflow: visible !important;
+              text-overflow: clip !important;
+              word-wrap: normal !important;
+              word-break: keep-all !important;
+            `;
+            console.log('Applied strong nowrap to angel guidance line');
+            console.log('Element styles:', element.style.cssText);
           }
           
           console.log('After - Subtitle', index, 'font-size:', getComputedStyle(element).fontSize);
@@ -251,10 +268,17 @@
           document.querySelectorAll('.subtitle-line').forEach(element => {
             element.style.setProperty('font-size', '18px', 'important');
             
-            // 天使の導きの行だけnowrapを適用
+            // 天使の導きの行だけnowrapを適用（遅延実行）
             if (element.textContent.includes('天使の導き')) {
-              element.style.setProperty('white-space', 'nowrap', 'important');
-              element.style.setProperty('overflow', 'visible', 'important');
+              console.log('Re-applying strong nowrap to angel guidance line');
+              element.style.cssText += `
+                white-space: nowrap !important;
+                overflow: visible !important;
+                text-overflow: clip !important;
+                word-wrap: normal !important;
+                word-break: keep-all !important;
+              `;
+              console.log('Re-applied strong nowrap styles');
             }
           });
           const mainEl = document.querySelector('.main-title-line');
@@ -435,7 +459,7 @@
     <!-- メインタイトル - Updated 2024-12-14 22:15:00 -->
     <div class="main-title" data-update="20241214-2215">
       <div class="title-line main-title-line" style="display: block !important;">Salon de Séra&shy;fina</div>
-      <div class="title-line subtitle-line" style="display: block !important; white-space: nowrap;">〜天使の導きをあなたに〜</div>
+      <div class="title-line subtitle-line" style="display: block !important; white-space: nowrap !important; overflow: visible !important; text-overflow: clip !important; word-wrap: normal !important;">〜天使の導きをあなたに〜</div>
       <div class="title-line subtitle-line" style="display: block !important;">神聖なる光の占い</div>
     </div>
     <!-- TITLE CHANGED: removed "占いサロン", moved "Salon de Sérafina" to top, replaced "へようこそ" with new content -->
