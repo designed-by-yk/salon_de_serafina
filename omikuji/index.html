@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Cache Buster: 2024-12-14 20:30:00 -->
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
@@ -38,8 +39,9 @@
   <link rel="stylesheet" href="banner-styles.css?v=20241214_005">
   <link rel="stylesheet" href="mobile-order.css?v=20241214_005">
   
-  <!-- 強制的にスマホ順序を適用 -->
+  <!-- 強制的にスマホ順序を適用 - Updated: 2024-12-14 20:30:00 -->
   <style>
+    /* Mobile Button Fix - 2024-12-14 20:30:00 */
     @media screen and (max-width: 768px) {
       .button-area {
         display: flex !important;
@@ -112,6 +114,16 @@
       }
     }
   </style>
+  
+  <!-- デバッグ用スクリプト -->
+  <script>
+    console.log('Mobile CSS loaded at:', new Date().toISOString());
+    if (window.innerWidth <= 768) {
+      console.log('Mobile view detected, applying mobile styles');
+    } else {
+      console.log('Desktop view detected');
+    }
+  </script>
 
 </head>
 <body>
