@@ -96,7 +96,8 @@ class CouponUI {
                     margin-bottom: 10px;
                 "></div>
                 
-                <div id="coupon-discount" class="hidden" style="
+                <div id="coupon-discount" style="
+                    display: none;
                     background: rgba(76, 175, 80, 0.2);
                     border: 1px solid rgba(76, 175, 80, 0.5);
                     border-radius: 6px;
@@ -145,8 +146,8 @@ class CouponUI {
                         <span>元の価格:</span>
                         <span id="original-price">¥${this.originalPrice.toLocaleString()}</span>
                     </div>
-                    <div id="discount-row" class="hidden" style="
-                        display: flex;
+                    <div id="discount-row" style="
+                        display: none;
                         justify-content: space-between;
                         margin-bottom: 5px;
                         color: #4caf50;
@@ -281,8 +282,8 @@ class CouponUI {
         document.getElementById('apply-coupon').textContent = '適用';
         document.getElementById('apply-coupon').disabled = false;
         
-        document.getElementById('coupon-discount').classList.add('hidden');
-        document.getElementById('discount-row').classList.add('hidden');
+                    document.getElementById('coupon-discount').style.display = 'none';
+            document.getElementById('discount-row').style.display = 'none';
         
         this.showMessage('', '');
         this.updatePriceDisplay(0, this.originalPrice);
@@ -348,7 +349,7 @@ class CouponUI {
             </div>
         `;
 
-        discountDiv.classList.remove('hidden');
+        discountDiv.style.display = 'block';
     }
 
     /**
@@ -360,10 +361,10 @@ class CouponUI {
         const finalPriceSpan = document.getElementById('final-price');
 
         if (discountAmount > 0) {
-            if (discountRow) discountRow.classList.remove('hidden');
+            if (discountRow) discountRow.style.display = 'flex';
             if (discountAmountSpan) discountAmountSpan.textContent = `-¥${discountAmount.toLocaleString()}`;
         } else {
-            if (discountRow) discountRow.classList.add('hidden');
+            if (discountRow) discountRow.style.display = 'none';
         }
 
         if (finalPriceSpan) {

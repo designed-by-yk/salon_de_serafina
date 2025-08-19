@@ -10,6 +10,10 @@
     <meta property="og:description" content="セラフィナが直接執筆する特別な個人鑑定。3,000文字以上の詳細鑑定書とフォローアップ付き">
     <meta property="og:type" content="website">
     
+    <!-- クーポンシステム -->
+    <script src="js/coupon-system.js"></script>
+    <script src="js/coupon-ui.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -765,6 +769,20 @@
                 <p class="highlight">週2枠限定（各鑑定）</p>
                 <p>品質維持のため、少人数制で承っております</p>
             </div>
+
+            <!-- クーポン入力エリア（統合） -->
+            <div id="personal-coupon-section" style="
+                background: rgba(255, 215, 0, 0.1);
+                border: 1px solid rgba(255, 215, 0, 0.3);
+                border-radius: 15px;
+                padding: 25px;
+                margin: 30px 0;
+                text-align: center;
+            ">
+                <h3 style="color: #ffd700; margin-bottom: 15px;">🎫 クーポンコードをお持ちの方</h3>
+                <p style="margin-bottom: 20px; color: rgba(255,255,255,0.8);">全ての鑑定プランに適用できます</p>
+                <!-- クーポンUIがここに挿入されます -->
+            </div>
             
             <div class="options-grid">
                 <!-- タロット個人鑑定 -->
@@ -796,10 +814,10 @@
                     
                     <div class="option-pricing">
                         <p class="original-price">通常 7,000円</p>
-                        <p class="current-price">オープン記念 <span class="price">5,000円</span></p>
+                        <p class="current-price">オープン記念 <span id="tarot-price" class="price">5,000円</span></p>
                     </div>
                     
-                    <button class="option-button tarot-btn" onclick="location.href='https://square.link/u/pr9IPpWD'">
+                    <button id="tarot-payment-btn" class="option-button tarot-btn" onclick="handlePersonalPayment('tarot', 5000)">
                         🔮 タロット鑑定を申し込む
                     </button>
                 </div>
@@ -833,10 +851,10 @@
                     
                     <div class="option-pricing">
                         <p class="original-price">通常 7,000円</p>
-                        <p class="current-price">オープン記念 <span class="price">5,000円</span></p>
+                        <p class="current-price">オープン記念 <span id="star-price" class="price">5,000円</span></p>
                     </div>
                     
-                    <button class="option-button star-btn" onclick="location.href='https://square.link/u/og2lry9q'">
+                    <button id="star-payment-btn" class="option-button star-btn" onclick="handlePersonalPayment('star', 5000)">
                         ⭐ 星詠み鑑定を申し込む
                     </button>
                 </div>
@@ -857,7 +875,7 @@
                     </div>
                     <div class="bundle-pricing">
                         <p class="bundle-original">単品合計 10,000円</p>
-                        <p class="bundle-price">セット価格 <span class="price">8,000円</span></p>
+                        <p class="bundle-price">セット価格 <span id="bundle-price" class="price">8,000円</span></p>
                         <p class="bundle-savings">2,000円お得！</p>
                     </div>
                 </div>
@@ -867,7 +885,7 @@
                     <p>（2つの鑑定書を丁寧に作成するため）</p>
                 </div>
 
-                <button class="bundle-button" onclick="location.href='https://square.link/u/KFP9scSR'">
+                <button id="bundle-payment-btn" class="bundle-button" onclick="handlePersonalPayment('bundle', 8000)">
                     セットで申し込む（2,000円お得）
                 </button>
             </div>
@@ -1008,24 +1026,229 @@
         </div>
     </div>
     
-    <!-- デバッグ用スクリプト -->
+    <!-- クーポンシステム統合スクリプト -->
     <script>
+        // 個人鑑定ページ用のクーポンシステム
+        let personalCouponUI;
+        const originalPrices = {
+            tarot: 5000,
+            star: 5000,
+            bundle: 8000
+        };
+
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Personal Reading page loaded:', new Date().toISOString());
             
-            // 決済情報要素の確認
-            const paymentInfo = document.querySelector('div[style*="background: rgba(255,255,255,0.05)"]');
-            if (paymentInfo) {
-                console.log('Payment info element found:', paymentInfo);
-                // 一時的に赤い枠を追加してデバッグ
-                paymentInfo.style.border = '2px solid red !important';
-                setTimeout(() => {
-                    paymentInfo.style.border = '1px solid rgba(255,255,255,0.1) !important';
-                }, 3000);
+            // クーポンシステムの初期化
+            if (window.couponSystem) {
+                initializePersonalCoupons();
             } else {
-                console.error('Payment info element not found!');
+                // クーポンシステムの読み込みを待つ
+                setTimeout(initializePersonalCoupons, 500);
             }
         });
+
+        function initializePersonalCoupons() {
+            if (!window.CouponUI || !window.couponSystem) {
+                console.error('クーポンシステムが読み込まれていません');
+                return;
+            }
+
+            // クーポンUIを初期化（デフォルト価格として個人鑑定の平均価格を使用）
+            personalCouponUI = new CouponUI('personal', originalPrices.tarot);
+            
+            // クーポンセクションにUIを挿入
+            const couponSection = document.getElementById('personal-coupon-section');
+            if (couponSection) {
+                const couponHTML = personalCouponUI.createCouponSection();
+                couponSection.innerHTML = couponSection.innerHTML + couponHTML;
+                personalCouponUI.bindEvents();
+            }
+
+            // 価格更新イベントをリッスン
+            window.addEventListener('priceUpdated', function(event) {
+                const { finalPrice, originalPrice, appliedCoupon, discountAmount } = event.detail;
+                
+                if (appliedCoupon) {
+                    // 全ての価格を更新
+                    updateAllPrices(discountAmount, appliedCoupon);
+                    console.log(`✅ クーポン適用: ${appliedCoupon.code} - ${discountAmount}円割引`);
+                } else {
+                    // 元の価格に戻す
+                    resetAllPrices();
+                }
+            });
+
+            console.log('✅ 個人鑑定クーポンシステム初期化完了');
+        }
+
+        // 全ての価格を更新
+        function updateAllPrices(discountAmount, appliedCoupon) {
+            // タロット鑑定価格更新
+            const tarotPrice = Math.max(0, originalPrices.tarot - discountAmount);
+            const tarotPriceSpan = document.getElementById('tarot-price');
+            const tarotBtn = document.getElementById('tarot-payment-btn');
+            
+            if (tarotPriceSpan) {
+                if (tarotPrice === 0) {
+                    tarotPriceSpan.innerHTML = '<span style="text-decoration: line-through; opacity: 0.5;">5,000円</span> 無料';
+                    tarotPriceSpan.style.color = '#4caf50';
+                } else {
+                    tarotPriceSpan.textContent = `${tarotPrice.toLocaleString()}円`;
+                }
+            }
+            
+            if (tarotBtn) {
+                if (tarotPrice === 0) {
+                    tarotBtn.textContent = '🎉 無料でタロット鑑定を受ける';
+                    tarotBtn.style.background = 'linear-gradient(45deg, #4caf50, #66bb6a)';
+                } else if (tarotPrice < originalPrices.tarot) {
+                    tarotBtn.textContent = `🔮 ${tarotPrice.toLocaleString()}円でタロット鑑定を申し込む`;
+                }
+            }
+
+            // 星詠み鑑定価格更新
+            const starPrice = Math.max(0, originalPrices.star - discountAmount);
+            const starPriceSpan = document.getElementById('star-price');
+            const starBtn = document.getElementById('star-payment-btn');
+            
+            if (starPriceSpan) {
+                if (starPrice === 0) {
+                    starPriceSpan.innerHTML = '<span style="text-decoration: line-through; opacity: 0.5;">5,000円</span> 無料';
+                    starPriceSpan.style.color = '#4caf50';
+                } else {
+                    starPriceSpan.textContent = `${starPrice.toLocaleString()}円`;
+                }
+            }
+            
+            if (starBtn) {
+                if (starPrice === 0) {
+                    starBtn.textContent = '🎉 無料で星詠み鑑定を受ける';
+                    starBtn.style.background = 'linear-gradient(45deg, #4caf50, #66bb6a)';
+                } else if (starPrice < originalPrices.star) {
+                    starBtn.textContent = `⭐ ${starPrice.toLocaleString()}円で星詠み鑑定を申し込む`;
+                }
+            }
+
+            // セット価格更新
+            const bundlePrice = Math.max(0, originalPrices.bundle - discountAmount);
+            const bundlePriceSpan = document.getElementById('bundle-price');
+            const bundleBtn = document.getElementById('bundle-payment-btn');
+            
+            if (bundlePriceSpan) {
+                if (bundlePrice === 0) {
+                    bundlePriceSpan.innerHTML = '<span style="text-decoration: line-through; opacity: 0.5;">8,000円</span> 無料';
+                    bundlePriceSpan.style.color = '#4caf50';
+                } else {
+                    bundlePriceSpan.textContent = `${bundlePrice.toLocaleString()}円`;
+                }
+            }
+            
+            if (bundleBtn) {
+                if (bundlePrice === 0) {
+                    bundleBtn.textContent = '🎉 無料でセット鑑定を受ける';
+                    bundleBtn.style.background = 'linear-gradient(45deg, #4caf50, #66bb6a)';
+                } else if (bundlePrice < originalPrices.bundle) {
+                    bundleBtn.textContent = `セットで申し込む（${bundlePrice.toLocaleString()}円）`;
+                }
+            }
+        }
+
+        // 価格をリセット
+        function resetAllPrices() {
+            const tarotPriceSpan = document.getElementById('tarot-price');
+            const starPriceSpan = document.getElementById('star-price');
+            const bundlePriceSpan = document.getElementById('bundle-price');
+            const tarotBtn = document.getElementById('tarot-payment-btn');
+            const starBtn = document.getElementById('star-payment-btn');
+            const bundleBtn = document.getElementById('bundle-payment-btn');
+
+            if (tarotPriceSpan) {
+                tarotPriceSpan.textContent = '5,000円';
+                tarotPriceSpan.style.color = '';
+            }
+            if (starPriceSpan) {
+                starPriceSpan.textContent = '5,000円';
+                starPriceSpan.style.color = '';
+            }
+            if (bundlePriceSpan) {
+                bundlePriceSpan.textContent = '8,000円';
+                bundlePriceSpan.style.color = '';
+            }
+            if (tarotBtn) {
+                tarotBtn.textContent = '🔮 タロット鑑定を申し込む';
+                tarotBtn.style.background = '';
+            }
+            if (starBtn) {
+                starBtn.textContent = '⭐ 星詠み鑑定を申し込む';
+                starBtn.style.background = '';
+            }
+            if (bundleBtn) {
+                bundleBtn.textContent = 'セットで申し込む（2,000円お得）';
+                bundleBtn.style.background = '';
+            }
+        }
+
+        // 個人鑑定決済処理
+        function handlePersonalPayment(type, originalPrice) {
+            if (!personalCouponUI) {
+                // クーポンなしで通常決済
+                proceedToPayment(type, originalPrice, null);
+                return;
+            }
+
+            const appliedCoupon = personalCouponUI.getAppliedCoupon();
+            
+            if (appliedCoupon.coupon) {
+                const finalPrice = Math.max(0, originalPrice - appliedCoupon.discountAmount);
+                
+                // 無料クーポンの場合
+                if (finalPrice === 0) {
+                    const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
+                    if (userEmail && userEmail.includes('@')) {
+                        const result = window.couponSystem.useCoupon(
+                            appliedCoupon.coupon.code,
+                            'personal',
+                            userEmail,
+                            originalPrice
+                        );
+                        
+                        if (result.success) {
+                            alert('🎉 無料クーポンが適用されました！\n鑑定フォームに進みます。');
+                            window.location.href = `personal-form.html?type=${type}&coupon=${appliedCoupon.coupon.code}&email=${encodeURIComponent(userEmail)}`;
+                        } else {
+                            alert('エラー: ' + result.error);
+                        }
+                    } else {
+                        alert('有効なメールアドレスを入力してください。');
+                    }
+                    return;
+                }
+                
+                // 割引ありで決済
+                proceedToPayment(type, finalPrice, appliedCoupon.coupon.code);
+            } else {
+                // 通常決済
+                proceedToPayment(type, originalPrice, null);
+            }
+        }
+
+        // Square決済に進む
+        function proceedToPayment(type, finalPrice, couponCode) {
+            const paymentUrls = {
+                tarot: 'https://square.link/u/pr9IPpWD',
+                star: 'https://square.link/u/og2lry9q',
+                bundle: 'https://square.link/u/KFP9scSR'
+            };
+
+            let url = paymentUrls[type];
+            
+            if (couponCode) {
+                url += `?coupon=${couponCode}&final=${finalPrice}&type=${type}`;
+            }
+            
+            window.location.href = url;
+        }
     </script>
 </body>
 </html>
