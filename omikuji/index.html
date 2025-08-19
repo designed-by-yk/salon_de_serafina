@@ -608,45 +608,119 @@
 
   <script src="script.js"></script>
 
-  <!-- 管理者リンク（隠しアクセス） -->
-  <div id="admin-access" style="position: fixed; bottom: 5px; right: 5px; z-index: 9999; display: none;">
-    <a href="admin/coupon-admin.html" style="
-      background: rgba(100, 100, 100, 0.3);
-      color: rgba(255, 255, 255, 0.5);
-      padding: 4px 8px;
-      border-radius: 10px;
-      text-decoration: none;
-      font-size: 10px;
-      font-weight: normal;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-      transition: all 0.3s ease;
-    " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'">
-      ⚙
-    </a>
-  </div>
-
   <!-- 隠し管理者アクセス用スクリプト -->
   <script>
-    // 特別なキーコンビネーション（Ctrl + Shift + A）で管理ボタンを表示
-    let keySequence = [];
+    // 管理者アクセス用変数
+    let adminKeySequence = '';
+    let adminAccessVisible = false;
+    
+    // キーボードイベントリスナー
     document.addEventListener('keydown', function(e) {
-      if (e.ctrlKey && e.shiftKey && e.key === 'A') {
-        const adminAccess = document.getElementById('admin-access');
-        if (adminAccess) {
-          adminAccess.style.display = adminAccess.style.display === 'none' ? 'block' : 'none';
-          if (adminAccess.style.display === 'block') {
-            console.log('🔧 管理者アクセスが有効になりました');
-            setTimeout(() => {
-              adminAccess.style.display = 'none';
-            }, 10000); // 10秒後に自動非表示
-          }
-        }
+      // Ctrl + Shift + A での管理アクセス
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'a') {
+        e.preventDefault();
+        toggleAdminAccess();
+        return;
+      }
+      
+      // 秘密のコード入力（admin と入力）
+      adminKeySequence += e.key.toLowerCase();
+      if (adminKeySequence.length > 10) {
+        adminKeySequence = adminKeySequence.slice(-10);
+      }
+      
+      if (adminKeySequence.includes('admin')) {
+        toggleAdminAccess();
+        adminKeySequence = '';
       }
     });
 
+    // 管理アクセス表示切り替え
+    function toggleAdminAccess() {
+      if (!adminAccessVisible) {
+        showAdminAccess();
+      } else {
+        hideAdminAccess();
+      }
+    }
+
+    // 管理アクセス表示
+    function showAdminAccess() {
+      // 既存の管理ボタンがあれば削除
+      const existingBtn = document.getElementById('admin-access-btn');
+      if (existingBtn) {
+        existingBtn.remove();
+      }
+
+      // 新しい管理ボタンを作成
+      const adminBtn = document.createElement('div');
+      adminBtn.id = 'admin-access-btn';
+      adminBtn.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        background: linear-gradient(45deg, #ff6b6b, #ffd700);
+        color: #2d1b69;
+        padding: 12px 16px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 14px;
+        box-shadow: 0 4px 20px rgba(255, 107, 107, 0.6);
+        animation: pulse 2s infinite;
+        user-select: none;
+      `;
+      adminBtn.innerHTML = '🛠️ 管理画面';
+      
+      // クリックイベント
+      adminBtn.onclick = function() {
+        // 正しいパスで管理画面を開く
+        const currentPath = window.location.pathname;
+        const adminPath = currentPath.includes('/omikuji/') 
+          ? '../admin/coupon-admin.html' 
+          : 'admin/coupon-admin.html';
+        window.open(adminPath, '_blank');
+      };
+      
+      document.body.appendChild(adminBtn);
+      adminAccessVisible = true;
+      
+      console.log('🔧 管理者アクセスが有効になりました');
+      console.log('💡 ボタンをクリックして管理画面にアクセスできます');
+      
+      // 15秒後に自動非表示
+      setTimeout(() => {
+        hideAdminAccess();
+      }, 15000);
+    }
+
+    // 管理アクセス非表示
+    function hideAdminAccess() {
+      const adminBtn = document.getElementById('admin-access-btn');
+      if (adminBtn) {
+        adminBtn.remove();
+        adminAccessVisible = false;
+        console.log('🔧 管理者アクセスが非表示になりました');
+      }
+    }
+
+    // アニメーション追加
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes pulse {
+        0% { transform: scale(1); box-shadow: 0 4px 20px rgba(255, 107, 107, 0.6); }
+        50% { transform: scale(1.05); box-shadow: 0 6px 25px rgba(255, 107, 107, 0.8); }
+        100% { transform: scale(1); box-shadow: 0 4px 20px rgba(255, 107, 107, 0.6); }
+      }
+    `;
+    document.head.appendChild(style);
+
     // コンソールメッセージ
     console.log('👋 Salon de Serafina へようこそ');
-    console.log('🔧 管理者の方は Ctrl + Shift + A を押してください');
+    console.log('🔧 管理者の方は以下の方法でアクセスできます:');
+    console.log('   1. Ctrl + Shift + A を押す');
+    console.log('   2. キーボードで "admin" と入力する');
   </script>
 </body>
 </html>
