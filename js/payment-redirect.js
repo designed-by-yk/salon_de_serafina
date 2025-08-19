@@ -1,0 +1,346 @@
+/**
+ * 決済ページリダイレクト用ヘルパー
+ * 各サービスページからSquare決済ページへの遷移を管理
+ */
+
+class PaymentRedirect {
+    constructor() {
+        this.baseUrl = 'square-payment.html';
+        console.log('🔗 PaymentRedirect システム初期化');
+    }
+
+    /**
+     * 神託システムタロット占い決済
+     */
+    redirectToShintakuPayment(userEmail = null) {
+        const params = {
+            service: 'shintaku',
+            price: 3000,
+            name: '神託システムタロット占い',
+            description: 'AIと人間の直感を組み合わせた深層タロット鑑定',
+            email: userEmail || ''
+        };
+        
+        this.redirect(params);
+    }
+
+    /**
+     * 星詠みシステム星座占い決済
+     */
+    redirectToStarYomiPayment(userEmail = null) {
+        const params = {
+            service: 'star_yomi',
+            price: 3000,
+            name: '星詠みシステム星座占い',
+            description: '生年月日から読み解く詳細な星座鑑定',
+            email: userEmail || ''
+        };
+        
+        this.redirect(params);
+    }
+
+    /**
+     * 個人鑑定タロット決済
+     */
+    redirectToPersonalTarotPayment(userEmail = null) {
+        const params = {
+            service: 'personal_tarot',
+            price: 5000,
+            name: '個人鑑定タロット',
+            description: 'セラフィナによる完全個人向けタロット鑑定',
+            email: userEmail || ''
+        };
+        
+        this.redirect(params);
+    }
+
+    /**
+     * 個人鑑定誕生日占い決済
+     */
+    redirectToPersonalBirthdayPayment(userEmail = null) {
+        const params = {
+            service: 'personal_birthday',
+            price: 5000,
+            name: '個人鑑定誕生日占い',
+            description: 'セラフィナによる生年月日を基にした個人鑑定',
+            email: userEmail || ''
+        };
+        
+        this.redirect(params);
+    }
+
+    /**
+     * 個人鑑定セット決済
+     */
+    redirectToPersonalSetPayment(userEmail = null) {
+        const params = {
+            service: 'personal_set',
+            price: 8000,
+            name: '個人鑑定セット',
+            description: 'タロット + 誕生日占いのお得なセット鑑定',
+            email: userEmail || ''
+        };
+        
+        this.redirect(params);
+    }
+
+    /**
+     * 汎用決済リダイレクト
+     */
+    redirectToCustomPayment(serviceType, price, name, description, userEmail = null) {
+        const params = {
+            service: serviceType,
+            price: price,
+            name: name,
+            description: description,
+            email: userEmail || ''
+        };
+        
+        this.redirect(params);
+    }
+
+    /**
+     * URLパラメータを作成してリダイレクト
+     */
+    redirect(params) {
+        const searchParams = new URLSearchParams();
+        
+        Object.entries(params).forEach(([key, value]) => {
+            if (value !== null && value !== undefined && value !== '') {
+                searchParams.append(key, value.toString());
+            }
+        });
+        
+        const url = `${this.baseUrl}?${searchParams.toString()}`;
+        
+        console.log('🔗 決済ページにリダイレクト:', url);
+        console.log('📊 パラメータ:', params);
+        
+        window.location.href = url;
+    }
+
+    /**
+     * クーポン適用状態でリダイレクト
+     */
+    redirectWithCoupon(serviceType, price, name, description, couponCode, userEmail = null) {
+        // まずクーポンを検証
+        if (window.couponSystem && couponCode) {
+            const validation = window.couponSystem.validateCoupon(
+                couponCode,
+                serviceType,
+                price,
+                userEmail
+            );
+            
+            if (validation.valid) {
+                console.log('✅ クーポン事前検証成功:', validation);
+                
+                // クーポン情報をセッションストレージに保存
+                sessionStorage.setItem('appliedCoupon', JSON.stringify({
+                    code: couponCode,
+                    discountAmount: validation.discountAmount,
+                    finalPrice: validation.finalPrice
+                }));
+            }
+        }
+        
+        // 通常のリダイレクト
+        this.redirectToCustomPayment(serviceType, price, name, description, userEmail);
+    }
+}
+
+/**
+ * 既存のサービスページとの互換性を保つためのヘルパー関数
+ */
+
+// 神託システム用
+function handleShintakuPayment() {
+    const paymentRedirect = new PaymentRedirect();
+    
+    // クーポン適用状態を確認
+    const appliedCoupon = getAppliedCouponFromUI();
+    const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
+    
+    if (!userEmail || !userEmail.includes('@')) {
+        alert('有効なメールアドレスを入力してください。');
+        return;
+    }
+    
+    if (appliedCoupon && appliedCoupon.coupon) {
+        paymentRedirect.redirectWithCoupon(
+            'shintaku', 
+            3000, 
+            '神託システムタロット占い',
+            'AIと人間の直感を組み合わせた深層タロット鑑定',
+            appliedCoupon.coupon.code,
+            userEmail
+        );
+    } else {
+        paymentRedirect.redirectToShintakuPayment(userEmail);
+    }
+}
+
+// 個人鑑定用
+function handlePersonalPayment(type, originalPrice) {
+    const paymentRedirect = new PaymentRedirect();
+    
+    // クーポン適用状態を確認
+    const appliedCoupon = getAppliedCouponFromUI();
+    const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
+    
+    if (!userEmail || !userEmail.includes('@')) {
+        alert('有効なメールアドレスを入力してください。');
+        return;
+    }
+    
+    // タイプに応じた設定
+    const serviceConfig = {
+        tarot: {
+            serviceType: 'personal_tarot',
+            name: '個人鑑定タロット',
+            description: 'セラフィナによる完全個人向けタロット鑑定'
+        },
+        star: {
+            serviceType: 'personal_birthday',
+            name: '個人鑑定誕生日占い', 
+            description: 'セラフィナによる生年月日を基にした個人鑑定'
+        },
+        bundle: {
+            serviceType: 'personal_set',
+            name: '個人鑑定セット',
+            description: 'タロット + 誕生日占いのお得なセット鑑定'
+        }
+    };
+    
+    const config = serviceConfig[type];
+    if (!config) {
+        console.error('❌ 不明なサービスタイプ:', type);
+        return;
+    }
+    
+    if (appliedCoupon && appliedCoupon.coupon) {
+        paymentRedirect.redirectWithCoupon(
+            config.serviceType,
+            originalPrice,
+            config.name,
+            config.description,
+            appliedCoupon.coupon.code,
+            userEmail
+        );
+    } else {
+        paymentRedirect.redirectToCustomPayment(
+            config.serviceType,
+            originalPrice,
+            config.name,
+            config.description,
+            userEmail
+        );
+    }
+}
+
+// 星詠みシステム用
+function handleStarYomiPayment() {
+    const paymentRedirect = new PaymentRedirect();
+    
+    const appliedCoupon = getAppliedCouponFromUI();
+    const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
+    
+    if (!userEmail || !userEmail.includes('@')) {
+        alert('有効なメールアドレスを入力してください。');
+        return;
+    }
+    
+    if (appliedCoupon && appliedCoupon.coupon) {
+        paymentRedirect.redirectWithCoupon(
+            'star_yomi',
+            3000,
+            '星詠みシステム星座占い',
+            '生年月日から読み解く詳細な星座鑑定',
+            appliedCoupon.coupon.code,
+            userEmail
+        );
+    } else {
+        paymentRedirect.redirectToStarYomiPayment(userEmail);
+    }
+}
+
+/**
+ * UIからクーポン適用状態を取得
+ */
+function getAppliedCouponFromUI() {
+    // CouponUIインスタンスが存在する場合
+    if (typeof personalCouponUI !== 'undefined' && personalCouponUI) {
+        return personalCouponUI.getAppliedCoupon();
+    }
+    
+    if (typeof couponUI !== 'undefined' && couponUI) {
+        return couponUI.getAppliedCoupon();
+    }
+    
+    // セッションストレージから取得
+    const sessionCoupon = sessionStorage.getItem('appliedCoupon');
+    if (sessionCoupon) {
+        try {
+            return JSON.parse(sessionCoupon);
+        } catch (error) {
+            console.error('❌ セッションクーポン解析エラー:', error);
+        }
+    }
+    
+    return null;
+}
+
+/**
+ * レガシー関数の互換性を保つ
+ */
+function proceedToPayment(type, finalPrice, couponCode) {
+    console.log('🔄 レガシー決済関数から新システムにリダイレクト');
+    
+    const paymentRedirect = new PaymentRedirect();
+    const userEmail = document.getElementById('user-email')?.value || 
+                     prompt('メールアドレスを入力してください:');
+    
+    if (!userEmail) return;
+    
+    // タイプに基づいてサービス設定を決定
+    const serviceMap = {
+        tarot: { serviceType: 'personal_tarot', name: '個人鑑定タロット' },
+        star: { serviceType: 'personal_birthday', name: '個人鑑定誕生日占い' },
+        bundle: { serviceType: 'personal_set', name: '個人鑑定セット' },
+        shintaku: { serviceType: 'shintaku', name: '神託システムタロット占い' },
+        star_yomi: { serviceType: 'star_yomi', name: '星詠みシステム星座占い' }
+    };
+    
+    const service = serviceMap[type] || { 
+        serviceType: type, 
+        name: 'カスタムサービス' 
+    };
+    
+    if (couponCode) {
+        paymentRedirect.redirectWithCoupon(
+            service.serviceType,
+            finalPrice,
+            service.name,
+            '詳細鑑定サービス',
+            couponCode,
+            userEmail
+        );
+    } else {
+        paymentRedirect.redirectToCustomPayment(
+            service.serviceType,
+            finalPrice,
+            service.name,
+            '詳細鑑定サービス',
+            userEmail
+        );
+    }
+}
+
+// グローバルに利用可能にする
+window.PaymentRedirect = PaymentRedirect;
+window.handleShintakuPayment = handleShintakuPayment;
+window.handlePersonalPayment = handlePersonalPayment;
+window.handleStarYomiPayment = handleStarYomiPayment;
+window.proceedToPayment = proceedToPayment;
+
+console.log('🔗 Payment Redirect System loaded');

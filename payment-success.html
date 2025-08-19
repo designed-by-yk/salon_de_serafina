@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎉 決済完了 - Salon de Serafina</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 50%, #1a0033 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .success-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        .success-title {
+            color: #4caf50;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .success-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .payment-details {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            text-align: left;
+        }
+
+        .payment-details h3 {
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+        }
+
+        .detail-value {
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .detail-amount {
+            color: #4caf50;
+            font-size: 1.2em;
+        }
+
+        .detail-discount {
+            color: #ff6b6b;
+        }
+
+        .coupon-info {
+            background: linear-gradient(45deg, rgba(76, 175, 80, 0.2), rgba(102, 187, 106, 0.2));
+            border: 1px solid #4caf50;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .coupon-info h4 {
+            color: #4caf50;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .next-steps {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            text-align: left;
+        }
+
+        .next-steps h3 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .next-steps ol {
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+
+        .next-steps li {
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .contact-info {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+
+        .contact-info h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .contact-info p {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            margin: 5px 0;
+        }
+
+        .free-service {
+            background: linear-gradient(45deg, rgba(76, 175, 80, 0.3), rgba(102, 187, 106, 0.3));
+            border: 2px solid #4caf50;
+        }
+
+        .free-service .success-title {
+            color: #4caf50;
+        }
+
+        .free-service .success-icon {
+            filter: hue-rotate(120deg);
+        }
+
+        @media (max-width: 768px) {
+            .success-container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .success-title {
+                font-size: 2em;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container" id="success-container">
+        <div class="success-icon" id="success-icon">🎉</div>
+        <h1 class="success-title" id="success-title">決済完了！</h1>
+        <p class="success-subtitle" id="success-subtitle">
+            ありがとうございます！決済が正常に完了しました。<br>
+            鑑定結果は指定のメールアドレスにお送りいたします。
+        </p>
+
+        <!-- 決済詳細 -->
+        <div class="payment-details">
+            <h3>📋 決済詳細</h3>
+            <div class="detail-row">
+                <span class="detail-label">サービス:</span>
+                <span class="detail-value" id="service-name">読み込み中...</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">基本料金:</span>
+                <span class="detail-value" id="original-amount">¥0</span>
+            </div>
+            <div class="detail-row" id="discount-row" style="display: none;">
+                <span class="detail-label">割引額:</span>
+                <span class="detail-value detail-discount" id="discount-amount">¥0</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">お支払い金額:</span>
+                <span class="detail-value detail-amount" id="final-amount">¥0</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">決済ID:</span>
+                <span class="detail-value" id="payment-id">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">送信先メール:</span>
+                <span class="detail-value" id="user-email">-</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">決済日時:</span>
+                <span class="detail-value" id="payment-date">-</span>
+            </div>
+        </div>
+
+        <!-- クーポン情報 -->
+        <div id="coupon-info" class="coupon-info" style="display: none;">
+            <h4>🎫 適用されたクーポン</h4>
+            <p><strong>コード:</strong> <span id="coupon-code">-</span></p>
+            <p><strong>割引額:</strong> <span id="coupon-discount">¥0</span></p>
+            <p>クーポンをご利用いただき、ありがとうございました！</p>
+        </div>
+
+        <!-- 次のステップ -->
+        <div class="next-steps" id="next-steps">
+            <h3>📬 今後の流れ</h3>
+            <ol id="next-steps-list">
+                <!-- JavaScriptで動的に内容を設定 -->
+            </ol>
+        </div>
+
+        <!-- アクションボタン -->
+        <div class="action-buttons">
+            <a href="omikuji/index.html" class="btn btn-primary">🏠 トップページに戻る</a>
+            <a href="javascript:window.print()" class="btn btn-secondary">🖨️ 領収書印刷</a>
+            <button class="btn btn-success" id="screenshot-button" onclick="showScreenshotGuide()" style="display: none;">📸 スクリーンショット案内</button>
+        </div>
+
+        <!-- お問い合わせ情報 -->
+        <div class="contact-info">
+            <h4>📞 お問い合わせ</h4>
+            <p>鑑定に関するご質問やお困りのことがございましたら、公式LINEのリッチメニューからお問い合わせください。</p>
+            <p><strong>公式LINE:</strong> <a href="https://line.me/R/ti/p/@439nqjol" style="color: #4caf50; text-decoration: none;">@439nqjol</a></p>
+            <p><strong>お問い合わせ方法:</strong> リッチメニュー > お問い合わせ</p>
+            <div id="additional-info" style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-radius: 8px; border: 1px solid rgba(255, 193, 7, 0.3);">
+                <!-- JavaScriptで動的に追加情報を設定 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎉 決済完了ページ初期化開始');
+            loadPaymentDetails();
+        });
+
+        // URLパラメータから決済詳細を読み込み
+        function loadPaymentDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            const paymentData = {
+                paymentId: urlParams.get('paymentId') || generateDemoPaymentId(),
+                service: urlParams.get('service') || 'unknown',
+                email: urlParams.get('email') || '',
+                amount: urlParams.get('amount') || '0',
+                coupon: urlParams.get('coupon') || '',
+                discount: urlParams.get('discount') || '0',
+                type: urlParams.get('type') || 'paid' // 'paid' or 'free'
+            };
+
+            console.log('📋 決済データ:', paymentData);
+            updatePageContent(paymentData);
+        }
+
+        // ページコンテンツを更新
+        function updatePageContent(data) {
+            // サービス名の設定
+            const serviceNames = {
+                'shintaku': '神託システムタロット占い',
+                'star_yomi': '星詠みシステム星座占い',
+                'personal_tarot': '個人鑑定タロット',
+                'personal_birthday': '個人鑑定誕生日占い',
+                'personal_set': '個人鑑定セット'
+            };
+
+            const serviceName = serviceNames[data.service] || data.service;
+            
+            // 基本情報の設定
+            document.getElementById('service-name').textContent = serviceName;
+            document.getElementById('payment-id').textContent = data.paymentId;
+            document.getElementById('user-email').textContent = data.email;
+            document.getElementById('payment-date').textContent = new Date().toLocaleString();
+
+            // 金額の設定
+            const amount = parseInt(data.amount) || 0;
+            const discount = parseInt(data.discount) || 0;
+            const originalAmount = amount + discount;
+
+            document.getElementById('original-amount').textContent = `¥${originalAmount.toLocaleString()}`;
+            document.getElementById('final-amount').textContent = amount === 0 ? '無料' : `¥${amount.toLocaleString()}`;
+
+            // サービスタイプに応じた案内を設定
+            updateServiceGuidance(data.service, amount === 0);
+            
+            // 個人鑑定の場合はスクリーンショット案内ボタンを表示
+            if (data.service.startsWith('personal_')) {
+                const screenshotButton = document.getElementById('screenshot-button');
+                if (screenshotButton) {
+                    screenshotButton.style.display = 'inline-block';
+                }
+            }
+
+            // 無料サービスの場合の特別処理
+            if (data.type === 'free' || amount === 0) {
+                handleFreeService(data);
+            }
+
+            // 割引情報の表示
+            if (discount > 0 && data.coupon) {
+                document.getElementById('discount-row').style.display = 'flex';
+                document.getElementById('discount-amount').textContent = `¥${discount.toLocaleString()}`;
+                
+                // クーポン情報の表示
+                const couponInfo = document.getElementById('coupon-info');
+                couponInfo.style.display = 'block';
+                document.getElementById('coupon-code').textContent = data.coupon;
+                document.getElementById('coupon-discount').textContent = `¥${discount.toLocaleString()}`;
+            }
+
+            console.log('✅ ページコンテンツ更新完了');
+        }
+
+        // サービスタイプに応じた案内を設定
+        function updateServiceGuidance(serviceType, isFree) {
+            const nextStepsList = document.getElementById('next-steps-list');
+            const additionalInfo = document.getElementById('additional-info');
+            
+            // システム鑑定（すぐに結果が出る）
+            if (serviceType === 'shintaku' || serviceType === 'star_yomi') {
+                nextStepsList.innerHTML = `
+                    <li><strong>結果表示:</strong> システムがAIと直感を組み合わせて鑑定します</li>
+                    <li><strong>鑑定完了:</strong> 数分以内に詳細な鑑定結果が表示されます</li>
+                    <li><strong>結果確認:</strong> 鑑定ページで結果をご確認ください</li>
+                    <li><strong>追加質問:</strong> さらに詳しく知りたい場合は追加質問も可能です（1往復500円）</li>
+                `;
+                
+                additionalInfo.innerHTML = `
+                    <h5 style="color: #ffc107; margin-bottom: 8px;">💡 システム鑑定について</h5>
+                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin: 0;">
+                        システム鑑定は即座に結果が表示されます。<br>
+                        追加で詳しく知りたいことがあれば、追加質問サービス（1往復500円）をご利用ください。
+                    </p>
+                `;
+            }
+            // 個人鑑定（セラフィナが直接鑑定）
+            else if (serviceType.startsWith('personal_')) {
+                nextStepsList.innerHTML = `
+                    <li><strong>決済完了連絡:</strong> この画面のスクリーンショットを撮影し、「決済完了」と公式LINEでご連絡ください</li>
+                    <li><strong>ご相談フォーム:</strong> 公式LINEでご相談フォームをお送りします</li>
+                    <li><strong>フォーム送信:</strong> ご相談内容をフォームに記入して送信ください</li>
+                    <li><strong>鑑定実施:</strong> セラフィナが詳細で丁寧な個人鑑定を行います（納期：1週間）</li>
+                    <li><strong>結果お届け:</strong> 公式LINEで鑑定結果をお届けします</li>
+                `;
+                
+                additionalInfo.innerHTML = `
+                    <h5 style="color: #ffc107; margin-bottom: 8px;">✨ 個人鑑定の手順</h5>
+                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin: 0; line-height: 1.5;">
+                        <strong>1.</strong> この画面をスクリーンショットして公式LINEに「決済完了」と連絡<br>
+                        <strong>2.</strong> ご相談フォームを記入・送信<br>
+                        <strong>3.</strong> 1週間以内に公式LINEで鑑定結果をお届け
+                    </p>
+                `;
+            }
+            // その他のサービス
+            else {
+                nextStepsList.innerHTML = `
+                    <li><strong>鑑定準備:</strong> あなた専用の鑑定を準備いたします</li>
+                    <li><strong>鑑定実施:</strong> 詳細で丁寧な鑑定を行います</li>
+                    <li><strong>結果送信:</strong> 鑑定結果をお送りします</li>
+                    <li><strong>サポート:</strong> ご質問があれば公式LINEからお問い合わせください</li>
+                `;
+                
+                additionalInfo.innerHTML = `
+                    <h5 style="color: #ffc107; margin-bottom: 8px;">📋 鑑定について</h5>
+                    <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; margin: 0;">
+                        鑑定結果は準備が整い次第お送りいたします。
+                    </p>
+                `;
+            }
+        }
+
+        // 無料サービスの処理
+        function handleFreeService(data) {
+            const container = document.getElementById('success-container');
+            const icon = document.getElementById('success-icon');
+            const title = document.getElementById('success-title');
+            const subtitle = document.getElementById('success-subtitle');
+
+            // 無料サービス用のスタイル適用
+            container.classList.add('free-service');
+            icon.textContent = '🎁';
+            title.textContent = '無料鑑定確定！';
+            
+            // サービスタイプに応じたメッセージ
+            if (data.service === 'shintaku' || data.service === 'star_yomi') {
+                subtitle.innerHTML = `
+                    無料クーポンが適用されました！<br>
+                    数分以内にシステム鑑定の結果が表示されます。
+                `;
+            } else if (data.service.startsWith('personal_')) {
+                subtitle.innerHTML = `
+                    無料クーポンが適用されました！<br>
+                    この画面をスクリーンショットして公式LINEに「決済完了」とご連絡ください。
+                `;
+            } else {
+                subtitle.innerHTML = `
+                    無料クーポンが適用されました！<br>
+                    詳細な手順は下記をご確認ください。
+                `;
+            }
+
+            console.log('🎁 無料サービス処理完了');
+        }
+
+        // デモ用決済ID生成
+        function generateDemoPaymentId() {
+            const timestamp = Date.now().toString();
+            const random = Math.random().toString(36).substr(2, 5).toUpperCase();
+            return `PAY_${timestamp.slice(-8)}_${random}`;
+        }
+
+        // 領収書印刷用のスタイル調整
+        window.addEventListener('beforeprint', function() {
+            document.body.style.background = 'white';
+            document.body.style.color = 'black';
+        });
+
+        window.addEventListener('afterprint', function() {
+            document.body.style.background = '';
+            document.body.style.color = '';
+        });
+
+        // スクリーンショット案内を表示
+        function showScreenshotGuide() {
+            const guide = `
+📸 スクリーンショットの撮り方
+
+【iPhone/iPad】
+• 同時押し: 電源ボタン + 音量上ボタン
+• または: 電源ボタン + ホームボタン
+
+【Android】
+• 同時押し: 電源ボタン + 音量下ボタン
+
+【PC（Windows）】
+• キー: Windows + Shift + S
+
+【PC（Mac）】
+• キー: Command + Shift + 4
+
+📱 撮影後の手順:
+1. この画面全体をスクリーンショット
+2. 公式LINE (@439nqjol) を開く
+3. 「決済完了」とメッセージと一緒に画像を送信
+4. ご相談フォームが届くまでお待ちください
+            `;
+            
+            alert(guide);
+        }
+
+        console.log('🎉 Payment Success Page initialized');
+    </script>
+</body>
+</html>

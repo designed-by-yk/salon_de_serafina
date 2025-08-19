@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Simple Square Test</title>
+    
+    <!-- Square Web Payments SDK -->
+    <script type="application/javascript" src="https://sandbox.web.squarecdn.com/v1/square.js"></script>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a0033;
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .status-ok {
+            color: #4caf50;
+        }
+        
+        .status-error {
+            color: #f44336;
+        }
+        
+        .btn {
+            background: #4caf50;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+        }
+        
+        .log {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        .error {
+            color: #f44336;
+        }
+        
+        .success {
+            color: #4caf50;
+        }
+        
+        .warning {
+            color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Simple Square Test</h1>
+        <p>Square決済システムの基本的な診断</p>
+        
+        <div class="test-section">
+            <h3>Step 1: 基本確認</h3>
+            <div id="basic-check">確認中...</div>
+            <button class="btn" onclick="runBasicCheck()">基本確認実行</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Step 2: Square SDK確認</h3>
+            <div id="sdk-check">確認中...</div>
+            <button class="btn" onclick="checkSquareSDK()">Square SDK確認</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Step 3: 設定確認</h3>
+            <div id="config-check">確認中...</div>
+            <button class="btn" onclick="checkConfig()">設定確認</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>Step 4: Square初期化テスト</h3>
+            <div id="init-test">テスト前...</div>
+            <button class="btn" onclick="testSquareInit()">初期化テスト</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>詳細ログ</h3>
+            <div class="log" id="detailed-log"></div>
+            <button class="btn" onclick="clearLog()">ログクリア</button>
+        </div>
+    </div>
+
+    <script>
+        let logs = [];
+        
+        // ログ関数
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${message}`;
+            
+            logs.push({ message: logEntry, type });
+            updateLog();
+            
+            console.log(logEntry);
+        }
+        
+        function updateLog() {
+            const logContainer = document.getElementById('detailed-log');
+            logContainer.innerHTML = logs
+                .slice(-20)
+                .map(l => `<div class="${l.type}">${l.message}</div>`)
+                .join('');
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function clearLog() {
+            logs = [];
+            updateLog();
+        }
+        
+        // 基本確認
+        function runBasicCheck() {
+            log('🔍 基本確認開始', 'info');
+            
+            const basicCheck = document.getElementById('basic-check');
+            let result = '';
+            
+            // JavaScript確認
+            result += `JavaScript: <span class="status-ok">✅ 有効</span><br>`;
+            log('✅ JavaScript有効', 'success');
+            
+            // LocalStorage確認
+            try {
+                localStorage.setItem('test', 'test');
+                localStorage.removeItem('test');
+                result += `LocalStorage: <span class="status-ok">✅ 利用可能</span><br>`;
+                log('✅ LocalStorage利用可能', 'success');
+            } catch (error) {
+                result += `LocalStorage: <span class="status-error">❌ 利用不可</span><br>`;
+                log('❌ LocalStorage利用不可: ' + error.message, 'error');
+            }
+            
+            // HTTPS確認
+            if (location.protocol === 'https:' || location.hostname === 'localhost') {
+                result += `プロトコル: <span class="status-ok">✅ ${location.protocol}</span><br>`;
+                log('✅ プロトコル確認完了: ' + location.protocol, 'success');
+            } else {
+                result += `プロトコル: <span class="status-error">❌ ${location.protocol} (HTTPSが推奨)</span><br>`;
+                log('⚠️ プロトコル警告: ' + location.protocol, 'warning');
+            }
+            
+            basicCheck.innerHTML = result;
+            log('✅ 基本確認完了', 'success');
+        }
+        
+        // Square SDK確認
+        function checkSquareSDK() {
+            log('🏦 Square SDK確認開始', 'info');
+            
+            const sdkCheck = document.getElementById('sdk-check');
+            let result = '';
+            
+            if (typeof Square === 'undefined') {
+                result += `Square SDK: <span class="status-error">❌ 読み込み失敗</span><br>`;
+                result += `URL: https://sandbox.web.squarecdn.com/v1/square.js<br>`;
+                log('❌ Square SDK未定義', 'error');
+                
+                // ネットワーク確認
+                result += `<br>ネットワーク確認をしてください：<br>`;
+                result += `1. インターネット接続を確認<br>`;
+                result += `2. ファイアウォール設定を確認<br>`;
+                result += `3. ブラウザの開発者ツール > Network タブでエラーを確認<br>`;
+                
+            } else {
+                result += `Square SDK: <span class="status-ok">✅ 読み込み完了</span><br>`;
+                log('✅ Square SDK読み込み完了', 'success');
+                
+                // Square.payments関数確認
+                if (typeof Square.payments === 'function') {
+                    result += `Square.payments: <span class="status-ok">✅ 利用可能</span><br>`;
+                    log('✅ Square.payments利用可能', 'success');
+                } else {
+                    result += `Square.payments: <span class="status-error">❌ 利用不可</span><br>`;
+                    log('❌ Square.payments利用不可', 'error');
+                }
+                
+                // 追加情報
+                try {
+                    log('📊 Square オブジェクト詳細: ' + JSON.stringify(Object.keys(Square)), 'info');
+                } catch (error) {
+                    log('⚠️ Square オブジェクト解析エラー: ' + error.message, 'warning');
+                }
+            }
+            
+            sdkCheck.innerHTML = result;
+            log('✅ Square SDK確認完了', 'success');
+        }
+        
+        // 設定確認
+        function checkConfig() {
+            log('⚙️ 設定確認開始', 'info');
+            
+            const configCheck = document.getElementById('config-check');
+            let result = '';
+            
+            // 直接設定値を使用してテスト
+            const testConfig = {
+                applicationId: 'sandbox-sq0idb-CB-RIxCr29hj4SCViMshkw',
+                locationId: 'LR301WJWM96J9'
+            };
+            
+            result += `Application ID: <code>${testConfig.applicationId}</code><br>`;
+            result += `Location ID: <code>${testConfig.locationId}</code><br>`;
+            
+            // IDの形式確認
+            if (testConfig.applicationId.startsWith('sandbox-sq0idb-')) {
+                result += `Application ID 形式: <span class="status-ok">✅ 正常（サンドボックス）</span><br>`;
+                log('✅ Application ID形式正常', 'success');
+            } else {
+                result += `Application ID 形式: <span class="status-error">❌ 異常</span><br>`;
+                log('❌ Application ID形式異常', 'error');
+            }
+            
+            if (testConfig.locationId.length > 5) {
+                result += `Location ID 形式: <span class="status-ok">✅ 正常</span><br>`;
+                log('✅ Location ID形式正常', 'success');
+            } else {
+                result += `Location ID 形式: <span class="status-error">❌ 異常</span><br>`;
+                log('❌ Location ID形式異常', 'error');
+            }
+            
+            configCheck.innerHTML = result;
+            log('✅ 設定確認完了', 'success');
+        }
+        
+        // Square初期化テスト
+        async function testSquareInit() {
+            log('🧪 Square初期化テスト開始', 'info');
+            
+            const initTest = document.getElementById('init-test');
+            let result = '';
+            
+            try {
+                // Square SDK確認
+                if (typeof Square === 'undefined') {
+                    throw new Error('Square SDKが読み込まれていません');
+                }
+                
+                log('✅ Square SDK確認完了', 'success');
+                
+                // 設定値
+                const applicationId = 'sandbox-sq0idb-CB-RIxCr29hj4SCViMshkw';
+                const locationId = 'LR301WJWM96J9';
+                
+                log(`🔧 使用設定 - App ID: ${applicationId}`, 'info');
+                log(`🔧 使用設定 - Location ID: ${locationId}`, 'info');
+                
+                // Square.payments()呼び出し
+                result += `Step 1: Square.payments() 呼び出し...<br>`;
+                const payments = Square.payments(applicationId, locationId);
+                result += `Step 1: <span class="status-ok">✅ 成功</span><br>`;
+                log('✅ Square.payments()呼び出し成功', 'success');
+                
+                // カード初期化
+                result += `Step 2: カード初期化...<br>`;
+                const card = await payments.card();
+                result += `Step 2: <span class="status-ok">✅ 成功</span><br>`;
+                log('✅ カード初期化成功', 'success');
+                
+                result += `<br><span class="status-ok">🎉 Square初期化テスト完全成功！</span><br>`;
+                log('🎉 Square初期化テスト完全成功！', 'success');
+                
+            } catch (error) {
+                result += `<span class="status-error">❌ エラー: ${error.message}</span><br>`;
+                log('❌ Square初期化エラー: ' + error.message, 'error');
+                
+                // 詳細エラー情報
+                log('📋 エラー詳細: ' + JSON.stringify(error), 'error');
+                
+                // トラブルシューティング
+                result += `<br>🔧 トラブルシューティング：<br>`;
+                result += `1. Application ID が正しいか確認<br>`;
+                result += `2. Location ID が正しいか確認<br>`;
+                result += `3. Square Developer ダッシュボードでアプリが有効か確認<br>`;
+                result += `4. ネットワーク接続を確認<br>`;
+            }
+            
+            initTest.innerHTML = result;
+            log('✅ Square初期化テスト完了', 'success');
+        }
+        
+        // ページロード時
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🔍 Simple Square Test 開始', 'info');
+            runBasicCheck();
+        });
+        
+        console.log('🔍 Simple Square Test initialized');
+    </script>
+</body>
+</html>
