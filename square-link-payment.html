@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>💳 Square Payment Link決済 - Salon de Serafina</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 50%, #1a0033 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .payment-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .payment-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .payment-header h1 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .service-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .price-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+
+        .price-value {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .coupon-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .coupon-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .coupon-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ffd700);
+            color: #2d1b69;
+        }
+
+        .payment-button {
+            width: 100%;
+            padding: 20px;
+            font-size: 18px;
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            color: #fff;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+            display: none;
+        }
+
+        .message-success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4caf50;
+            color: #4caf50;
+        }
+
+        .message-error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #f44336;
+        }
+
+        .square-info {
+            background: rgba(0, 123, 255, 0.1);
+            border: 1px solid rgba(0, 123, 255, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .square-info h4 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <div class="payment-header">
+            <h1>💳 Square Payment Link決済</h1>
+            <p>クーポン対応 + 実際のSquare決済</p>
+        </div>
+
+        <!-- サービス情報 -->
+        <div class="service-info">
+            <h2 id="service-name">サービス選択</h2>
+            <p id="service-description">サービスの詳細説明</p>
+            
+            <div class="price-display">
+                <span class="price-label">基本料金:</span>
+                <span class="price-value" id="original-price">¥0</span>
+            </div>
+            
+            <div class="price-display" id="discount-display" style="display: none;">
+                <span class="price-label">割引額:</span>
+                <span class="price-value" id="discount-amount">¥0</span>
+            </div>
+            
+            <div class="price-display">
+                <span class="price-label">お支払い金額:</span>
+                <span class="price-value" id="final-price">¥0</span>
+            </div>
+        </div>
+
+        <!-- クーポン入力 -->
+        <div class="coupon-section">
+            <h3>🎫 クーポンコード</h3>
+            <div class="coupon-input-group">
+                <input type="text" id="coupon-input" class="coupon-input" 
+                       placeholder="クーポンコードを入力してください" maxlength="20">
+                <button class="btn btn-primary" onclick="applyCoupon()">適用</button>
+                <button class="btn btn-primary" onclick="clearCoupon()">クリア</button>
+            </div>
+            <div id="coupon-applied" class="message message-success"></div>
+            
+            <!-- テスト用クーポン案内 -->
+            <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 8px; padding: 15px; margin-top: 15px;">
+                <h4 style="color: #ffc107; margin-bottom: 10px;">🧪 テスト用クーポン</h4>
+                <p style="color: rgba(255, 255, 255, 0.8); margin: 5px 0; font-size: 14px;">
+                    <strong>TEST500</strong>: 500円割引<br>
+                    <strong>TESTFREE</strong>: 100%割引（無料）<br>
+                    <strong>TEST100OFF</strong>: 100円割引
+                </p>
+            </div>
+        </div>
+
+        <!-- Square Payment Link説明 -->
+        <div class="square-info">
+            <h4>💳 Square Payment Linkについて</h4>
+            <p style="color: rgba(255, 255, 255, 0.8); font-size: 14px; line-height: 1.5;">
+                「Square決済ページへ進む」をクリックすると、実際のSquare決済ページが開きます。<br>
+                本番環境では、実際のクレジットカード決済が可能になります。
+            </p>
+        </div>
+
+        <!-- 決済ボタン -->
+        <button class="payment-button" onclick="proceedToSquarePayment()">
+            Square決済ページへ進む
+        </button>
+
+        <!-- メッセージ表示 -->
+        <div id="payment-error" class="message message-error"></div>
+    </div>
+
+    <!-- スクリプト読み込み -->
+    <script src="js/coupon-system.js"></script>
+
+    <script>
+        let currentServiceData = null;
+        let appliedCoupon = null;
+
+        // ページ読み込み時の処理
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('💳 Square Payment Link システム初期化開始');
+            loadServiceFromURL();
+            setupTestCoupons();
+        });
+
+        // URLパラメータからサービス情報を読み込み
+        function loadServiceFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            currentServiceData = {
+                serviceType: urlParams.get('service') || 'shintaku',
+                originalPrice: parseInt(urlParams.get('price')) || 3000,
+                serviceName: urlParams.get('name') || '神託システムタロット占い',
+                description: urlParams.get('description') || 'AIと人間の直感を組み合わせた深層タロット鑑定',
+                userEmail: urlParams.get('email') || ''
+            };
+
+            console.log('📋 サービス情報:', currentServiceData);
+            updateServiceDisplay();
+        }
+
+        // サービス表示を更新
+        function updateServiceDisplay() {
+            document.getElementById('service-name').textContent = currentServiceData.serviceName;
+            document.getElementById('service-description').textContent = currentServiceData.description;
+            document.getElementById('original-price').textContent = `¥${currentServiceData.originalPrice.toLocaleString()}`;
+            document.getElementById('final-price').textContent = `¥${currentServiceData.originalPrice.toLocaleString()}`;
+        }
+
+        // テスト用クーポン設定
+        function setupTestCoupons() {
+            if (!window.couponSystem) {
+                console.log('⚠️ クーポンシステムが利用できません');
+                return;
+            }
+
+            try {
+                const testCoupons = [
+                    {
+                        code: 'TEST500',
+                        description: 'テスト用500円割引',
+                        discountType: 'fixed',
+                        discountValue: 500,
+                        maxUses: 10,
+                        currentUses: 0,
+                        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        applicableServices: ['all'],
+                        isActive: true,
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        code: 'TESTFREE',
+                        description: 'テスト用100%割引',
+                        discountType: 'percentage',
+                        discountValue: 100,
+                        maxUses: 5,
+                        currentUses: 0,
+                        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        applicableServices: ['all'],
+                        isActive: true,
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        code: 'TEST100OFF',
+                        description: 'テスト用100円割引',
+                        discountType: 'fixed',
+                        discountValue: 100,
+                        maxUses: 10,
+                        currentUses: 0,
+                        expiryDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+                        applicableServices: ['all'],
+                        isActive: true,
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+
+                testCoupons.forEach(coupon => {
+                    window.couponSystem.createCoupon(coupon);
+                });
+                
+                console.log('🎫 テスト用クーポン設定完了');
+                
+            } catch (error) {
+                console.error('❌ テストクーポン設定エラー:', error);
+            }
+        }
+
+        // クーポン適用
+        function applyCoupon() {
+            const couponCode = document.getElementById('coupon-input').value.trim();
+            
+            if (!couponCode) {
+                showError('クーポンコードを入力してください');
+                return;
+            }
+
+            if (!window.couponSystem) {
+                showError('クーポンシステムが利用できません');
+                return;
+            }
+
+            try {
+                const validation = window.couponSystem.validateCoupon(
+                    couponCode,
+                    currentServiceData.serviceType,
+                    currentServiceData.originalPrice,
+                    currentServiceData.userEmail || null
+                );
+
+                if (validation.valid) {
+                    appliedCoupon = {
+                        code: couponCode,
+                        discountAmount: validation.discountAmount,
+                        finalPrice: validation.finalPrice,
+                        coupon: validation.coupon
+                    };
+
+                    updatePriceDisplay();
+                    showCouponApplied();
+                    
+                    console.log('✅ クーポン適用成功:', appliedCoupon);
+                    
+                } else {
+                    showError(validation.error);
+                }
+                
+            } catch (error) {
+                console.error('❌ クーポン適用エラー:', error);
+                showError('クーポンの処理中にエラーが発生しました');
+            }
+        }
+
+        // クーポンクリア
+        function clearCoupon() {
+            appliedCoupon = null;
+            document.getElementById('coupon-input').value = '';
+            updatePriceDisplay();
+            hideCouponApplied();
+        }
+
+        // 価格表示更新
+        function updatePriceDisplay() {
+            const discountDisplay = document.getElementById('discount-display');
+            const discountAmountElement = document.getElementById('discount-amount');
+            const finalPriceElement = document.getElementById('final-price');
+
+            if (appliedCoupon) {
+                discountDisplay.style.display = 'flex';
+                discountAmountElement.textContent = `¥${appliedCoupon.discountAmount.toLocaleString()}`;
+                
+                if (appliedCoupon.finalPrice === 0) {
+                    finalPriceElement.textContent = '無料';
+                } else {
+                    finalPriceElement.textContent = `¥${appliedCoupon.finalPrice.toLocaleString()}`;
+                }
+            } else {
+                discountDisplay.style.display = 'none';
+                finalPriceElement.textContent = `¥${currentServiceData.originalPrice.toLocaleString()}`;
+            }
+        }
+
+        // クーポン適用表示
+        function showCouponApplied() {
+            const element = document.getElementById('coupon-applied');
+            element.innerHTML = `✅ クーポン「${appliedCoupon.code}」が適用されました（${appliedCoupon.discountAmount}円割引）`;
+            element.style.display = 'block';
+        }
+
+        // クーポン適用表示を隠す
+        function hideCouponApplied() {
+            const element = document.getElementById('coupon-applied');
+            element.style.display = 'none';
+        }
+
+        // Square決済処理
+        function proceedToSquarePayment() {
+            try {
+                const finalPrice = appliedCoupon ? appliedCoupon.finalPrice : currentServiceData.originalPrice;
+                
+                // 無料の場合
+                if (finalPrice === 0) {
+                    if (appliedCoupon && window.couponSystem) {
+                        const result = window.couponSystem.useCoupon(
+                            appliedCoupon.code,
+                            currentServiceData.serviceType,
+                            currentServiceData.userEmail || 'guest@example.com',
+                            currentServiceData.originalPrice
+                        );
+                        
+                        if (result.success) {
+                            // 無料サービス完了ページに移動
+                            const params = new URLSearchParams({
+                                service: currentServiceData.serviceType,
+                                email: currentServiceData.userEmail || 'guest@example.com',
+                                coupon: appliedCoupon.code,
+                                amount: '0',
+                                type: 'free'
+                            });
+                            
+                            window.location.href = `payment-success.html?${params.toString()}`;
+                            return;
+                        }
+                    }
+                }
+                
+                // 実際のSquare Payment Linkを生成
+                const squarePaymentUrl = generateSquarePaymentLink(finalPrice);
+                
+                console.log('💳 Square Payment Link:', squarePaymentUrl);
+                
+                // クーポン使用記録
+                if (appliedCoupon && window.couponSystem) {
+                    window.couponSystem.useCoupon(
+                        appliedCoupon.code,
+                        currentServiceData.serviceType,
+                        currentServiceData.userEmail || 'guest@example.com',
+                        currentServiceData.originalPrice
+                    );
+                }
+                
+                // Square決済ページに遷移
+                window.location.href = squarePaymentUrl;
+                
+            } catch (error) {
+                console.error('❌ 決済処理エラー:', error);
+                showError('決済処理中にエラーが発生しました');
+            }
+        }
+
+        // Square Payment Link URL生成
+        function generateSquarePaymentLink(amount) {
+            // 実際のSquare Payment Linkの場合
+            // const baseUrl = 'https://square.link/u/YOUR_PAYMENT_LINK';
+            
+            // デモ用: Square公式サンドボックス
+            const baseUrl = 'https://squareup.com/jp/checkout';
+            
+            const params = new URLSearchParams({
+                // 実際の実装では、Squareで作成したPayment Linkのパラメータを使用
+                amount: (amount * 100).toString(), // セント単位
+                currency: 'JPY',
+                note: `${currentServiceData.serviceName}${appliedCoupon ? ` (クーポン: ${appliedCoupon.code})` : ''}`,
+                // Square Payment Linkで設定したリダイレクトURL
+                redirect_url: `${window.location.origin}/payment-success.html?service=${currentServiceData.serviceType}&email=${currentServiceData.userEmail || 'guest@example.com'}&amount=${amount}&coupon=${appliedCoupon?.code || ''}&discount=${appliedCoupon?.discountAmount || '0'}&type=paid`
+            });
+            
+            return `${baseUrl}?${params.toString()}`;
+        }
+
+        // エラー表示
+        function showError(message) {
+            const errorElement = document.getElementById('payment-error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        console.log('💳 Square Payment Link System initialized');
+    </script>
+</body>
+</html>
