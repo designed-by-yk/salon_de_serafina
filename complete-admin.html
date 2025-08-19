@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>完全版クーポン管理 - Salon de Serafina</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 50%, #1a0033 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .header h1 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .section-title {
+            color: #ffd700;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            font-size: 14px;
+            margin: 5px;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ffd700);
+            color: #2d1b69;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff4757, #ff6b6b);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #2ed573, #7bed9f);
+            color: #2d1b69;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffa502, #ff6348);
+            color: #fff;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .coupon-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .coupon-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .coupon-code {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .coupon-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+        }
+
+        .status-inactive {
+            background: rgba(158, 158, 158, 0.3);
+            color: #9e9e9e;
+        }
+
+        .status-expired {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+        }
+
+        .status-used-up {
+            background: rgba(156, 39, 176, 0.3);
+            color: #9c27b0;
+        }
+
+        .coupon-details {
+            margin: 10px 0;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .coupon-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .message-success {
+            background: rgba(76, 175, 80, 0.9);
+            border: 1px solid #4caf50;
+            color: #fff;
+        }
+
+        .message-error {
+            background: rgba(244, 67, 54, 0.9);
+            border: 1px solid #f44336;
+            color: #fff;
+        }
+
+        .debug-info {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #00ff00;
+            display: none;
+        }
+
+        .debug-toggle {
+            background: #333;
+            color: #fff;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .services-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .service-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .service-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #ffd700;
+        }
+
+        /* モーダル */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a0033, #2d1b69);
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #ffd700;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row, .form-row-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .coupon-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .coupon-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎫 完全版クーポン管理</h1>
+            <p>Salon de Serafina - 管理者画面</p>
+            <button class="debug-toggle" onclick="toggleDebug()">🐛 デバッグ表示切替</button>
+        </div>
+
+        <!-- デバッグ情報 -->
+        <div id="debug-info" class="debug-info">
+            <div>システム状態: <span id="system-status">初期化中...</span></div>
+            <div>最後の操作: <span id="last-operation">なし</span></div>
+            <div>クーポン数: <span id="coupon-count">-</span></div>
+            <div>エラー: <span id="error-log">なし</span></div>
+        </div>
+
+        <!-- ローディング表示 -->
+        <div id="loading">⏳ 処理中...</div>
+
+        <!-- クイックアクション -->
+        <div class="section">
+            <h2 class="section-title">⚡ クイックアクション</h2>
+            <div class="quick-actions">
+                <button class="btn btn-primary" onclick="createTestCoupon()">🧪 テストクーポン作成</button>
+                <button class="btn btn-primary" onclick="createTestUsage()">📊 テスト使用履歴作成</button>
+                <button class="btn btn-secondary" onclick="loadCoupons()">🔄 一覧を更新</button>
+                <button class="btn btn-warning" onclick="exportData()">📥 データエクスポート</button>
+            </div>
+        </div>
+
+        <!-- クーポン作成 -->
+        <div class="section">
+            <h2 class="section-title">➕ 新規クーポン作成</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="new-code">クーポンコード *</label>
+                    <input type="text" id="new-code" placeholder="例: WELCOME2024">
+                </div>
+                <div class="form-group">
+                    <label for="new-description">説明</label>
+                    <input type="text" id="new-description" placeholder="例: 新規お客様特典">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="new-discount-type">割引タイプ *</label>
+                    <select id="new-discount-type">
+                        <option value="">選択してください</option>
+                        <option value="percentage">パーセント割引</option>
+                        <option value="fixed">固定金額割引</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-discount-value">割引値 *</label>
+                    <input type="number" id="new-discount-value" placeholder="例: 500">
+                </div>
+            </div>
+
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label for="new-max-uses">最大使用回数</label>
+                    <input type="number" id="new-max-uses" value="1" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="new-expiry-date">有効期限</label>
+                    <input type="date" id="new-expiry-date">
+                </div>
+                <div class="form-group">
+                    <label for="new-is-active">初期状態</label>
+                    <select id="new-is-active">
+                        <option value="true">有効</option>
+                        <option value="false">無効</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>適用可能サービス *</label>
+                <div id="new-services" class="services-list">
+                    <div class="service-checkbox">
+                        <input type="checkbox" id="service-all" value="all">
+                        <label for="service-all">全サービス共通</label>
+                    </div>
+                    <div class="service-checkbox">
+                        <input type="checkbox" id="service-shintaku" value="shintaku">
+                        <label for="service-shintaku">神託システムタロット占い</label>
+                    </div>
+                    <div class="service-checkbox">
+                        <input type="checkbox" id="service-star-yomi" value="star_yomi">
+                        <label for="service-star-yomi">星詠みシステム星座占い</label>
+                    </div>
+                    <div class="service-checkbox">
+                        <input type="checkbox" id="service-personal-tarot" value="personal_tarot">
+                        <label for="service-personal-tarot">個人鑑定タロット</label>
+                    </div>
+                    <div class="service-checkbox">
+                        <input type="checkbox" id="service-personal-birthday" value="personal_birthday">
+                        <label for="service-personal-birthday">個人鑑定誕生日</label>
+                    </div>
+                    <div class="service-checkbox">
+                        <input type="checkbox" id="service-personal-set" value="personal_set">
+                        <label for="service-personal-set">個人鑑定セット</label>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-primary" onclick="createCoupon()">
+                    ➕ クーポンを作成する
+                </button>
+                <button class="btn btn-secondary" onclick="resetForm()">
+                    🔄 フォームリセット
+                </button>
+            </div>
+        </div>
+
+        <!-- クーポン一覧 -->
+        <div class="section">
+            <h2 class="section-title">📋 クーポン一覧</h2>
+            <div id="coupon-list">
+                <!-- クーポン一覧がここに表示される -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 編集モーダル -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✏️ クーポン詳細編集</h2>
+                <button class="close-btn" onclick="closeEditModal()">×</button>
+            </div>
+            <div id="edit-form">
+                <!-- 編集フォームがここに動的生成される -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 完全版クーポンシステム
+        class CompleteCouponSystem {
+            constructor() {
+                this.coupons = {};
+                this.usage = [];
+                this.serviceTypes = {
+                    'all': '全サービス共通',
+                    'shintaku': '神託システムタロット占い',
+                    'star_yomi': '星詠みシステム星座占い',
+                    'personal_tarot': '個人鑑定タロット',
+                    'personal_birthday': '個人鑑定誕生日',
+                    'personal_set': '個人鑑定セット'
+                };
+                this.loadData();
+                console.log('✅ CompleteCouponSystem 初期化完了');
+            }
+
+            // データの読み込み
+            loadData() {
+                try {
+                    const savedCoupons = localStorage.getItem('salon_coupons');
+                    const savedUsage = localStorage.getItem('salon_coupon_usage');
+                    
+                    if (savedCoupons) {
+                        this.coupons = JSON.parse(savedCoupons);
+                        console.log('📋 クーポンデータ読み込み:', Object.keys(this.coupons).length + '件');
+                    }
+                    
+                    if (savedUsage) {
+                        this.usage = JSON.parse(savedUsage);
+                        console.log('📊 使用履歴読み込み:', this.usage.length + '件');
+                    }
+                } catch (error) {
+                    console.error('❌ データ読み込みエラー:', error);
+                }
+            }
+
+            // データの保存
+            saveData() {
+                try {
+                    localStorage.setItem('salon_coupons', JSON.stringify(this.coupons));
+                    localStorage.setItem('salon_coupon_usage', JSON.stringify(this.usage));
+                    console.log('💾 データ保存完了');
+                } catch (error) {
+                    console.error('❌ データ保存エラー:', error);
+                }
+            }
+
+            // クーポン作成
+            createCoupon(data) {
+                try {
+                    const coupon = {
+                        code: data.code,
+                        description: data.description || '',
+                        discountType: data.discountType,
+                        discountValue: data.discountValue,
+                        maxUses: data.maxUses || 1,
+                        currentUses: 0,
+                        expiryDate: data.expiryDate || null,
+                        applicableServices: data.applicableServices || [],
+                        isActive: data.isActive !== undefined ? data.isActive : true,
+                        createdAt: new Date().toISOString()
+                    };
+
+                    this.coupons[data.code] = coupon;
+                    this.saveData();
+                    
+                    console.log('✅ クーポン作成成功:', data.code);
+                    return { success: true, coupon };
+                } catch (error) {
+                    console.error('❌ クーポン作成エラー:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            // 全クーポン取得
+            getAllCoupons() {
+                return Object.values(this.coupons);
+            }
+
+            // クーポン取得
+            getCoupon(code) {
+                return this.coupons[code] || null;
+            }
+
+            // クーポン更新
+            updateCoupon(code, updates) {
+                try {
+                    if (this.coupons[code]) {
+                        Object.assign(this.coupons[code], updates);
+                        this.saveData();
+                        console.log('✅ クーポン更新成功:', code);
+                        return { success: true };
+                    }
+                    return { success: false, error: 'クーポンが見つかりません' };
+                } catch (error) {
+                    console.error('❌ クーポン更新エラー:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            // クーポン削除
+            deleteCoupon(code) {
+                try {
+                    if (this.coupons[code]) {
+                        delete this.coupons[code];
+                        this.saveData();
+                        console.log('✅ クーポン削除成功:', code);
+                        return { success: true };
+                    }
+                    return { success: false, error: 'クーポンが見つかりません' };
+                } catch (error) {
+                    console.error('❌ クーポン削除エラー:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            // 使用履歴取得
+            getAllUsage() {
+                return this.usage;
+            }
+
+            // 使用履歴記録
+            recordUsage(couponCode, serviceType, userEmail, discountAmount) {
+                try {
+                    const usage = {
+                        couponCode,
+                        serviceType,
+                        userEmail: userEmail || 'test-user@example.com',
+                        discountAmount: discountAmount || 0,
+                        usedAt: new Date().toISOString()
+                    };
+
+                    this.usage.push(usage);
+                    
+                    // クーポンの使用回数を増加
+                    if (this.coupons[couponCode]) {
+                        this.coupons[couponCode].currentUses = (this.coupons[couponCode].currentUses || 0) + 1;
+                    }
+                    
+                    this.saveData();
+                    console.log('✅ 使用履歴記録:', couponCode);
+                    return { success: true };
+                } catch (error) {
+                    console.error('❌ 使用履歴記録エラー:', error);
+                    return { success: false, error: error.message };
+                }
+            }
+
+            // テスト使用履歴作成
+            createTestUsage(couponCode) {
+                const serviceTypes = Object.keys(this.serviceTypes);
+                const randomService = serviceTypes[Math.floor(Math.random() * serviceTypes.length)];
+                const randomDiscount = Math.floor(Math.random() * 1000) + 100;
+                
+                return this.recordUsage(couponCode, randomService, 'test-user@example.com', randomDiscount);
+            }
+        }
+
+        // グローバル変数
+        let couponSystem = null;
+        let debugMode = false;
+        let currentEditingCode = null;
+
+        // デバッグ関数
+        function debugLog(message, data = null) {
+            console.log(`🐛 [DEBUG] ${message}`, data || '');
+            if (debugMode) {
+                updateDebugInfo('last-operation', message);
+            }
+        }
+
+        function updateDebugInfo(elementId, value) {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.textContent = value;
+            }
+        }
+
+        function toggleDebug() {
+            debugMode = !debugMode;
+            const debugInfo = document.getElementById('debug-info');
+            debugInfo.style.display = debugMode ? 'block' : 'none';
+            debugLog(`デバッグモード: ${debugMode ? 'ON' : 'OFF'}`);
+        }
+
+        function showLoading(show = true) {
+            const loading = document.getElementById('loading');
+            loading.style.display = show ? 'block' : 'none';
+        }
+
+        function showMessage(message, type = 'success') {
+            debugLog(`メッセージ表示: ${message} (${type})`);
+            
+            // 既存のメッセージを削除
+            const existingMessage = document.querySelector('.message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            // 新しいメッセージを作成
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message message-${type}`;
+            messageDiv.textContent = message;
+            
+            document.body.appendChild(messageDiv);
+            
+            // 5秒後に自動削除
+            setTimeout(() => {
+                if (messageDiv.parentNode) {
+                    messageDiv.remove();
+                }
+            }, 5000);
+        }
+
+        // 初期化
+        function initializeSystem() {
+            debugLog('システム初期化開始');
+            
+            try {
+                couponSystem = new CompleteCouponSystem();
+                updateDebugInfo('system-status', '正常');
+                
+                // クーポン一覧の初回読み込み
+                loadCoupons();
+                
+                debugLog('システム初期化完了');
+                showMessage('システムが正常に初期化されました', 'success');
+                
+            } catch (error) {
+                debugLog('初期化エラー', error);
+                updateDebugInfo('system-status', 'エラー');
+                updateDebugInfo('error-log', error.message);
+                showMessage(`初期化エラー: ${error.message}`, 'error');
+            }
+        }
+
+        // フォームリセット
+        function resetForm() {
+            debugLog('フォームリセット開始');
+            
+            document.getElementById('new-code').value = '';
+            document.getElementById('new-description').value = '';
+            document.getElementById('new-discount-type').value = '';
+            document.getElementById('new-discount-value').value = '';
+            document.getElementById('new-max-uses').value = '1';
+            document.getElementById('new-expiry-date').value = '';
+            document.getElementById('new-is-active').value = 'true';
+            
+            // チェックボックスをリセット
+            document.querySelectorAll('#new-services input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            debugLog('フォームリセット完了');
+            showMessage('フォームをリセットしました', 'success');
+        }
+
+        // クーポン作成
+        function createCoupon() {
+            debugLog('クーポン作成開始');
+            showLoading(true);
+            
+            try {
+                // フォームデータ取得
+                const code = document.getElementById('new-code').value.trim().toUpperCase();
+                const description = document.getElementById('new-description').value.trim();
+                const discountType = document.getElementById('new-discount-type').value;
+                const discountValue = parseFloat(document.getElementById('new-discount-value').value);
+                const maxUses = parseInt(document.getElementById('new-max-uses').value) || 1;
+                const expiryDate = document.getElementById('new-expiry-date').value || null;
+                const isActive = document.getElementById('new-is-active').value === 'true';
+
+                // 選択されたサービスを取得
+                const selectedServices = [];
+                document.querySelectorAll('#new-services input[type="checkbox"]:checked').forEach(checkbox => {
+                    selectedServices.push(checkbox.value);
+                });
+
+                debugLog('フォームデータ', {
+                    code, description, discountType, discountValue, maxUses, expiryDate, isActive, selectedServices
+                });
+
+                // バリデーション
+                if (!code) {
+                    throw new Error('クーポンコードを入力してください');
+                }
+                if (!discountType || isNaN(discountValue) || discountValue <= 0) {
+                    throw new Error('正しい割引タイプと割引値を設定してください');
+                }
+                if (selectedServices.length === 0) {
+                    throw new Error('適用可能サービスを1つ以上選択してください');
+                }
+
+                // 既存チェック
+                const existingCoupon = couponSystem.getCoupon(code);
+                if (existingCoupon) {
+                    throw new Error('同じコードのクーポンが既に存在します');
+                }
+
+                // クーポンデータ作成
+                const couponData = {
+                    code,
+                    description,
+                    discountType,
+                    discountValue,
+                    maxUses,
+                    expiryDate,
+                    isActive,
+                    applicableServices: selectedServices
+                };
+
+                debugLog('作成するクーポンデータ', couponData);
+
+                // クーポン作成実行
+                const result = couponSystem.createCoupon(couponData);
+                debugLog('作成結果', result);
+
+                if (result && result.success) {
+                    showMessage(`✅ クーポン「${code}」を作成しました`, 'success');
+                    resetForm();
+                    loadCoupons();
+                } else {
+                    const errorMsg = result && result.error ? result.error : 'クーポンの作成に失敗しました';
+                    throw new Error(errorMsg);
+                }
+
+            } catch (error) {
+                debugLog('作成エラー', error);
+                updateDebugInfo('error-log', error.message);
+                showMessage(`❌ ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // テストクーポン作成
+        function createTestCoupon() {
+            debugLog('テストクーポン作成開始');
+            
+            const testCode = `TEST${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+            const testData = {
+                code: testCode,
+                description: 'テスト用クーポン',
+                discountType: 'fixed',
+                discountValue: 500,
+                maxUses: 3,
+                expiryDate: null,
+                isActive: true,
+                applicableServices: ['all']
+            };
+
+            try {
+                const result = couponSystem.createCoupon(testData);
+                if (result && result.success) {
+                    showMessage(`✅ テストクーポン「${testCode}」を作成しました`, 'success');
+                    loadCoupons();
+                } else {
+                    throw new Error('テストクーポンの作成に失敗しました');
+                }
+            } catch (error) {
+                debugLog('テストクーポン作成エラー', error);
+                showMessage(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        // テスト使用履歴作成
+        function createTestUsage() {
+            debugLog('テスト使用履歴作成開始');
+            
+            const coupons = couponSystem.getAllCoupons();
+            if (coupons.length === 0) {
+                showMessage('❌ まずクーポンを作成してください', 'error');
+                return;
+            }
+
+            // ランダムにクーポンを選択
+            const randomCoupon = coupons[Math.floor(Math.random() * coupons.length)];
+            
+            try {
+                const result = couponSystem.createTestUsage(randomCoupon.code);
+                if (result && result.success) {
+                    showMessage(`✅ 「${randomCoupon.code}」のテスト使用履歴を作成しました`, 'success');
+                    loadCoupons(); // 使用回数更新のため再読み込み
+                } else {
+                    throw new Error('テスト使用履歴の作成に失敗しました');
+                }
+            } catch (error) {
+                debugLog('テスト使用履歴作成エラー', error);
+                showMessage(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        // クーポン一覧読み込み
+        function loadCoupons() {
+            debugLog('クーポン一覧読み込み開始');
+            showLoading(true);
+            
+            try {
+                const coupons = couponSystem.getAllCoupons();
+                debugLog('取得したクーポン数', coupons.length);
+                updateDebugInfo('coupon-count', coupons.length);
+
+                const container = document.getElementById('coupon-list');
+                
+                if (coupons.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: rgba(255,255,255,0.7); padding: 40px;">クーポンが登録されていません</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                
+                coupons.forEach((coupon, index) => {
+                    const couponDiv = document.createElement('div');
+                    couponDiv.className = 'coupon-item';
+                    
+                    const statusInfo = getCouponStatusInfo(coupon);
+                    const discount = formatDiscount(coupon);
+                    const services = formatServices(coupon.applicableServices);
+                    
+                    couponDiv.innerHTML = `
+                        <div class="coupon-header">
+                            <div class="coupon-code">${coupon.code}</div>
+                            <div class="coupon-status ${statusInfo.class}">${statusInfo.text}</div>
+                        </div>
+                        <div class="coupon-details">
+                            <div><strong>説明:</strong> ${coupon.description || 'なし'}</div>
+                            <div><strong>割引:</strong> ${discount}</div>
+                            <div><strong>使用回数:</strong> ${coupon.currentUses || 0}/${coupon.maxUses}</div>
+                            <div><strong>有効期限:</strong> ${coupon.expiryDate || '無期限'}</div>
+                            <div><strong>サービス:</strong> ${services}</div>
+                            <div><strong>作成日:</strong> ${new Date(coupon.createdAt).toLocaleDateString()}</div>
+                        </div>
+                        <div class="coupon-actions">
+                            <button class="btn btn-secondary" onclick="openEditModal('${coupon.code}')">✏️ 完全編集</button>
+                            <button class="btn ${coupon.isActive ? 'btn-warning' : 'btn-success'}" onclick="toggleCouponStatus('${coupon.code}')">
+                                ${coupon.isActive ? '🔴 無効化' : '🟢 有効化'}
+                            </button>
+                            <button class="btn btn-secondary" onclick="viewHistory('${coupon.code}')">📊 履歴</button>
+                            <button class="btn btn-danger" onclick="deleteCoupon('${coupon.code}')">🗑️ 削除</button>
+                        </div>
+                    `;
+                    
+                    container.appendChild(couponDiv);
+                });
+
+                debugLog('クーポン一覧読み込み完了');
+                
+            } catch (error) {
+                debugLog('一覧読み込みエラー', error);
+                updateDebugInfo('error-log', error.message);
+                showMessage(`❌ 一覧の読み込みに失敗しました: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ヘルパー関数
+        function getCouponStatusInfo(coupon) {
+            if (coupon.isActive === false) {
+                return { text: '無効', class: 'status-inactive' };
+            }
+            
+            const now = new Date();
+            const expiryDate = coupon.expiryDate ? new Date(coupon.expiryDate) : null;
+            
+            if (expiryDate && expiryDate < now) {
+                return { text: '期限切れ', class: 'status-expired' };
+            }
+            if ((coupon.currentUses || 0) >= coupon.maxUses) {
+                return { text: '使用済み', class: 'status-used-up' };
+            }
+            
+            return { text: '有効', class: 'status-active' };
+        }
+
+        function formatDiscount(coupon) {
+            if (coupon.discountType === 'percentage') {
+                return `${coupon.discountValue}% OFF`;
+            } else {
+                return `${coupon.discountValue}円 OFF`;
+            }
+        }
+
+        function formatServices(services) {
+            if (services.includes('all')) return '全サービス';
+            
+            const serviceNames = services.map(service => {
+                const mapping = {
+                    'shintaku': '神託システムタロット占い',
+                    'star_yomi': '星詠みシステム星座占い',
+                    'personal_tarot': '個人鑑定タロット',
+                    'personal_birthday': '個人鑑定誕生日',
+                    'personal_set': '個人鑑定セット'
+                };
+                return mapping[service] || service;
+            });
+            return serviceNames.join(', ');
+        }
+
+        // 有効/無効切り替え
+        function toggleCouponStatus(code) {
+            debugLog('ステータス切り替え開始', code);
+            
+            try {
+                const coupon = couponSystem.getCoupon(code);
+                if (!coupon) {
+                    showMessage('❌ クーポンが見つかりません', 'error');
+                    return;
+                }
+
+                const newStatus = !coupon.isActive;
+                const result = couponSystem.updateCoupon(code, { isActive: newStatus });
+                
+                if (result && result.success) {
+                    const statusText = newStatus ? '有効' : '無効';
+                    showMessage(`✅ クーポン「${code}」を${statusText}にしました`, 'success');
+                    loadCoupons();
+                } else {
+                    throw new Error('ステータスの変更に失敗しました');
+                }
+            } catch (error) {
+                debugLog('ステータス切り替えエラー', error);
+                showMessage(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        // 完全編集モーダル
+        function openEditModal(code) {
+            debugLog('編集モーダル開始', code);
+            
+            try {
+                const coupon = couponSystem.getCoupon(code);
+                if (!coupon) {
+                    showMessage('❌ クーポンが見つかりません', 'error');
+                    return;
+                }
+
+                currentEditingCode = code;
+                
+                const editForm = document.getElementById('edit-form');
+                editForm.innerHTML = `
+                    <div class="form-group">
+                        <label>クーポンコード（変更不可）</label>
+                        <input type="text" value="${coupon.code}" readonly style="background: rgba(255,255,255,0.05);">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-description">説明</label>
+                        <textarea id="edit-description" placeholder="クーポンの説明">${coupon.description || ''}</textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit-discount-type">割引タイプ</label>
+                            <select id="edit-discount-type">
+                                <option value="percentage" ${coupon.discountType === 'percentage' ? 'selected' : ''}>パーセント割引</option>
+                                <option value="fixed" ${coupon.discountType === 'fixed' ? 'selected' : ''}>固定金額割引</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-discount-value">割引値</label>
+                            <input type="number" id="edit-discount-value" value="${coupon.discountValue}">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row-3">
+                        <div class="form-group">
+                            <label for="edit-max-uses">最大使用回数</label>
+                            <input type="number" id="edit-max-uses" value="${coupon.maxUses}" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-expiry-date">有効期限</label>
+                            <input type="date" id="edit-expiry-date" value="${coupon.expiryDate || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-is-active">状態</label>
+                            <select id="edit-is-active">
+                                <option value="true" ${coupon.isActive ? 'selected' : ''}>有効</option>
+                                <option value="false" ${!coupon.isActive ? 'selected' : ''}>無効</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>適用可能サービス</label>
+                        <div class="services-list">
+                            ${Object.entries(couponSystem.serviceTypes).map(([key, name]) => {
+                                const isChecked = coupon.applicableServices.includes(key);
+                                return `
+                                    <div class="service-checkbox">
+                                        <input type="checkbox" id="edit-service-${key}" value="${key}" ${isChecked ? 'checked' : ''}>
+                                        <label for="edit-service-${key}">${name}</label>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="btn btn-primary" onclick="saveEditedCoupon()">💾 変更を保存</button>
+                        <button class="btn btn-secondary" onclick="closeEditModal()">❌ キャンセル</button>
+                    </div>
+                `;
+                
+                document.getElementById('edit-modal').style.display = 'flex';
+            } catch (error) {
+                debugLog('編集モーダルエラー', error);
+                showMessage(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        // 編集保存
+        function saveEditedCoupon() {
+            debugLog('編集保存開始', currentEditingCode);
+            
+            if (!currentEditingCode) return;
+            
+            try {
+                const description = document.getElementById('edit-description').value.trim();
+                const discountType = document.getElementById('edit-discount-type').value;
+                const discountValue = parseFloat(document.getElementById('edit-discount-value').value);
+                const maxUses = parseInt(document.getElementById('edit-max-uses').value);
+                const expiryDate = document.getElementById('edit-expiry-date').value || null;
+                const isActive = document.getElementById('edit-is-active').value === 'true';
+
+                const selectedServices = [];
+                document.querySelectorAll('#edit-form input[type="checkbox"]:checked').forEach(checkbox => {
+                    selectedServices.push(checkbox.value);
+                });
+
+                // バリデーション
+                if (!discountType || isNaN(discountValue) || discountValue <= 0) {
+                    throw new Error('正しい割引タイプと割引値を設定してください');
+                }
+                if (selectedServices.length === 0) {
+                    throw new Error('適用可能サービスを1つ以上選択してください');
+                }
+
+                const updates = {
+                    description,
+                    discountType,
+                    discountValue,
+                    maxUses,
+                    expiryDate,
+                    isActive,
+                    applicableServices: selectedServices
+                };
+
+                const result = couponSystem.updateCoupon(currentEditingCode, updates);
+                
+                if (result && result.success) {
+                    showMessage(`✅ クーポン「${currentEditingCode}」を更新しました`, 'success');
+                    closeEditModal();
+                    loadCoupons();
+                } else {
+                    throw new Error('更新に失敗しました');
+                }
+            } catch (error) {
+                debugLog('編集保存エラー', error);
+                showMessage(`❌ ${error.message}`, 'error');
+            }
+        }
+
+        // 編集モーダル閉じる
+        function closeEditModal() {
+            document.getElementById('edit-modal').style.display = 'none';
+            currentEditingCode = null;
+        }
+
+        // 履歴表示
+        function viewHistory(code) {
+            debugLog('履歴表示開始', code);
+            
+            try {
+                const usage = couponSystem.getAllUsage().filter(u => u.couponCode === code);
+                const coupon = couponSystem.getCoupon(code);
+                
+                if (usage.length === 0) {
+                    alert(`クーポン「${code}」の使用履歴はありません`);
+                } else {
+                    let historyText = `クーポン「${code}」の使用履歴:\n`;
+                    historyText += `説明: ${coupon?.description || 'なし'}\n`;
+                    historyText += `総使用回数: ${usage.length}回\n`;
+                    historyText += `総割引額: ¥${usage.reduce((sum, u) => sum + (u.discountAmount || 0), 0).toLocaleString()}\n\n`;
+                    
+                    usage.reverse().forEach((u, index) => {
+                        historyText += `${index + 1}. ${new Date(u.usedAt).toLocaleString()}\n`;
+                        historyText += `   サービス: ${couponSystem.serviceTypes[u.serviceType] || u.serviceType}\n`;
+                        historyText += `   利用者: ${u.userEmail}\n`;
+                        historyText += `   割引額: ¥${(u.discountAmount || 0).toLocaleString()}\n\n`;
+                    });
+                    alert(historyText);
+                }
+            } catch (error) {
+                debugLog('履歴表示エラー', error);
+                showMessage(`❌ 履歴の表示に失敗しました: ${error.message}`, 'error');
+            }
+        }
+
+        // 削除機能
+        function deleteCoupon(code) {
+            debugLog('削除開始', code);
+            
+            if (confirm(`クーポン「${code}」を削除しますか？\nこの操作は取り消せません。`)) {
+                try {
+                    const result = couponSystem.deleteCoupon(code);
+                    
+                    if (result && result.success) {
+                        showMessage(`✅ クーポン「${code}」を削除しました`, 'success');
+                        loadCoupons();
+                    } else {
+                        throw new Error('削除に失敗しました');
+                    }
+                } catch (error) {
+                    debugLog('削除エラー', error);
+                    showMessage(`❌ ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // データエクスポート
+        function exportData() {
+            debugLog('データエクスポート開始');
+            
+            try {
+                const coupons = couponSystem.getAllCoupons();
+                const usage = couponSystem.getAllUsage();
+                
+                const data = {
+                    exportDate: new Date().toISOString(),
+                    coupons: coupons,
+                    usage: usage,
+                    summary: {
+                        totalCoupons: coupons.length,
+                        activeCoupons: coupons.filter(c => getCouponStatusInfo(c).class === 'status-active').length,
+                        totalUsage: usage.length,
+                        totalDiscount: usage.reduce((sum, u) => sum + (u.discountAmount || 0), 0)
+                    }
+                };
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `salon-coupon-data-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                showMessage('✅ データをエクスポートしました', 'success');
+            } catch (error) {
+                debugLog('エクスポートエラー', error);
+                showMessage(`❌ エクスポートに失敗しました: ${error.message}`, 'error');
+            }
+        }
+
+        // エラーハンドリング
+        window.addEventListener('error', function(e) {
+            debugLog('JavaScriptエラー', e.error);
+            updateDebugInfo('error-log', e.error ? e.error.message : 'Unknown error');
+            console.error('❌ エラー:', e.error);
+        });
+
+        // 初期化実行
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('DOM読み込み完了');
+            
+            // 少し遅延させて初期化
+            setTimeout(() => {
+                initializeSystem();
+            }, 100);
+        });
+
+        console.log('🚀 完全版管理画面スクリプト読み込み完了');
+    </script>
+</body>
+</html>
