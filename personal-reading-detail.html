@@ -1101,8 +1101,8 @@
                 return;
             }
 
-            // クーポンUIを初期化（デフォルト価格として個人鑑定の平均価格を使用）
-            personalCouponUI = new CouponUI('personal', originalPrices.tarot);
+            // クーポンUIを初期化（個人鑑定は複数サービスタイプに対応）
+            personalCouponUI = new CouponUI(['personal_tarot', 'personal_birthday', 'personal_set'], originalPrices.tarot);
             
             // クーポンセクションにUIを挿入
             const couponSection = document.getElementById('personal-coupon-section');
@@ -1253,9 +1253,14 @@
                 if (finalPrice === 0) {
                     const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
                     if (userEmail && userEmail.includes('@')) {
+                        // タイプに応じてサービス種別を設定
+                        const serviceType = type === 'tarot' ? 'personal_tarot' : 
+                                          type === 'star' ? 'personal_birthday' : 
+                                          'personal_set';
+                        
                         const result = window.couponSystem.useCoupon(
                             appliedCoupon.coupon.code,
-                            'personal',
+                            serviceType,
                             userEmail,
                             originalPrice
                         );

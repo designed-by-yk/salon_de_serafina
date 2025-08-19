@@ -5,7 +5,8 @@
 
 class CouponUI {
     constructor(serviceType, originalPrice) {
-        this.serviceType = serviceType;
+        // サービスタイプが配列の場合と単一の場合を対応
+        this.serviceType = Array.isArray(serviceType) ? serviceType : [serviceType];
         this.originalPrice = originalPrice;
         this.appliedCoupon = null;
         this.finalPrice = originalPrice;
@@ -275,8 +276,9 @@ class CouponUI {
             return;
         }
 
-        // 検証実行
-        const result = this.couponSystem.validateCoupon(code, this.serviceType, this.originalPrice);
+        // 検証実行（複数サービスタイプの場合は最初のタイプで検証）
+        const serviceTypeForValidation = this.serviceType[0];
+        const result = this.couponSystem.validateCoupon(code, serviceTypeForValidation, this.originalPrice);
         
         if (result.valid) {
             this.appliedCoupon = result.coupon;

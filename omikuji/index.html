@@ -608,6 +608,25 @@
 
   <script src="script.js"></script>
 
+  <!-- 管理者アクセス（シンプル版） -->
+  <div id="simple-admin-access" style="
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.3s ease;
+    opacity: 0.3;
+  " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.3'" onclick="openSimpleAdmin()">
+    🔧 管理
+  </div>
+
   <!-- 隠し管理者アクセス用スクリプト -->
   <script>
     // 管理者アクセス用変数
@@ -617,10 +636,8 @@
     // ページ読み込み完了後にイベントリスナーを設定
     document.addEventListener('DOMContentLoaded', function() {
       console.log('👋 Salon de Serafina へようこそ');
-      console.log('🔧 管理者の方は以下の方法でアクセスできます:');
-      console.log('   1. Ctrl + Shift + A を押す');
-      console.log('   2. キーボードで連続して a-d-m-i-n と入力する');
-      console.log('   3. 管理者ポータル manage.html に直接アクセスする');
+      console.log('🔧 管理者の方は左下の「🔧 管理」ボタンからアクセスできます');
+      console.log('📱 または直接 simple-admin.html にアクセスしてください');
       
       // キーボードイベントリスナー
       document.addEventListener('keydown', function(e) {
@@ -748,6 +765,12 @@
       }
     `;
     document.head.appendChild(style);
+
+    // シンプル管理画面アクセス
+    function openSimpleAdmin() {
+      console.log('🔧 シンプル管理画面を開きます');
+      window.open('../simple-admin.html', '_blank');
+    }
   </script>
 </body>
 </html>

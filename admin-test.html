@@ -115,18 +115,18 @@
             addLog('👋 ページ読み込み完了');
             addLog('🔧 キーボードイベントリスナーを設定中...');
             
-            document.addEventListener('keydown', function(e) {
-                addLog(`キー押下: ${e.key} (Ctrl: ${e.ctrlKey}, Shift: ${e.shiftKey})`);
-                
-                // Ctrl + Shift + A
-                if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
-                    e.preventDefault();
-                    addLog('🎯 Ctrl + Shift + A が検出されました！');
-                    showAdminAccess();
-                    return;
-                }
-                
-                // admin コード
+                    document.addEventListener('keydown', function(e) {
+            // ブラウザのデフォルト動作を阻止
+            if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+                e.preventDefault();
+                e.stopPropagation();
+                addLog('🎯 Ctrl + Shift + A が検出されました！');
+                showAdminAccess();
+                return false;
+            }
+            
+            // 英数字のみを記録（特殊キーを除外）
+            if (e.key.length === 1 && e.key.match(/[a-zA-Z]/)) {
                 adminKeyCode += e.key.toLowerCase();
                 if (adminKeyCode.length > 5) {
                     adminKeyCode = adminKeyCode.slice(-5);
@@ -135,11 +135,20 @@
                 addLog(`現在のキーコード: "${adminKeyCode}"`);
                 
                 if (adminKeyCode === 'admin') {
+                    e.preventDefault();
+                    e.stopPropagation();
                     addLog('🎯 "admin" コードが検出されました！');
                     showAdminAccess();
                     adminKeyCode = '';
+                    return false;
                 }
-            });
+            }
+            
+            // ログは特殊キー以外のみ
+            if (e.key.length === 1 || e.ctrlKey || e.shiftKey) {
+                addLog(`キー押下: ${e.key} (Ctrl: ${e.ctrlKey}, Shift: ${e.shiftKey})`);
+            }
+        });
             
             addLog('✅ イベントリスナー設定完了');
         });

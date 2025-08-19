@@ -5,17 +5,24 @@
 
 class CouponSystem {
     constructor() {
+        console.log('🚀 CouponSystem コンストラクタ開始');
+        
         this.coupons = this.loadCoupons();
+        console.log('📊 初期化後のクーポン数:', Object.keys(this.coupons).length);
+        
         this.usage = this.loadUsage();
+        console.log('📊 初期化後の使用履歴数:', this.usage.length);
+        
         this.serviceTypes = {
             'all': '全サービス共通',
             'shintaku': '神託システムタロット占い',
             'star_yomi': '星詠みシステム星座占い',
-            'personal': 'セラフィナの個人鑑定',
-            'mini_tarot': 'miniタロット占い',
-            'mini_horoscope': 'mini星座占い',
-            'ai_horoscope': 'AI星座占い'
+            'personal_tarot': '個人鑑定タロット',
+            'personal_birthday': '個人鑑定誕生日',
+            'personal_set': '個人鑑定セット'
         };
+        
+        console.log('✅ CouponSystem 初期化完了');
     }
 
     /**
@@ -106,10 +113,17 @@ class CouponSystem {
      */
     loadCoupons() {
         try {
+            console.log('📂 loadCoupons 開始');
             const data = localStorage.getItem('serafina_coupons');
-            return data ? JSON.parse(data) : {};
+            console.log('📂 localStorage から取得:', data ? `${data.length}文字` : 'null');
+            
+            const parsed = data ? JSON.parse(data) : {};
+            console.log('📂 パース結果:', parsed);
+            console.log('📂 オブジェクトキー数:', Object.keys(parsed).length);
+            
+            return parsed;
         } catch (error) {
-            console.error('クーポンデータの読み込みエラー:', error);
+            console.error('❌ クーポンデータの読み込みエラー:', error);
             return {};
         }
     }
@@ -132,9 +146,21 @@ class CouponSystem {
      */
     saveCoupons() {
         try {
-            localStorage.setItem('serafina_coupons', JSON.stringify(this.coupons));
+            console.log('💾 saveCoupons 開始');
+            console.log('💾 保存するデータ:', this.coupons);
+            const jsonData = JSON.stringify(this.coupons);
+            console.log('💾 JSON文字列長:', jsonData.length);
+            localStorage.setItem('serafina_coupons', jsonData);
+            console.log('✅ localStorage保存完了');
+            
+            // 保存後の確認
+            const saved = localStorage.getItem('serafina_coupons');
+            console.log('🔍 保存確認 - 文字列長:', saved ? saved.length : 'null');
+            
+            return true;
         } catch (error) {
-            console.error('クーポンデータの保存エラー:', error);
+            console.error('❌ クーポンデータの保存エラー:', error);
+            return false;
         }
     }
 
@@ -237,8 +263,11 @@ class CouponSystem {
      * サービスがクーポンに適用可能か確認
      */
     isServiceApplicable(coupon, serviceType) {
+        // serviceTypeが配列の場合は、いずれかのサービスが適用可能ならOK
+        const serviceTypes = Array.isArray(serviceType) ? serviceType : [serviceType];
+        
         return coupon.applicableServices.includes('all') || 
-               coupon.applicableServices.includes(serviceType);
+               serviceTypes.some(type => coupon.applicableServices.includes(type));
     }
 
     /**
@@ -306,16 +335,20 @@ class CouponSystem {
      * 新しいクーポンを作成
      */
     createCoupon(couponData) {
+        console.log('🔧 CouponSystem.createCoupon 開始', couponData);
+        
         const code = couponData.code.toUpperCase().trim();
+        console.log('📝 処理するコード:', code);
         
         if (this.coupons[code]) {
+            console.log('⚠️ 既存クーポンが存在:', this.coupons[code]);
             return {
                 success: false,
                 error: 'このクーポンコードは既に存在します'
             };
         }
 
-        this.coupons[code] = {
+        const newCoupon = {
             code: code,
             discountType: couponData.discountType,
             discountValue: couponData.discountValue,
@@ -328,7 +361,20 @@ class CouponSystem {
             createdAt: new Date().toISOString()
         };
 
-        this.saveCoupons();
+        console.log('💾 作成するクーポンオブジェクト:', newCoupon);
+        
+        this.coupons[code] = newCoupon;
+        
+        console.log('📊 クーポン追加後のオブジェクト数:', Object.keys(this.coupons).length);
+        console.log('📊 現在のクーポン一覧:', Object.keys(this.coupons));
+        
+        const saveResult = this.saveCoupons();
+        console.log('💾 保存結果:', saveResult);
+        
+        // 保存後の確認
+        const savedCoupons = this.loadCoupons();
+        console.log('🔍 保存後の読み込み確認:', Object.keys(savedCoupons).length, '件');
+        
         return { success: true };
     }
 
@@ -372,7 +418,17 @@ class CouponSystem {
      * 全クーポンを取得
      */
     getAllCoupons() {
-        return this.coupons;
+        console.log('📋 getAllCoupons 呼び出し');
+        console.log('📊 this.coupons:', this.coupons);
+        console.log('📊 this.coupons type:', typeof this.coupons);
+        console.log('📊 Object.keys(this.coupons):', Object.keys(this.coupons));
+        
+        // オブジェクトを配列に変換
+        const couponsArray = Object.values(this.coupons);
+        console.log('📋 変換後の配列:', couponsArray);
+        console.log('📋 配列の長さ:', couponsArray.length);
+        
+        return couponsArray;
     }
 
     /**
