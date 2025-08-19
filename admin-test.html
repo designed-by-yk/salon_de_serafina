@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理者アクセステスト</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #2d1b69;
+            color: white;
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .test-button {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px 25px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd700);
+            color: #2d1b69;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .log {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            text-align: left;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .instructions {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 管理者アクセステスト</h1>
+        
+        <div class="instructions">
+            <h3>📋 テスト手順</h3>
+            <ol>
+                <li><strong>Ctrl + Shift + A</strong> を押してください</li>
+                <li>キーボードで <strong>admin</strong> と入力してください</li>
+                <li>手動ボタンでテストしてください</li>
+            </ol>
+        </div>
+        
+        <div>
+            <button class="test-button" onclick="testShowAdminAccess()">
+                🧪 手動で管理ボタンを表示
+            </button>
+            
+            <button class="test-button" onclick="clearLog()">
+                🗑️ ログクリア
+            </button>
+            
+            <a href="manage.html" class="test-button">
+                📱 管理者ポータル
+            </a>
+            
+            <a href="admin/coupon-admin.html" class="test-button">
+                🎫 クーポン管理（直接）
+            </a>
+        </div>
+        
+        <div id="log" class="log">
+            <div>🚀 テストページが読み込まれました</div>
+        </div>
+    </div>
+
+    <script>
+        let adminAccessVisible = false;
+        let adminKeyCode = '';
+        let logContainer = document.getElementById('log');
+        
+        function addLog(message) {
+            const logDiv = document.createElement('div');
+            logDiv.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            logContainer.appendChild(logDiv);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(message);
+        }
+        
+        function clearLog() {
+            logContainer.innerHTML = '<div>🗑️ ログがクリアされました</div>';
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            addLog('👋 ページ読み込み完了');
+            addLog('🔧 キーボードイベントリスナーを設定中...');
+            
+            document.addEventListener('keydown', function(e) {
+                addLog(`キー押下: ${e.key} (Ctrl: ${e.ctrlKey}, Shift: ${e.shiftKey})`);
+                
+                // Ctrl + Shift + A
+                if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+                    e.preventDefault();
+                    addLog('🎯 Ctrl + Shift + A が検出されました！');
+                    showAdminAccess();
+                    return;
+                }
+                
+                // admin コード
+                adminKeyCode += e.key.toLowerCase();
+                if (adminKeyCode.length > 5) {
+                    adminKeyCode = adminKeyCode.slice(-5);
+                }
+                
+                addLog(`現在のキーコード: "${adminKeyCode}"`);
+                
+                if (adminKeyCode === 'admin') {
+                    addLog('🎯 "admin" コードが検出されました！');
+                    showAdminAccess();
+                    adminKeyCode = '';
+                }
+            });
+            
+            addLog('✅ イベントリスナー設定完了');
+        });
+        
+        function testShowAdminAccess() {
+            addLog('🧪 手動テスト: 管理ボタンを表示します');
+            showAdminAccess();
+        }
+        
+        function showAdminAccess() {
+            if (adminAccessVisible) {
+                addLog('⚠️ 管理ボタンは既に表示されています');
+                return;
+            }
+            
+            addLog('🔧 管理ボタンを作成中...');
+            
+            const existingBtn = document.getElementById('admin-access-btn');
+            if (existingBtn) {
+                existingBtn.remove();
+                addLog('🗑️ 既存のボタンを削除しました');
+            }
+            
+            const adminBtn = document.createElement('div');
+            adminBtn.id = 'admin-access-btn';
+            adminBtn.innerHTML = '🛠️ 管理画面';
+            
+            // スタイル設定
+            adminBtn.style.position = 'fixed';
+            adminBtn.style.bottom = '20px';
+            adminBtn.style.right = '20px';
+            adminBtn.style.zIndex = '99999';
+            adminBtn.style.background = 'linear-gradient(45deg, #ff6b6b, #ffd700)';
+            adminBtn.style.color = '#2d1b69';
+            adminBtn.style.padding = '15px 20px';
+            adminBtn.style.borderRadius = '50px';
+            adminBtn.style.cursor = 'pointer';
+            adminBtn.style.fontWeight = 'bold';
+            adminBtn.style.fontSize = '16px';
+            adminBtn.style.boxShadow = '0 4px 20px rgba(255, 107, 107, 0.8)';
+            adminBtn.style.userSelect = 'none';
+            adminBtn.style.border = '3px solid #fff';
+            
+            adminBtn.onclick = function() {
+                addLog('🖱️ 管理ボタンがクリックされました');
+                window.open('manage.html', '_blank');
+                hideAdminAccess();
+            };
+            
+            document.body.appendChild(adminBtn);
+            adminAccessVisible = true;
+            
+            addLog('✅ 管理ボタンが表示されました！右下を確認してください');
+            
+            setTimeout(() => {
+                hideAdminAccess();
+                addLog('⏰ 20秒経過したため、ボタンを自動非表示にしました');
+            }, 20000);
+        }
+        
+        function hideAdminAccess() {
+            const adminBtn = document.getElementById('admin-access-btn');
+            if (adminBtn) {
+                adminBtn.remove();
+                adminAccessVisible = false;
+                addLog('🔧 管理ボタンを非表示にしました');
+            }
+        }
+    </script>
+</body>
+</html>
