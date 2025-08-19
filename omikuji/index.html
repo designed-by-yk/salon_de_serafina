@@ -766,11 +766,75 @@
     `;
     document.head.appendChild(style);
 
-    // シンプル管理画面アクセス
-    function openSimpleAdmin() {
-      console.log('🔧 シンプル管理画面を開きます');
-      window.open('../simple-admin.html', '_blank');
+    // 管理者ポータルアクセス
+    function openAdminPortal() {
+      console.log('🔐 管理者ポータルを開きます');
+      window.open('../admin-portal.html', '_blank');
     }
+
+    // 隠し管理ボタンの表示/非表示
+    function toggleAdminAccess() {
+      const adminBtn = document.getElementById('hidden-admin-btn');
+      if (adminBtn.style.display === 'none' || !adminBtn.style.display) {
+        adminBtn.style.display = 'block';
+        adminBtn.style.animation = 'pulse 2s infinite';
+        console.log('🔐 管理者アクセスボタンを表示しました');
+        
+        // 10秒後に自動的に隠す
+        setTimeout(() => {
+          adminBtn.style.display = 'none';
+        }, 10000);
+      } else {
+        adminBtn.style.display = 'none';
+      }
+    }
+
+    // 隠しキーコンビネーション
+    let keySequence = '';
+    const ADMIN_SEQUENCE = 'admin';
+    
+    document.addEventListener('keydown', function(event) {
+      // Ctrl + Shift + A での管理者アクセス
+      if (event.ctrlKey && event.shiftKey && event.key === 'A') {
+        event.preventDefault();
+        toggleAdminAccess();
+        return;
+      }
+      
+      // "admin"タイピングでの管理者アクセス
+      keySequence += event.key.toLowerCase();
+      if (keySequence.length > ADMIN_SEQUENCE.length) {
+        keySequence = keySequence.slice(-ADMIN_SEQUENCE.length);
+      }
+      
+      if (keySequence === ADMIN_SEQUENCE) {
+        toggleAdminAccess();
+        keySequence = '';
+      }
+    });
   </script>
+
+  <!-- 隠し管理者アクセスボタン -->
+  <div id="hidden-admin-btn" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: none;
+    background: linear-gradient(45deg, #ff6b6b, #ffd700);
+    border: none;
+    border-radius: 50px;
+    padding: 15px 25px;
+    color: #2d1b69;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(255, 107, 107, 0.8);
+    transition: all 0.3s ease;
+    font-size: 16px;
+    text-decoration: none;
+    white-space: nowrap;
+  " onclick="openAdminPortal()">
+    🔐 管理者ポータル
+  </div>
 </body>
 </html>
