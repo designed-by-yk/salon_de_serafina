@@ -313,14 +313,11 @@ class CouponUI {
         const discountRow = document.getElementById('discount-row');
         
         if (discountDiv) {
-            discountDiv.style.setProperty('display', 'none', 'important');
-            discountDiv.style.setProperty('visibility', 'hidden', 'important');
-            discountDiv.style.setProperty('opacity', '0', 'important');
+            discountDiv.classList.remove('show-discount');
+            discountDiv.classList.add('force-hidden');
         }
         if (discountRow) {
-            discountRow.style.setProperty('display', 'none', 'important');
-            discountRow.style.setProperty('visibility', 'hidden', 'important');
-            discountRow.style.setProperty('opacity', '0', 'important');
+            discountRow.classList.remove('show-discount');
         }
         
         this.showMessage('', '');
@@ -387,9 +384,8 @@ class CouponUI {
             </div>
         `;
 
-        discountDiv.style.setProperty('display', 'block', 'important');
-        discountDiv.style.setProperty('visibility', 'visible', 'important');
-        discountDiv.style.setProperty('opacity', '1', 'important');
+        discountDiv.classList.add('show-discount');
+        discountDiv.classList.remove('force-hidden');
     }
 
     /**
@@ -402,16 +398,12 @@ class CouponUI {
 
         if (discountAmount > 0) {
             if (discountRow) {
-                discountRow.style.setProperty('display', 'flex', 'important');
-                discountRow.style.setProperty('visibility', 'visible', 'important');
-                discountRow.style.setProperty('opacity', '1', 'important');
+                discountRow.classList.add('show-discount');
             }
             if (discountAmountSpan) discountAmountSpan.textContent = `-¥${discountAmount.toLocaleString()}`;
         } else {
             if (discountRow) {
-                discountRow.style.setProperty('display', 'none', 'important');
-                discountRow.style.setProperty('visibility', 'hidden', 'important');
-                discountRow.style.setProperty('opacity', '0', 'important');
+                discountRow.classList.remove('show-discount');
             }
         }
 

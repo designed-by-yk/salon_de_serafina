@@ -27,6 +27,41 @@
     <!-- クーポンシステム -->
     <script src="../js/coupon-system.js"></script>
     <script src="../js/coupon-ui.js"></script>
+    
+    <!-- クーポン表示制御CSS -->
+    <style>
+        .force-hidden {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        #coupon-discount {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        #discount-row {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        #coupon-discount.show-discount {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #discount-row.show-discount {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+    </style>
 </head>
 <body>
     <!-- パンくずリスト -->
@@ -261,6 +296,25 @@
         document.addEventListener('DOMContentLoaded', function() {
             // クーポンUIを初期化
             couponUI = window.initializeCouponUI('shintaku', originalPrice);
+            
+            // 確実にクーポン適用済み表示を隠す（強制実行）
+            setTimeout(function() {
+                const discountDiv = document.getElementById('coupon-discount');
+                const discountRow = document.getElementById('discount-row');
+                
+                if (discountDiv) {
+                    discountDiv.style.setProperty('display', 'none', 'important');
+                    discountDiv.style.setProperty('visibility', 'hidden', 'important');
+                    discountDiv.style.setProperty('opacity', '0', 'important');
+                    discountDiv.classList.add('force-hidden');
+                }
+                if (discountRow) {
+                    discountRow.style.setProperty('display', 'none', 'important');
+                    discountRow.style.setProperty('visibility', 'hidden', 'important');
+                    discountRow.style.setProperty('opacity', '0', 'important');
+                }
+                console.log('🔧 クーポン表示の強制非表示完了');
+            }, 500);
             
             // 価格更新イベントをリッスン
             window.addEventListener('priceUpdated', function(event) {

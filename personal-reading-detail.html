@@ -15,6 +15,38 @@
     <script src="js/coupon-ui.js"></script>
     
     <style>
+        /* クーポン表示制御CSS */
+        .force-hidden {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        #coupon-discount {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        #discount-row {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        #coupon-discount.show-discount {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #discount-row.show-discount {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
         * {
             margin: 0;
             padding: 0;
@@ -1046,6 +1078,21 @@
                 // クーポンシステムの読み込みを待つ
                 setTimeout(initializePersonalCoupons, 500);
             }
+            
+            // 確実にクーポン適用済み表示を隠す（強制実行）
+            setTimeout(function() {
+                const discountDiv = document.getElementById('coupon-discount');
+                const discountRow = document.getElementById('discount-row');
+                
+                if (discountDiv) {
+                    discountDiv.classList.add('force-hidden');
+                    discountDiv.classList.remove('show-discount');
+                }
+                if (discountRow) {
+                    discountRow.classList.remove('show-discount');
+                }
+                console.log('🔧 個人鑑定: クーポン表示の強制非表示完了');
+            }, 1000);
         });
 
         function initializePersonalCoupons() {

@@ -17,6 +17,38 @@
     <script src="../js/coupon-ui.js"></script>
     
     <style>
+        /* クーポン表示制御CSS */
+        .force-hidden {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+        
+        #coupon-discount {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        #discount-row {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+        }
+        
+        #coupon-discount.show-discount {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        #discount-row.show-discount {
+            display: flex !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
         .premium-zodiac-container {
             min-height: 100vh;
             background: linear-gradient(135deg, #1a0033, #2d1b69, #4a69bd);
@@ -495,6 +527,21 @@
         document.addEventListener('DOMContentLoaded', function() {
             // クーポンUIを初期化
             couponUI = window.initializeCouponUI('star_yomi', originalPrice);
+            
+            // 確実にクーポン適用済み表示を隠す（強制実行）
+            setTimeout(function() {
+                const discountDiv = document.getElementById('coupon-discount');
+                const discountRow = document.getElementById('discount-row');
+                
+                if (discountDiv) {
+                    discountDiv.classList.add('force-hidden');
+                    discountDiv.classList.remove('show-discount');
+                }
+                if (discountRow) {
+                    discountRow.classList.remove('show-discount');
+                }
+                console.log('🔧 星詠みシステム: クーポン表示の強制非表示完了');
+            }, 500);
             
             // 価格更新イベントをリッスン
             window.addEventListener('priceUpdated', function(event) {
