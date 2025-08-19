@@ -23,6 +23,10 @@
     
     <link rel="stylesheet" href="css/oracle-style.css">
     <link rel="stylesheet" href="line-styles.css">
+    
+    <!-- クーポンシステム -->
+    <script src="../js/coupon-system.js"></script>
+    <script src="../js/coupon-ui.js"></script>
 </head>
 <body>
     <!-- パンくずリスト -->
@@ -250,8 +254,75 @@
         // 🚨 Cache check - if this shows, page is updated
         console.log('🚨 Page loaded: 1755585495 - NO TEST BUTTONS');
         
+        // クーポンシステムの初期化
+        let couponUI;
+        const originalPrice = 1500; // 通常価格
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // クーポンUIを初期化
+            couponUI = window.initializeCouponUI('shintaku', originalPrice);
+            
+            // 価格更新イベントをリッスン
+            window.addEventListener('priceUpdated', function(event) {
+                const { finalPrice, appliedCoupon } = event.detail;
+                
+                // 決済ボタンのテキストを更新
+                const paymentBtn = document.getElementById('payment-btn');
+                if (paymentBtn) {
+                    const btnText = paymentBtn.querySelector('.btn-text');
+                    if (finalPrice === 0) {
+                        btnText.textContent = '無料で鑑定を受ける';
+                        paymentBtn.style.background = 'linear-gradient(45deg, #4caf50, #66bb6a)';
+                    } else if (finalPrice < originalPrice) {
+                        btnText.textContent = `¥${finalPrice.toLocaleString()}で鑑定を申し込む`;
+                    } else {
+                        btnText.textContent = '今すぐ鑑定を申し込む';
+                    }
+                }
+            });
+        });
+        
         document.getElementById('payment-btn').addEventListener('click', () => {
-            window.location.href = 'https://square.link/u/SwNECrMb';
+            // クーポンが適用されている場合の処理
+            if (couponUI) {
+                const appliedCoupon = couponUI.getAppliedCoupon();
+                
+                if (appliedCoupon.coupon) {
+                    // 無料クーポンの場合は直接結果ページへ
+                    if (appliedCoupon.finalPrice === 0) {
+                        // クーポン使用を記録
+                        const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
+                        if (userEmail && userEmail.includes('@')) {
+                            const result = window.couponSystem.useCoupon(
+                                appliedCoupon.coupon.code,
+                                'shintaku',
+                                userEmail,
+                                originalPrice
+                            );
+                            
+                            if (result.success) {
+                                alert('🎉 無料クーポンが適用されました！\n鑑定フォームに進みます。');
+                                window.location.href = 'payment-success.html?coupon=' + appliedCoupon.coupon.code + '&email=' + encodeURIComponent(userEmail);
+                            } else {
+                                alert('エラー: ' + result.error);
+                            }
+                        } else {
+                            alert('有効なメールアドレスを入力してください。');
+                        }
+                        return;
+                    }
+                    
+                    // 割引ありの場合はSquareの金額を調整
+                    // 実際の実装では、Square APIに割引後の金額を渡す
+                    const discountQuery = `?discount=${appliedCoupon.discountAmount}&final=${appliedCoupon.finalPrice}&coupon=${appliedCoupon.coupon.code}`;
+                    window.location.href = 'https://square.link/u/SwNECrMb' + discountQuery;
+                } else {
+                    // 通常の決済
+                    window.location.href = 'https://square.link/u/SwNECrMb';
+                }
+            } else {
+                window.location.href = 'https://square.link/u/SwNECrMb';
+            }
         });
 
         // スムーズスクロール

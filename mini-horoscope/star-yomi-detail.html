@@ -11,6 +11,11 @@
     <meta http-equiv="Expires" content="0">
     <title>星詠みシステム - Salon de Serafina</title>
     <link rel="stylesheet" href="../divine-tarot/css/oracle-style.css">
+    
+    <!-- クーポンシステム -->
+    <script src="../js/coupon-system.js"></script>
+    <script src="../js/coupon-ui.js"></script>
+    
     <style>
         .premium-zodiac-container {
             min-height: 100vh;
@@ -483,8 +488,73 @@
     </div>
     
     <script>
+        // クーポンシステムの初期化
+        let couponUI;
+        const originalPrice = 980; // 通常価格
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // クーポンUIを初期化
+            couponUI = window.initializeCouponUI('star_yomi', originalPrice);
+            
+            // 価格更新イベントをリッスン
+            window.addEventListener('priceUpdated', function(event) {
+                const { finalPrice, appliedCoupon } = event.detail;
+                
+                // 決済ボタンのテキストを更新
+                const paymentBtn = document.querySelector('.payment-button');
+                if (paymentBtn) {
+                    if (finalPrice === 0) {
+                        paymentBtn.innerHTML = '🎉 無料で鑑定を受ける';
+                        paymentBtn.style.background = 'linear-gradient(45deg, #4caf50, #66bb6a)';
+                    } else if (finalPrice < originalPrice) {
+                        paymentBtn.innerHTML = `💎 ¥${finalPrice.toLocaleString()}で鑑定する`;
+                    } else {
+                        paymentBtn.innerHTML = '💎 980円で鑑定する';
+                    }
+                }
+            });
+        });
+        
         function handlePayment() {
-            window.location.href = 'https://square.link/u/7XZ2ip4k';
+            // クーポンが適用されている場合の処理
+            if (couponUI) {
+                const appliedCoupon = couponUI.getAppliedCoupon();
+                
+                if (appliedCoupon.coupon) {
+                    // 無料クーポンの場合は直接結果ページへ
+                    if (appliedCoupon.finalPrice === 0) {
+                        // クーポン使用を記録
+                        const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
+                        if (userEmail && userEmail.includes('@')) {
+                            const result = window.couponSystem.useCoupon(
+                                appliedCoupon.coupon.code,
+                                'star_yomi',
+                                userEmail,
+                                originalPrice
+                            );
+                            
+                            if (result.success) {
+                                alert('🎉 無料クーポンが適用されました！\n鑑定フォームに進みます。');
+                                window.location.href = 'star-yomi-form.html?coupon=' + appliedCoupon.coupon.code + '&email=' + encodeURIComponent(userEmail);
+                            } else {
+                                alert('エラー: ' + result.error);
+                            }
+                        } else {
+                            alert('有効なメールアドレスを入力してください。');
+                        }
+                        return;
+                    }
+                    
+                    // 割引ありの場合はSquareの金額を調整
+                    const discountQuery = `?discount=${appliedCoupon.discountAmount}&final=${appliedCoupon.finalPrice}&coupon=${appliedCoupon.coupon.code}`;
+                    window.location.href = 'https://square.link/u/7XZ2ip4k' + discountQuery;
+                } else {
+                    // 通常の決済
+                    window.location.href = 'https://square.link/u/7XZ2ip4k';
+                }
+            } else {
+                window.location.href = 'https://square.link/u/7XZ2ip4k';
+            }
         }
         
         // 星詠みシステムのサンプルコンテンツ
