@@ -603,10 +603,19 @@
             console.log('📊 初期クーポン数:', couponSystem.getAllCoupons().length);
             
             console.log('✅ クーポンシステム初期化完了');
+            
+            // UI初期化
             initializeUI();
+            
+            // 初期データ読み込み
             loadCoupons();
             loadStats();
+            
+            // イベントバインド
             bindEvents();
+            
+            // 初期表示設定
+            updateExpiryInput();
         });
 
         // UI初期化
@@ -732,11 +741,11 @@
             console.log('💾 作成するクーポンデータ:', couponData);
 
             // クーポン作成
-            const success = couponSystem.createCoupon(couponData);
+            const result = couponSystem.createCoupon(couponData);
 
-            console.log('📊 作成結果:', success);
+            console.log('📊 作成結果:', result);
             
-            if (success) {
+            if (result && result.success) {
                 // 作成後の確認
                 const createdCoupon = couponSystem.getCoupon(code);
                 console.log('✅ 作成されたクーポン:', createdCoupon);
@@ -750,8 +759,9 @@
                 loadCoupons();
                 loadStats();
             } else {
-                console.error('❌ クーポン作成失敗');
-                showMessage('❌ クーポンの作成に失敗しました', 'error');
+                console.error('❌ クーポン作成失敗:', result);
+                const errorMsg = result && result.error ? result.error : 'クーポンの作成に失敗しました';
+                showMessage(`❌ ${errorMsg}`, 'error');
             }
         }
 
@@ -759,9 +769,17 @@
         function resetForm() {
             document.getElementById('coupon-form').reset();
             document.getElementById('discount-unit').textContent = '';
+            
+            // 有効期限タイプをリセット
+            document.getElementById('expiry-type').value = 'date';
+            updateExpiryInput();
+            
+            // サービスチェックボックスをリセット
             document.querySelectorAll('#services-checkboxes input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
+            
+            console.log('📝 フォームをリセットしました');
         }
 
         // クイククーポン作成
@@ -807,13 +825,16 @@
                     break;
             }
 
-            const success = couponSystem.createCoupon(couponData);
+            console.log(`🚀 ${type}クーポン作成開始:`, couponData);
+            const result = couponSystem.createCoupon(couponData);
+            console.log(`📊 ${type}クーポン作成結果:`, result);
             
-            if (success) {
+            if (result && result.success) {
                 showMessage(`✅ ${type}クーポン「${couponData.code}」を作成しました`, 'success');
                 loadCoupons();
                 loadStats();
             } else {
+                console.error(`❌ ${type}クーポンの作成に失敗:`, result);
                 showMessage(`❌ ${type}クーポンの作成に失敗しました`, 'error');
             }
         }
@@ -838,13 +859,16 @@
                 applicableServices: ['all']
             };
 
-            const success = couponSystem.createCoupon(couponData);
+            console.log('🎲 ランダムクーポン作成開始:', couponData);
+            const result = couponSystem.createCoupon(couponData);
+            console.log('🎲 ランダムクーポン作成結果:', result);
             
-            if (success) {
+            if (result && result.success) {
                 showMessage(`✅ ランダムクーポン「${code}」を作成しました`, 'success');
                 loadCoupons();
                 loadStats();
             } else {
+                console.error('❌ ランダムクーポンの作成に失敗:', result);
                 showMessage('❌ ランダムクーポンの作成に失敗しました', 'error');
             }
         }
@@ -874,42 +898,79 @@
                 return;
             }
 
-            container.innerHTML = coupons.map(coupon => {
+            // 一覧をクリアして再構築
+            container.innerHTML = '';
+            
+            coupons.forEach(coupon => {
                 const status = getCouponStatus(coupon);
                 const statusClass = `status-${status.type}`;
                 
-                return `
-                    <div class="coupon-item">
-                        <div class="coupon-header">
-                            <div class="coupon-code">${coupon.code}</div>
-                            <div class="coupon-status ${statusClass}">${status.text}</div>
-                        </div>
-                        <div class="coupon-details">
-                            <div><strong>説明:</strong> ${coupon.description || 'なし'}</div>
-                            <div><strong>割引:</strong> ${formatDiscount(coupon)}</div>
-                            <div><strong>使用回数:</strong> ${coupon.currentUses}/${coupon.maxUses}</div>
-                            <div><strong>有効期限:</strong> ${coupon.expiryDate || '無期限'}</div>
-                            <div><strong>サービス:</strong> ${formatServices(coupon.applicableServices)}</div>
-                            <div><strong>作成日:</strong> ${new Date(coupon.createdAt).toLocaleDateString()}</div>
-                        </div>
-                        <div class="coupon-actions">
-                            <button onclick="editCoupon('${coupon.code}')" class="btn btn-secondary">
-                                ✏️ 編集
-                            </button>
-                            <button onclick="toggleCouponStatus('${coupon.code}', ${coupon.isActive})" 
-                                    class="btn ${coupon.isActive ? 'btn-danger' : 'btn-primary'}">
-                                ${coupon.isActive ? '🔴 無効化' : '🟢 有効化'}
-                            </button>
-                            <button onclick="deleteCoupon('${coupon.code}')" class="btn btn-danger">
-                                🗑️ 削除
-                            </button>
-                            <button onclick="viewUsageHistory('${coupon.code}')" class="btn btn-secondary">
-                                📊 使用履歴
-                            </button>
-                        </div>
-                    </div>
+                // クーポン項目要素を作成
+                const couponItem = document.createElement('div');
+                couponItem.className = 'coupon-item';
+                
+                // クーポンヘッダー
+                const couponHeader = document.createElement('div');
+                couponHeader.className = 'coupon-header';
+                couponHeader.innerHTML = `
+                    <div class="coupon-code">${coupon.code}</div>
+                    <div class="coupon-status ${statusClass}">${status.text}</div>
                 `;
-            }).join('');
+                
+                // クーポン詳細
+                const couponDetails = document.createElement('div');
+                couponDetails.className = 'coupon-details';
+                couponDetails.innerHTML = `
+                    <div><strong>説明:</strong> ${coupon.description || 'なし'}</div>
+                    <div><strong>割引:</strong> ${formatDiscount(coupon)}</div>
+                    <div><strong>使用回数:</strong> ${coupon.currentUses}/${coupon.maxUses}</div>
+                    <div><strong>有効期限:</strong> ${coupon.expiryDate || '無期限'}</div>
+                    <div><strong>サービス:</strong> ${formatServices(coupon.applicableServices)}</div>
+                    <div><strong>作成日:</strong> ${new Date(coupon.createdAt).toLocaleDateString()}</div>
+                `;
+                
+                // クーポンアクション
+                const couponActions = document.createElement('div');
+                couponActions.className = 'coupon-actions';
+                
+                // 編集ボタン
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn btn-secondary';
+                editBtn.innerHTML = '✏️ 編集';
+                editBtn.onclick = () => editCoupon(coupon.code);
+                
+                // 有効/無効切り替えボタン
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = `btn ${coupon.isActive ? 'btn-danger' : 'btn-primary'}`;
+                toggleBtn.innerHTML = coupon.isActive ? '🔴 無効化' : '🟢 有効化';
+                toggleBtn.onclick = () => toggleCouponStatus(coupon.code, coupon.isActive);
+                
+                // 削除ボタン
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger';
+                deleteBtn.innerHTML = '🗑️ 削除';
+                deleteBtn.onclick = () => deleteCoupon(coupon.code);
+                
+                // 使用履歴ボタン
+                const historyBtn = document.createElement('button');
+                historyBtn.className = 'btn btn-secondary';
+                historyBtn.innerHTML = '📊 使用履歴';
+                historyBtn.onclick = () => viewUsageHistory(coupon.code);
+                
+                // ボタンをアクションコンテナに追加
+                couponActions.appendChild(editBtn);
+                couponActions.appendChild(toggleBtn);
+                couponActions.appendChild(deleteBtn);
+                couponActions.appendChild(historyBtn);
+                
+                // 要素を組み立て
+                couponItem.appendChild(couponHeader);
+                couponItem.appendChild(couponDetails);
+                couponItem.appendChild(couponActions);
+                
+                // コンテナに追加
+                container.appendChild(couponItem);
+            });
 
             console.log(`✅ ${coupons.length}件のクーポンを読み込みました`);
         }
@@ -1309,6 +1370,42 @@
         }
 
         console.log('🚀 直接管理画面スクリプト読み込み完了');
+        
+        // テスト用のグローバル関数を追加（デバッグ用）
+        window.debugCouponSystem = function() {
+            console.log('🔍 デバッグ情報:');
+            console.log('couponSystem:', couponSystem);
+            console.log('全クーポン:', couponSystem.getAllCoupons());
+            console.log('LocalStorage:', localStorage.getItem('serafina_coupons'));
+            
+            // テストクーポンを作成
+            const testCoupon = {
+                code: 'DEBUG' + Math.random().toString(36).substr(2, 4).toUpperCase(),
+                description: 'デバッグテスト用',
+                discountType: 'fixed',
+                discountValue: 100,
+                maxUses: 1,
+                applicableServices: ['all']
+            };
+            
+            console.log('🧪 テストクーポンを作成:', testCoupon);
+            const result = couponSystem.createCoupon(testCoupon);
+            console.log('🧪 作成結果:', result);
+            
+            if (result.success) {
+                loadCoupons();
+                loadStats();
+            }
+        };
+        
+        // コンソールからテスト実行できるようにメッセージ表示
+        console.log('💡 テスト用コマンド: debugCouponSystem() を実行してテストクーポンを作成');
+        
+        // エラーハンドリングを追加
+        window.addEventListener('error', function(e) {
+            console.error('❌ JavaScript エラー:', e.error);
+            showMessage('JavaScript エラーが発生しました。コンソールを確認してください。', 'error');
+        });
     </script>
 </body>
 </html>

@@ -355,9 +355,10 @@ class CouponSystem {
             maxUses: couponData.maxUses,
             currentUses: 0,
             expiryDate: couponData.expiryDate,
+            expiryType: couponData.expiryType || null,
             applicableServices: couponData.applicableServices,
-            description: couponData.description,
-            isActive: true,
+            description: couponData.description || '',
+            isActive: couponData.isActive !== false, // デフォルトはtrue
             createdAt: new Date().toISOString()
         };
 
