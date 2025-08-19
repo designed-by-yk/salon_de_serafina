@@ -17,6 +17,7 @@ class CouponUI {
     init() {
         this.createCouponSection();
         this.bindEvents();
+        this.ensureHiddenElements();
     }
 
     /**
@@ -97,7 +98,9 @@ class CouponUI {
                 "></div>
                 
                 <div id="coupon-discount" style="
-                    display: none;
+                    display: none !important;
+                    visibility: hidden !important;
+                    opacity: 0 !important;
                     background: rgba(76, 175, 80, 0.2);
                     border: 1px solid rgba(76, 175, 80, 0.5);
                     border-radius: 6px;
@@ -147,7 +150,9 @@ class CouponUI {
                         <span id="original-price">¥${this.originalPrice.toLocaleString()}</span>
                     </div>
                     <div id="discount-row" style="
-                        display: none;
+                        display: none !important;
+                        visibility: hidden !important;
+                        opacity: 0 !important;
                         justify-content: space-between;
                         margin-bottom: 5px;
                         color: #4caf50;
@@ -175,6 +180,27 @@ class CouponUI {
     }
 
     /**
+     * 非表示要素を確実に隠す
+     */
+    ensureHiddenElements() {
+        setTimeout(() => {
+            const discountDiv = document.getElementById('coupon-discount');
+            const discountRow = document.getElementById('discount-row');
+            
+            if (discountDiv) {
+                discountDiv.style.setProperty('display', 'none', 'important');
+                discountDiv.style.setProperty('visibility', 'hidden', 'important');
+                discountDiv.style.setProperty('opacity', '0', 'important');
+            }
+            if (discountRow) {
+                discountRow.style.setProperty('display', 'none', 'important');
+                discountRow.style.setProperty('visibility', 'hidden', 'important');
+                discountRow.style.setProperty('opacity', '0', 'important');
+            }
+        }, 100);
+    }
+
+    /**
      * 既存の価格表示エリアにクーポンセクションを挿入
      */
     insertIntoPage() {
@@ -194,6 +220,7 @@ class CouponUI {
             }
             
             this.bindEvents();
+            this.ensureHiddenElements();
         } else {
             console.warn('価格表示エリアが見つかりません');
         }
@@ -282,8 +309,19 @@ class CouponUI {
         document.getElementById('apply-coupon').textContent = '適用';
         document.getElementById('apply-coupon').disabled = false;
         
-                    document.getElementById('coupon-discount').style.display = 'none';
-            document.getElementById('discount-row').style.display = 'none';
+        const discountDiv = document.getElementById('coupon-discount');
+        const discountRow = document.getElementById('discount-row');
+        
+        if (discountDiv) {
+            discountDiv.style.setProperty('display', 'none', 'important');
+            discountDiv.style.setProperty('visibility', 'hidden', 'important');
+            discountDiv.style.setProperty('opacity', '0', 'important');
+        }
+        if (discountRow) {
+            discountRow.style.setProperty('display', 'none', 'important');
+            discountRow.style.setProperty('visibility', 'hidden', 'important');
+            discountRow.style.setProperty('opacity', '0', 'important');
+        }
         
         this.showMessage('', '');
         this.updatePriceDisplay(0, this.originalPrice);
@@ -349,7 +387,9 @@ class CouponUI {
             </div>
         `;
 
-        discountDiv.style.display = 'block';
+        discountDiv.style.setProperty('display', 'block', 'important');
+        discountDiv.style.setProperty('visibility', 'visible', 'important');
+        discountDiv.style.setProperty('opacity', '1', 'important');
     }
 
     /**
@@ -361,10 +401,18 @@ class CouponUI {
         const finalPriceSpan = document.getElementById('final-price');
 
         if (discountAmount > 0) {
-            if (discountRow) discountRow.style.display = 'flex';
+            if (discountRow) {
+                discountRow.style.setProperty('display', 'flex', 'important');
+                discountRow.style.setProperty('visibility', 'visible', 'important');
+                discountRow.style.setProperty('opacity', '1', 'important');
+            }
             if (discountAmountSpan) discountAmountSpan.textContent = `-¥${discountAmount.toLocaleString()}`;
         } else {
-            if (discountRow) discountRow.style.display = 'none';
+            if (discountRow) {
+                discountRow.style.setProperty('display', 'none', 'important');
+                discountRow.style.setProperty('visibility', 'hidden', 'important');
+                discountRow.style.setProperty('opacity', '0', 'important');
+            }
         }
 
         if (finalPriceSpan) {
@@ -424,6 +472,11 @@ window.initializeCouponUI = function(serviceType, originalPrice) {
 
     const couponUI = new CouponUI(serviceType, originalPrice);
     couponUI.insertIntoPage();
+    
+    // 確実に非表示要素を隠す
+    setTimeout(() => {
+        couponUI.ensureHiddenElements();
+    }, 200);
     
     // URLパラメータからクーポンコードを自動適用
     const urlParams = new URLSearchParams(window.location.search);
