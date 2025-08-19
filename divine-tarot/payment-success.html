@@ -137,18 +137,7 @@
     </div>
     
     <script>
-        // URLパラメータによるテストモード判定
-        (function(){
-            const urlParams = new URLSearchParams(window.location.search);
-            const isTestMode = urlParams.get('test') === 'true';
-            if (isTestMode) {
-                document.body.insertAdjacentHTML('afterbegin',
-                    '<div style="background: yellow; padding: 10px; text-align: center; font-weight: bold;">⚠️ テストモード</div>'
-                );
-            } else {
-                // 本番モード: ここに決済確認の処理を実装可能
-            }
-        })();
+
         // 文字数カウンター
         const consultationTextarea = document.getElementById('consultation');
         const charCounter = document.getElementById('char-counter');
@@ -213,6 +202,10 @@
             };
             
             localStorage.setItem('consultationData', JSON.stringify(consultationData));
+            
+            // 決済完了フラグを設定
+            localStorage.setItem('payment_completed_divine_tarot', 'true');
+            localStorage.setItem('payment_timestamp', Date.now().toString());
             
             // 鑑定結果ページへリダイレクト（実際の分析時間をシミュレート）
             setTimeout(() => {

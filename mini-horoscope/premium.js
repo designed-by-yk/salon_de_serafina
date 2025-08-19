@@ -130,8 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // DOM要素の取得
   const loginRequired = document.getElementById('login-required');
   const premiumContent = document.getElementById('premium-content');
-  const testPremiumBtn = document.getElementById('test-premium');
-  const logoutBtn = document.getElementById('logout-btn');
+
   const dailyMessageBtn = document.getElementById('daily-message-btn');
   const monthlyReadingBtn = document.getElementById('monthly-reading-btn');
   const dailyMessage = document.getElementById('daily-message');
@@ -180,13 +179,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // プレミアム会員状態をチェック
   function isPremiumUser() {
-    return localStorage.getItem('premium_user') === 'true';
+    // 実際の決済システムと連携するまで常にfalseを返す
+    return false;
   }
 
-  // プレミアム会員状態を設定
-  function setPremiumUser(status) {
-    localStorage.setItem('premium_user', status.toString());
-  }
+
 
   // 現在の星座を保存
   function saveCurrentSign(sign) {
@@ -292,17 +289,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // イベントリスナーの設定
-  testPremiumBtn.addEventListener('click', () => {
-    setPremiumUser(true);
-    alert('テスト用プレミアム会員になりました！');
-    initialize();
-  });
-
-  logoutBtn.addEventListener('click', () => {
-    setPremiumUser(false);
-    alert('ログアウトしました');
-    initialize();
-  });
 
   dailyMessageBtn.addEventListener('click', showDailyMessage);
   monthlyReadingBtn.addEventListener('click', showMonthlyReading);
@@ -315,7 +301,9 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // ボタンを挿入
   const controls = document.querySelector('.controls');
-  controls.insertBefore(historyBtn, logoutBtn);
+  if (controls) {
+    controls.appendChild(historyBtn);
+  }
 
   // 初期化実行
   initialize();

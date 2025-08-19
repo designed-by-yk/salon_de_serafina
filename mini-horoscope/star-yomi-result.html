@@ -509,6 +509,31 @@
                 console.log('📋 ユーザーデータ:', userData);
                 console.log('🔮 鑑定データ:', readingData);
                 
+                // 決済チェック
+                const paymentCompleted = localStorage.getItem('payment_completed_star_yomi');
+                const paymentTimestamp = localStorage.getItem('payment_timestamp');
+                
+                if (!paymentCompleted || paymentCompleted !== 'true') {
+                    console.error('❌ 決済が完了していません');
+                    alert('決済が完了していません。お申し込みページからやり直してください。');
+                    window.location.href = 'star-yomi-detail.html';
+                    return;
+                }
+                
+                // 決済から1時間以上経過していないかチェック
+                if (paymentTimestamp) {
+                    const timeDiff = Date.now() - parseInt(paymentTimestamp);
+                    const oneHour = 60 * 60 * 1000;
+                    if (timeDiff > oneHour) {
+                        console.error('❌ 決済情報が期限切れです');
+                        alert('セッションが期限切れです。お申し込みページからやり直してください。');
+                        localStorage.removeItem('payment_completed_star_yomi');
+                        localStorage.removeItem('payment_timestamp');
+                        window.location.href = 'star-yomi-detail.html';
+                        return;
+                    }
+                }
+                
                 if (!userData.name) {
                     console.error('❌ ユーザーデータが見つかりません');
                     alert('鑑定データが見つかりません。最初からやり直してください。');

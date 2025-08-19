@@ -217,23 +217,5 @@ ${zodiacSign}の${userData.name}さんにとって、今月は新しい可能性
     return age;
   }
 
-  // テスト用のAPI接続確認
-  async testConnection() {
-    try {
-      const testPrompt = "こんにちは、テストです。";
-      const response = await fetch(`${this.apiEndpoint}?key=${this.apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: testPrompt }] }]
-        })
-      });
-      
-      console.log('API接続テスト結果:', response.ok ? '成功' : '失敗');
-      return response.ok;
-    } catch (error) {
-      console.error('API接続テストエラー:', error);
-      return false;
-    }
-  }
+
 }

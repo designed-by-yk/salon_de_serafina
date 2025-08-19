@@ -291,18 +291,7 @@
     <script src="../api-config.js"></script>
     <script src="js/star-yomi-system.js"></script>
     <script>
-        // URLパラメータをチェックしてテストモード表示
-        (function(){
-            const urlParams = new URLSearchParams(window.location.search);
-            const isTestMode = urlParams.get('test') === 'true';
-            if (isTestMode) {
-                document.body.insertAdjacentHTML('afterbegin',
-                    '<div style="background: yellow; padding: 10px; text-align: center; font-weight: bold;">⚠️ テストモード</div>'
-                );
-            } else {
-                // 本番モードでは決済確認のコードをここに実装
-            }
-        })();
+
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('consultation-form');
             const submitBtn = document.getElementById('submit-btn');
@@ -348,10 +337,15 @@
                         consultationData.consultation
                     );
                     
-                    // 結果を保存
-                    localStorage.setItem('premiumZodiacReading', JSON.stringify(reading));
+                    // 決済確認（実際の運用では決済システムと連携）
+                    alert('現在は開発中です。実際の運用時は決済完了後に結果ページに移動します。');
+                    console.log('決済システム連携が必要です');
+                    return;
                     
-                    // 結果ページに移動
+                    // 以下は決済完了後に実行される予定のコード
+                    localStorage.setItem('premiumZodiacReading', JSON.stringify(reading));
+                    localStorage.setItem('payment_completed_star_yomi', 'true');
+                    localStorage.setItem('payment_timestamp', Date.now().toString());
                     window.location.href = 'star-yomi-result.html';
                     
                 } catch (error) {

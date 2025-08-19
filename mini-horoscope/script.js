@@ -275,15 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('current_selected_sign', sign);
   }
 
-  // デバッグ用：制限をリセット
-  function resetDailyLimit() {
-    const key = getTodayKey();
-    localStorage.removeItem(key);
-    console.log('制限がリセットされました');
-  }
 
-  // デバッグ用：グローバル関数として公開
-  window.debugReset = resetDailyLimit;
 
   // イベントリスナーの設定
   zodiacButtons.forEach(button => {

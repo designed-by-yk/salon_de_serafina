@@ -186,6 +186,32 @@
 
         function displayReading() {
             console.log('🎯 鑑定結果ページを読み込み中...');
+            
+            // 決済チェック
+            const paymentCompleted = localStorage.getItem('payment_completed_divine_tarot');
+            const paymentTimestamp = localStorage.getItem('payment_timestamp');
+            
+            if (!paymentCompleted || paymentCompleted !== 'true') {
+                console.error('❌ 決済が完了していません');
+                alert('決済が完了していません。お申し込みページからやり直してください。');
+                window.location.href = 'tarot-detail.html';
+                return;
+            }
+            
+            // 決済から1時間以上経過していないかチェック（セキュリティ強化）
+            if (paymentTimestamp) {
+                const timeDiff = Date.now() - parseInt(paymentTimestamp);
+                const oneHour = 60 * 60 * 1000;
+                if (timeDiff > oneHour) {
+                    console.error('❌ 決済情報が期限切れです');
+                    alert('セッションが期限切れです。お申し込みページからやり直してください。');
+                    localStorage.removeItem('payment_completed_divine_tarot');
+                    localStorage.removeItem('payment_timestamp');
+                    window.location.href = 'tarot-detail.html';
+                    return;
+                }
+            }
+            
             const consultationData = JSON.parse(localStorage.getItem('consultationData') || '{}');
             console.log('📋 相談データ確認:', consultationData);
             
@@ -205,54 +231,8 @@
             console.log('🔮 神託システムを初期化...');
             const oracle = new OracleSystem();
             
-            // テスト用：グローバルに公開してコンソールでテスト可能にする
-            window.oracleTest = oracle;
-            console.log('🧪 テスト用: window.oracleTest でシステムにアクセス可能');
-            console.log('🔬 API動作確認用コマンド:');
-            console.log('   window.testAPI() - 簡単なAPI接続テスト');
-            console.log('   window.testFullReading() - 完全な鑑定テスト');
-            
-            // API動作確認用のテスト関数を追加
-            window.testAPI = async function() {
-                console.log('🧪 API接続テストを開始...');
-                const testData = {
-                    name: "テストユーザー",
-                    consultation: "今後の人生について相談があります。",
-                    focusArea: "future",
-                    birthdate: "1990-01-01"
-                };
-                
-                try {
-                    const result = await oracle.generateWithAPI(testData);
-                    console.log('✅ API接続テスト成功！', result);
-                    return result;
-                } catch (error) {
-                    console.error('❌ API接続テスト失敗:', error);
-                    return null;
-                }
-            };
-            
-            window.testFullReading = async function() {
-                console.log('🔮 完全鑑定テストを開始...');
-                const testData = {
-                    name: "テストユーザー",
-                    consultation: "恋愛について悩んでいます。今の関係をどう進めていけばいいでしょうか。",
-                    focusArea: "love",
-                    birthdate: "1990-06-15"
-                };
-                
-                try {
-                    const result = await oracle.generateReading(testData);
-                    console.log('✅ 完全鑑定テスト完了！');
-                    console.log('📊 鑑定結果:', result);
-                    console.log('📝 鑑定文字数:', result.reading.length);
-                    console.log('🃏 選ばれたカード:', result.cards.map(c => c.name));
-                    return result;
-                } catch (error) {
-                    console.error('❌ 完全鑑定テスト失敗:', error);
-                    return null;
-                }
-            };
+
+
             
             console.log('⏳ 鑑定を開始します...');
             oracle.generateReading(consultationData).then(result => {
