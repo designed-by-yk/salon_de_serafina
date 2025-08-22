@@ -27,8 +27,8 @@
     <!-- クーポンシステム -->
     <script src="../js/coupon-system.js"></script>
     <script src="../js/coupon-ui.js"></script>
-    <!-- 統合管理連携スクリプト -->
-    <script src="../js/admin-integration.js?v=20250822j"></script>
+    <!-- 統合管理連携スクリプト - 一時無効化 -->
+    <!-- <script src="../js/admin-integration.js?v=20250822j"></script> -->
     <script src="../js/payment-redirect.js"></script>
     
     <!-- クーポン表示制御CSS -->
@@ -339,87 +339,8 @@
             });
         });
         
-        document.getElementById('payment-btn').addEventListener('click', () => {
-            // クーポンが適用されている場合の処理
-            if (couponUI) {
-                const appliedCoupon = couponUI.getAppliedCoupon();
-                
-                if (appliedCoupon.coupon) {
-                    // 無料クーポンの場合は直接結果ページへ
-                    if (appliedCoupon.finalPrice === 0) {
-                        // クーポン使用を記録
-                        const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
-                        if (userEmail && userEmail.includes('@')) {
-                            const result = window.couponSystem.useCoupon(
-                                appliedCoupon.coupon.code,
-                                'shintaku',
-                                userEmail,
-                                originalPrice
-                            );
-                            
-                            if (result.success) {
-                                alert('🎉 無料クーポンが適用されました！\n鑑定フォームに進みます。');
-                                window.location.href = 'payment-success.html?coupon=' + appliedCoupon.coupon.code + '&email=' + encodeURIComponent(userEmail);
-                            } else {
-                                alert('エラー: ' + result.error);
-                            }
-                        } else {
-                            alert('有効なメールアドレスを入力してください。');
-                        }
-                        return;
-                    }
-                    
-                    // 割引ありの場合はSquareの金額を調整
-                    // 実際の実装では、Square APIに割引後の金額を渡す
-                    const discountQuery = `?discount=${appliedCoupon.discountAmount}&final=${appliedCoupon.finalPrice}&coupon=${appliedCoupon.coupon.code}`;
-                    // 統合管理画面から決済リンクを取得
-                    const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
-                    let paymentUrl = 'https://square.link/u/SwNECrMb'; // デフォルト
-                    
-                    if (adminData.paymentLinks) {
-                        const shintakuLink = adminData.paymentLinks.find(link => 
-                            link.productId === 'shintaku' && link.active
-                        );
-                        if (shintakuLink && shintakuLink.url) {
-                            paymentUrl = shintakuLink.url;
-                        }
-                    }
-                    
-                    window.location.href = paymentUrl + discountQuery;
-                } else {
-                    // 通常の決済
-                    // 統合管理画面から決済リンクを取得
-                    const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
-                    let paymentUrl = 'https://square.link/u/SwNECrMb'; // デフォルト
-                    
-                    if (adminData.paymentLinks) {
-                        const shintakuLink = adminData.paymentLinks.find(link => 
-                            link.productId === 'shintaku' && link.active
-                        );
-                        if (shintakuLink && shintakuLink.url) {
-                            paymentUrl = shintakuLink.url;
-                        }
-                    }
-                    
-                    window.location.href = paymentUrl;
-                }
-            } else {
-                // 統合管理画面から決済リンクを取得
-                const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
-                let paymentUrl = 'https://square.link/u/SwNECrMb'; // デフォルト
-                
-                if (adminData.paymentLinks) {
-                    const shintakuLink = adminData.paymentLinks.find(link => 
-                        link.productId === 'shintaku' && link.active
-                    );
-                    if (shintakuLink && shintakuLink.url) {
-                        paymentUrl = shintakuLink.url;
-                    }
-                }
-                
-                window.location.href = paymentUrl;
-            }
-        });
+        // 決済ボタンのイベントリスナーは onclick で処理するため削除
+        // クーポン機能は将来的に再実装予定
 
         // スムーズスクロール
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
