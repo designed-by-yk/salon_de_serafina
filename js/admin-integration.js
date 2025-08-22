@@ -355,24 +355,29 @@ class AdminIntegration {
      * リンク要素の更新
      */
     updateLinkElements(serviceKey, link) {
-        // 決済ボタンのリンクを更新
+        // 決済ボタンのリンクを更新（ナビゲーションボタンは除外）
         const linkSelectors = [
-            `[data-service="${serviceKey}"] a`,
-            `[data-service="${serviceKey}"] .payment-button`,
-            `[data-service="${serviceKey}"] .btn`,
-            `.${serviceKey}-link`,
-            `#${serviceKey}-link`
+            // 決済専用ボタンのみをターゲット
+            `#payment-btn`, // 神託・星詠み決済ボタン
+            `#tarot-payment-btn`, // 個人鑑定タロット
+            `#star-payment-btn`, // 個人鑑定星詠み
+            `#bundle-payment-btn`, // 個人鑑定セット
+            `.payment-button`, // 決済ボタン用クラス
+            `[data-payment-button="${serviceKey}"]` // 決済ボタン用データ属性
         ];
 
         linkSelectors.forEach(selector => {
             const elements = document.querySelectorAll(selector);
             elements.forEach(element => {
-                if (element.tagName === 'A') {
-                    element.href = link.url;
-                    this.log(`🔗 ${serviceKey} のリンクを更新: ${link.url}`);
-                } else if (element.onclick || element.addEventListener) {
-                    // ボタンの場合、クリックイベントを更新
+                // 決済ボタンかどうかを確認（ナビゲーションボタンを除外）
+                const isPaymentButton = element.id?.includes('payment') || 
+                                      element.classList.contains('payment-button') ||
+                                      element.getAttribute('data-payment-button');
+                
+                if (isPaymentButton && element.onclick) {
+                    // onclickイベントを更新（決済ボタンのみ）
                     element.onclick = () => window.open(link.url, '_blank');
+                    this.log(`🔗 ${serviceKey} の決済ボタンを更新: ${link.url}`);
                 }
             });
         });

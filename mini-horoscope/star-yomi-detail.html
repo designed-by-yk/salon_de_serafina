@@ -15,8 +15,8 @@
     <!-- クーポンシステム -->
     <script src="../js/coupon-system.js"></script>
     <script src="../js/coupon-ui.js"></script>
-    <!-- 統合管理連携スクリプト - 一時無効化 -->
-    <!-- <script src="../js/admin-integration.js?v=20250822j"></script> -->
+    <!-- 統合管理連携スクリプト -->
+    <script src="../js/admin-integration.js?v=20250822k"></script>
 
 
     
@@ -367,8 +367,8 @@
                 </p>
             </div>
             
-            <button class="payment-button" onclick="window.open('https://square.link/u/7XZ2ip4k', '_blank')">
-                💎 980円で鑑定する
+            <button id="payment-btn" class="payment-button" onclick="window.open('https://square.link/u/7XZ2ip4k', '_blank')">
+                💎 今すぐ鑑定を申し込む
             </button>
 
             <!-- ✅ テストボタンは完全に削除されました - 2025年8月19日 15:28:59 -->
@@ -582,7 +582,7 @@
                     } else if (finalPrice < originalPrice) {
                         paymentBtn.innerHTML = `💎 ¥${finalPrice.toLocaleString()}で鑑定する`;
                     } else {
-                        paymentBtn.innerHTML = '💎 980円で鑑定する';
+                        paymentBtn.innerHTML = '💎 今すぐ鑑定を申し込む';
                     }
                 }
             });

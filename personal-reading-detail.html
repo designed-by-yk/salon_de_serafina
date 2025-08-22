@@ -13,8 +13,8 @@
     <!-- クーポンシステム -->
     <script src="js/coupon-system.js"></script>
     <script src="js/coupon-ui.js"></script>
-    <!-- 統合管理連携スクリプト - 一時無効化 -->
-    <!-- <script src="js/admin-integration.js?v=20250822j"></script> -->
+    <!-- 統合管理連携スクリプト -->
+    <script src="js/admin-integration.js?v=20250822k"></script>
 
 
 
@@ -809,18 +809,20 @@
                 <p>品質維持のため、少人数制で承っております</p>
             </div>
 
-            <!-- クーポン入力エリア（統合） -->
-            <div id="personal-coupon-section" style="
-                background: rgba(255, 215, 0, 0.1);
-                border: 1px solid rgba(255, 215, 0, 0.3);
+            <!-- クーポン使用者向け注意書き -->
+            <div class="coupon-notice" style="
+                background: rgba(255, 165, 0, 0.15);
+                border: 2px solid rgba(255, 165, 0, 0.4);
                 border-radius: 15px;
-                padding: 25px;
-                margin: 30px 0;
+                padding: 20px;
+                margin: 20px 0;
                 text-align: center;
             ">
-                <h3 style="color: #ffd700; margin-bottom: 15px;">🎫 クーポンコードをお持ちの方</h3>
-                <p style="margin-bottom: 20px; color: rgba(255,255,255,0.8);">全ての鑑定プランに適用できます</p>
-                <!-- クーポンUIがここに挿入されます -->
+                <h3 style="color: #ffa500; margin-bottom: 10px;">🎫 クーポンをお持ちの方へ</h3>
+                <p style="color: rgba(255,255,255,0.9); margin: 0; font-size: 16px;">
+                    クーポンコードをお持ちの場合は、各サービスの価格表示下にある<br>
+                    クーポン入力欄でコードを入力してください。
+                </p>
             </div>
             
             <div class="options-grid">
@@ -856,8 +858,56 @@
                         <p class="current-price"><span class="display-text" data-service="personal_tarot" data-text-type="discount">オープン記念</span> <span id="tarot-price" class="price" data-service="personal_tarot">5,000円</span></p>
                     </div>
                     
+                    <!-- タロット用クーポンシステム -->
+                    <div class="coupon-system-individual" style="
+                        background: rgba(255, 215, 0, 0.1);
+                        border: 1px solid rgba(255, 215, 0, 0.3);
+                        border-radius: 10px;
+                        padding: 15px;
+                        margin: 15px 0;
+                    ">
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center; justify-content: center;">
+                            <input type="text" id="tarot-coupon-input" placeholder="クーポンコード" style="
+                                width: 150px;
+                                padding: 8px 12px;
+                                border: 2px solid rgba(255, 215, 0, 0.5);
+                                border-radius: 8px;
+                                background: rgba(255, 255, 255, 0.1);
+                                color: white;
+                                font-size: 14px;
+                                text-align: center;
+                            ">
+                            <button id="tarot-apply-coupon" style="
+                                padding: 8px 15px;
+                                background: linear-gradient(45deg, #ffd700, #ffed4e);
+                                color: #000;
+                                border: none;
+                                border-radius: 8px;
+                                font-weight: bold;
+                                cursor: pointer;
+                                font-size: 14px;
+                            ">適用</button>
+                        </div>
+                        
+                        <!-- 価格計算表示 -->
+                        <div id="tarot-price-calculation" style="
+                            background: rgba(255, 255, 255, 0.1);
+                            border-radius: 8px;
+                            padding: 12px;
+                            margin: 10px 0;
+                            font-size: 14px;
+                            text-align: center;
+                        ">
+                            <div>元の価格: <span id="tarot-original-display">5,000円</span></div>
+                            <div id="tarot-discount-row" style="display: none;">割引額: <span id="tarot-discount-amount">0円</span></div>
+                            <div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 8px 0; padding-top: 8px; font-weight: bold;">
+                                お支払い金額: <span id="tarot-final-price" style="color: #ffd700;">5,000円</span>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <button id="tarot-payment-btn" class="option-button tarot-btn" data-service="personal_tarot" onclick="handlePersonalPayment('tarot', 5000)">
-                        🔮 タロット鑑定を申し込む
+                        🔮 今すぐ鑑定を申し込む
                     </button>
                 </div>
                 
@@ -893,8 +943,56 @@
                         <p class="current-price"><span class="display-text" data-service="personal_birthday" data-text-type="discount">オープン記念</span> <span id="star-price" class="price" data-service="personal_birthday">5,000円</span></p>
                     </div>
                     
+                    <!-- 星詠み用クーポンシステム -->
+                    <div class="coupon-system-individual" style="
+                        background: rgba(255, 215, 0, 0.1);
+                        border: 1px solid rgba(255, 215, 0, 0.3);
+                        border-radius: 10px;
+                        padding: 15px;
+                        margin: 15px 0;
+                    ">
+                        <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center; justify-content: center;">
+                            <input type="text" id="star-coupon-input" placeholder="クーポンコード" style="
+                                width: 150px;
+                                padding: 8px 12px;
+                                border: 2px solid rgba(255, 215, 0, 0.5);
+                                border-radius: 8px;
+                                background: rgba(255, 255, 255, 0.1);
+                                color: white;
+                                font-size: 14px;
+                                text-align: center;
+                            ">
+                            <button id="star-apply-coupon" style="
+                                padding: 8px 15px;
+                                background: linear-gradient(45deg, #ffd700, #ffed4e);
+                                color: #000;
+                                border: none;
+                                border-radius: 8px;
+                                font-weight: bold;
+                                cursor: pointer;
+                                font-size: 14px;
+                            ">適用</button>
+                        </div>
+                        
+                        <!-- 価格計算表示 -->
+                        <div id="star-price-calculation" style="
+                            background: rgba(255, 255, 255, 0.1);
+                            border-radius: 8px;
+                            padding: 12px;
+                            margin: 10px 0;
+                            font-size: 14px;
+                            text-align: center;
+                        ">
+                            <div>元の価格: <span id="star-original-display">5,000円</span></div>
+                            <div id="star-discount-row" style="display: none;">割引額: <span id="star-discount-amount">0円</span></div>
+                            <div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 8px 0; padding-top: 8px; font-weight: bold;">
+                                お支払い金額: <span id="star-final-price" style="color: #ffd700;">5,000円</span>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <button id="star-payment-btn" class="option-button star-btn" data-service="personal_birthday" onclick="handlePersonalPayment('star', 5000)">
-                        ⭐ 星詠み鑑定を申し込む
+                        ⭐ 今すぐ鑑定を申し込む
                     </button>
                 </div>
             </div>
@@ -924,8 +1022,56 @@
                     <p>（2つの鑑定書を丁寧に作成するため）</p>
                 </div>
 
+                <!-- セット用クーポンシステム -->
+                <div class="coupon-system-individual" style="
+                    background: rgba(255, 215, 0, 0.1);
+                    border: 1px solid rgba(255, 215, 0, 0.3);
+                    border-radius: 10px;
+                    padding: 15px;
+                    margin: 15px 0;
+                ">
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px; align-items: center; justify-content: center;">
+                        <input type="text" id="bundle-coupon-input" placeholder="クーポンコード" style="
+                            width: 150px;
+                            padding: 8px 12px;
+                            border: 2px solid rgba(255, 215, 0, 0.5);
+                            border-radius: 8px;
+                            background: rgba(255, 255, 255, 0.1);
+                            color: white;
+                            font-size: 14px;
+                            text-align: center;
+                        ">
+                        <button id="bundle-apply-coupon" style="
+                            padding: 8px 15px;
+                            background: linear-gradient(45deg, #ffd700, #ffed4e);
+                            color: #000;
+                            border: none;
+                            border-radius: 8px;
+                            font-weight: bold;
+                            cursor: pointer;
+                            font-size: 14px;
+                        ">適用</button>
+                    </div>
+                    
+                    <!-- 価格計算表示 -->
+                    <div id="bundle-price-calculation" style="
+                        background: rgba(255, 255, 255, 0.1);
+                        border-radius: 8px;
+                        padding: 12px;
+                        margin: 10px 0;
+                        font-size: 14px;
+                        text-align: center;
+                    ">
+                        <div>元の価格: <span id="bundle-original-display">8,000円</span></div>
+                        <div id="bundle-discount-row" style="display: none;">割引額: <span id="bundle-discount-amount">0円</span></div>
+                        <div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 8px 0; padding-top: 8px; font-weight: bold;">
+                            お支払い金額: <span id="bundle-final-price" style="color: #ffd700;">8,000円</span>
+                        </div>
+                    </div>
+                </div>
+
                 <button id="bundle-payment-btn" class="bundle-button" data-service="personal_set" onclick="handlePersonalPayment('bundle', 8000)">
-                    セットで申し込む（2,000円お得）
+                    🎁 今すぐセット鑑定を申し込む
                 </button>
             </div>
 
@@ -996,6 +1142,8 @@
                 （Visa, Mastercard, JCB, Amex対応）</strong>
             </p>
         </div>
+        
+
         
         <!-- LINE登録案内 -->
         <div class="line-registration-personal" style="
@@ -1151,17 +1299,8 @@
                 return;
             }
 
-            // クーポンUIを初期化（個人鑑定は複数サービスタイプに対応）
-            // 統合管理画面から最新価格を取得してから初期化
-            personalCouponUI = new CouponUI(['personal_tarot', 'personal_birthday', 'personal_set'], originalPrices.tarot);
-            
-            // クーポンセクションにUIを挿入
-            const couponSection = document.getElementById('personal-coupon-section');
-            if (couponSection) {
-                const couponHTML = personalCouponUI.createCouponSection();
-                couponSection.innerHTML = couponSection.innerHTML + couponHTML;
-                personalCouponUI.bindEvents();
-            }
+            // 個別クーポンシステムを初期化
+            initializeIndividualCouponSystems();
 
             // 価格更新イベントをリッスン
             window.addEventListener('priceUpdated', function(event) {
@@ -1178,6 +1317,168 @@
             });
 
             console.log('✅ 個人鑑定クーポンシステム初期化完了');
+        }
+        
+        // 個別クーポンシステムの初期化
+        function initializeIndividualCouponSystems() {
+            const services = [
+                { 
+                    name: 'tarot', 
+                    serviceType: 'personal_tarot',
+                    price: originalPrices.tarot 
+                },
+                { 
+                    name: 'star', 
+                    serviceType: 'personal_birthday',
+                    price: originalPrices.star 
+                },
+                { 
+                    name: 'bundle', 
+                    serviceType: 'personal_set',
+                    price: originalPrices.bundle 
+                }
+            ];
+            
+            services.forEach(service => {
+                initializeServiceCoupon(service);
+            });
+        }
+        
+        // 各サービスのクーポンシステム初期化
+        function initializeServiceCoupon(service) {
+            const { name, serviceType, price } = service;
+            let appliedCoupon = null;
+            
+            // 元の価格を統合管理画面の価格に更新
+            document.getElementById(`${name}-original-display`).textContent = `${price.toLocaleString()}円`;
+            document.getElementById(`${name}-final-price`).textContent = `${price.toLocaleString()}円`;
+            
+            // クーポン適用ボタン
+            document.getElementById(`${name}-apply-coupon`).addEventListener('click', function() {
+                const couponCode = document.getElementById(`${name}-coupon-input`).value.trim();
+                if (!couponCode) {
+                    alert('クーポンコードを入力してください');
+                    return;
+                }
+                
+                // クーポンシステムでクーポンを検証
+                if (window.couponSystem) {
+                    const coupon = window.couponSystem.validateCoupon(couponCode, [serviceType]);
+                    if (coupon) {
+                        appliedCoupon = coupon;
+                        updateServicePrice(name, price, coupon);
+                        updatePaymentButton(name, price, coupon);
+                    } else {
+                        alert('無効なクーポンコードまたはこのサービスに適用できません');
+                    }
+                }
+            });
+            
+            // 決済ボタンのクリック処理を更新
+            updatePaymentButtonHandler(name, serviceType, price, () => appliedCoupon);
+        }
+        
+        // サービス価格更新
+        function updateServicePrice(serviceName, originalPrice, coupon) {
+            let finalPrice = originalPrice;
+            let discountAmount = 0;
+            
+            if (coupon.discountType === 'percentage') {
+                discountAmount = originalPrice * (coupon.discountValue / 100);
+                finalPrice = Math.max(0, originalPrice - discountAmount);
+            } else {
+                discountAmount = coupon.discountValue;
+                finalPrice = Math.max(0, originalPrice - discountAmount);
+            }
+            
+            // 割引額表示
+            document.getElementById(`${serviceName}-discount-row`).style.display = 'block';
+            document.getElementById(`${serviceName}-discount-amount`).textContent = `${Math.round(discountAmount).toLocaleString()}円`;
+            
+            // 最終価格更新
+            const finalPriceElement = document.getElementById(`${serviceName}-final-price`);
+            if (finalPrice === 0) {
+                finalPriceElement.innerHTML = '<span style="color: #4caf50;">無料</span>';
+            } else {
+                finalPriceElement.textContent = `${Math.round(finalPrice).toLocaleString()}円`;
+            }
+        }
+        
+        // 決済ボタン更新
+        function updatePaymentButton(serviceName, originalPrice, coupon) {
+            const btn = document.getElementById(`${serviceName}-payment-btn`);
+            let finalPrice = originalPrice;
+            
+            if (coupon.discountType === 'percentage') {
+                finalPrice = Math.max(0, originalPrice * (1 - coupon.discountValue / 100));
+            } else {
+                finalPrice = Math.max(0, originalPrice - coupon.discountValue);
+            }
+            
+            if (finalPrice === 0) {
+                btn.style.background = 'linear-gradient(45deg, #4caf50, #66bb6a)';
+                if (serviceName === 'tarot') {
+                    btn.textContent = '🎉 無料でタロット鑑定を受ける';
+                } else if (serviceName === 'star') {
+                    btn.textContent = '🎉 無料で星詠み鑑定を受ける';
+                } else {
+                    btn.textContent = '🎉 無料でセット鑑定を受ける';
+                }
+            }
+        }
+        
+        // 決済ボタンのハンドラー更新
+        function updatePaymentButtonHandler(serviceName, serviceType, originalPrice, getCoupon) {
+            const btn = document.getElementById(`${serviceName}-payment-btn`);
+            
+            // 既存のonclickを削除して新しいハンドラーを設定
+            btn.onclick = function() {
+                const coupon = getCoupon();
+                
+                if (coupon) {
+                    // クーポン適用済みの決済
+                    handleCouponPayment(serviceName, serviceType, originalPrice, coupon);
+                } else {
+                    // 通常の決済
+                    handlePersonalPayment(serviceName, originalPrice);
+                }
+            };
+        }
+        
+        // クーポン決済処理
+        function handleCouponPayment(serviceName, serviceType, originalPrice, coupon) {
+            let finalPrice = originalPrice;
+            
+            if (coupon.discountType === 'percentage') {
+                finalPrice = Math.max(0, originalPrice * (1 - coupon.discountValue / 100));
+            } else {
+                finalPrice = Math.max(0, originalPrice - coupon.discountValue);
+            }
+            
+            if (finalPrice === 0) {
+                // 無料クーポンの場合
+                const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
+                if (userEmail && userEmail.includes('@')) {
+                    const result = window.couponSystem.useCoupon(
+                        coupon.code,
+                        serviceType,
+                        userEmail,
+                        originalPrice
+                    );
+                    
+                    if (result.success) {
+                        alert('🎉 無料クーポンが適用されました！\n鑑定フォームに進みます。');
+                        window.location.href = `payment-success.html?coupon=${coupon.code}&email=${encodeURIComponent(userEmail)}&service=${serviceName}`;
+                    } else {
+                        alert('エラー: ' + result.error);
+                    }
+                } else {
+                    alert('有効なメールアドレスを入力してください。');
+                }
+            } else {
+                // 有料決済
+                proceedToPayment(serviceName, Math.round(finalPrice), coupon.code);
+            }
         }
 
         // 全ての価格を更新
