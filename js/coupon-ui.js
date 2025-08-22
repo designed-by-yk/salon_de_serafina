@@ -14,6 +14,21 @@ class CouponUI {
         
         this.init();
     }
+    
+    /**
+     * 基底価格を更新（統合管理画面の価格変更に対応）
+     */
+    updateBasePrice(newPrice) {
+        this.originalPrice = newPrice;
+        this.finalPrice = newPrice;
+        
+        // クーポンが適用されている場合は再計算
+        if (this.appliedCoupon) {
+            this.applyCurrentCoupon();
+        } else {
+            this.updatePriceDisplay();
+        }
+    }
 
     init() {
         this.createCouponSection();

@@ -294,9 +294,31 @@
         
         // クーポンシステムの初期化
         let couponUI;
-        const originalPrice = 1500; // 通常価格
+        let originalPrice = 1500; // デフォルト価格
+        
+        // 統合管理画面から現在の販売価格を取得
+        function getCurrentPrice() {
+            try {
+                const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                if (adminData.products) {
+                    const shintakuProduct = adminData.products.find(p => 
+                        p.productId === 'shintaku' || p.name === '神託システムタロット占い'
+                    );
+                    if (shintakuProduct && shintakuProduct.salePrice) {
+                        return parseInt(shintakuProduct.salePrice);
+                    }
+                }
+            } catch (e) {
+                console.log('統合管理画面データ取得エラー:', e);
+            }
+            return 1500; // デフォルト価格
+        }
         
         document.addEventListener('DOMContentLoaded', function() {
+            // 現在の販売価格を取得
+            originalPrice = getCurrentPrice();
+            console.log('神託システム現在価格:', originalPrice);
+            
             // クーポンUIを初期化
             couponUI = window.initializeCouponUI('shintaku', originalPrice);
             

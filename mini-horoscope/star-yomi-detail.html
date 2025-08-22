@@ -526,9 +526,31 @@
     <script>
         // クーポンシステムの初期化
         let couponUI;
-        const originalPrice = 980; // 通常価格
+        let originalPrice = 980; // デフォルト価格
+        
+        // 統合管理画面から現在の販売価格を取得
+        function getCurrentPrice() {
+            try {
+                const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                if (adminData.products) {
+                    const starProduct = adminData.products.find(p => 
+                        p.productId === 'star_yomi' || p.name === '星詠みシステム星座占い'
+                    );
+                    if (starProduct && starProduct.salePrice) {
+                        return parseInt(starProduct.salePrice);
+                    }
+                }
+            } catch (e) {
+                console.log('統合管理画面データ取得エラー:', e);
+            }
+            return 980; // デフォルト価格
+        }
         
         document.addEventListener('DOMContentLoaded', function() {
+            // 現在の販売価格を取得
+            originalPrice = getCurrentPrice();
+            console.log('星詠みシステム現在価格:', originalPrice);
+            
             // クーポンUIを初期化
             couponUI = window.initializeCouponUI('star_yomi', originalPrice);
             
