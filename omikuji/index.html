@@ -507,10 +507,12 @@
       </a>
 
       <!-- 7. セラフィナの個人鑑定のボタン -->
-      <button id="personal-reading-btn" class="btn personal-reading-btn" data-service="personal_set">
-        <span class="main-text">セラフィナの個人鑑定</span>
-        <span class="sub-text">完全オーダーメイド鑑定</span>
-      </button>
+      <a href="../personal-reading-detail.html" id="personal-reading-link" data-service="personal_set">
+        <button id="personal-reading-btn" class="btn personal-reading-btn" data-service="personal_set">
+          <span class="main-text">セラフィナの個人鑑定</span>
+          <span class="sub-text">完全オーダーメイド鑑定</span>
+        </button>
+      </a>
 
     </div>
   </div>
@@ -815,7 +817,7 @@
   </script>
 
   <!-- 統合管理連携スクリプト -->
-      <script src="../js/admin-integration.js?v=20250822"></script>
+      <script src="../js/admin-integration.js?v=20250822j"></script>
   
   <!-- 価格表示スタイル -->
   <style>
@@ -870,13 +872,11 @@
 
 
   <script>
-    // 連携テスト用の関数
-    function testPriceSync() {
-      const resultDiv = document.getElementById('integration-test-result');
-      resultDiv.style.display = 'block';
-      resultDiv.innerHTML = '🔄 価格同期テスト実行中...';
-      
-      console.log('🧪 価格同期テスト開始');
+    // ページ読み込み完了時の初期化
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🎉 Salon de Serafina 読み込み完了');
+    });
+
       
       try {
         // 管理データを確認

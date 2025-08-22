@@ -191,7 +191,8 @@ class AdminIntegration {
             'personal-reading-detail.html': ['personal_tarot', 'personal_birthday', 'personal_set'],
             'tarot-detail.html': ['shintaku'],
             'star-yomi-detail.html': ['star_yomi'],
-            'index.html': [] // トップページは価格更新しない
+            'index.html': ['shintaku', 'star_yomi', 'personal_tarot', 'personal_birthday', 'personal_set'], // トップページは全サービス対応
+            '': ['shintaku', 'star_yomi', 'personal_tarot', 'personal_birthday', 'personal_set'] // GitHub Pages ルート対応
         };
         
         // 現在のページに対応するサービスリストを取得
