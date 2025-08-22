@@ -763,6 +763,7 @@
                     <tr>
                         <th>商品名</th>
                         <th>価格</th>
+                        <th>価格タイプ</th>
                         <th>Square決済リンクURL</th>
                         <th>ステータス</th>
                         <th>アクション</th>
@@ -1560,11 +1561,25 @@
             tbody.innerHTML = '';
             
             currentData.paymentLinks.forEach(link => {
+                const priceTypeText = {
+                    'regular': '通常価格',
+                    'sale': '販売価格',
+                    'custom': 'カスタム価格'
+                }[link.priceType || 'sale'] || '販売価格';
+                
+                const description = link.description ? `<br><small style="color: rgba(255,255,255,0.7);">${link.description}</small>` : '';
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${link.productName}</td>
                     <td>¥${link.price.toLocaleString()}</td>
-                    <td style="word-break: break-all; max-width: 300px;">${link.url}</td>
+                    <td>
+                        <span style="background: rgba(255,215,0,0.2); padding: 2px 8px; border-radius: 12px; font-size: 12px;">
+                            ${priceTypeText}
+                        </span>
+                        ${description}
+                    </td>
+                    <td style="word-break: break-all; max-width: 250px; font-size: 12px;">${link.url}</td>
                     <td>
                         <span class="status-badge ${link.active ? 'status-active' : 'status-inactive'}">
                             ${link.active ? '有効' : '無効'}
@@ -2064,12 +2079,26 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label class="form-label">価格タイプ</label>
+                        <select class="form-select" id="link-price-type" onchange="updateCustomPrice()">
+                            <option value="regular" ${link?.priceType === 'regular' ? 'selected' : ''}>通常価格</option>
+                            <option value="sale" ${link?.priceType === 'sale' ? 'selected' : ''}>販売価格</option>
+                            <option value="custom" ${link?.priceType === 'custom' ? 'selected' : ''}>カスタム価格</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label class="form-label">価格</label>
-                        <input type="number" class="form-input" id="link-price" value="${link?.price || ''}" placeholder="3000" readonly>
+                        <input type="number" class="form-input" id="link-price" value="${link?.price || ''}" placeholder="3000">
+                        <small class="form-hint" id="price-hint">商品選択後に自動設定されます</small>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">説明（任意）</label>
+                        <input type="text" class="form-input" id="link-description" value="${link?.description || ''}" placeholder="500円割引、1000円割引など">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Square決済リンクURL</label>
                         <input type="url" class="form-input" id="link-url" value="${link?.url || ''}" placeholder="https://square.link/u/YOUR_LINK">
+                        <small class="form-hint">Squareで価格別の商品を作成し、その決済リンクを貼ってください</small>
                     </div>
                     <div class="form-group">
                         <label class="form-label">ステータス</label>
@@ -2091,20 +2120,42 @@
         // 商品選択時に価格を自動設定
         function updateLinkPrice() {
             const productId = document.getElementById('link-product').value;
+            const priceType = document.getElementById('link-price-type').value;
             const product = currentData.products.find(p => p.id === productId);
             const priceInput = document.getElementById('link-price');
+            const hintElement = document.getElementById('price-hint');
             
-            if (product) {
-                priceInput.value = product.salePrice;
+            if (product && priceType !== 'custom') {
+                if (priceType === 'regular') {
+                    priceInput.value = product.regularPrice;
+                    hintElement.textContent = `通常価格: ${product.regularPrice.toLocaleString()}円`;
+                } else if (priceType === 'sale') {
+                    priceInput.value = product.salePrice;
+                    hintElement.textContent = `販売価格: ${product.salePrice.toLocaleString()}円`;
+                }
+                priceInput.readOnly = true;
             } else {
-                priceInput.value = '';
+                if (priceType === 'custom') {
+                    priceInput.readOnly = false;
+                    hintElement.textContent = 'カスタム価格を入力してください（例：500円割引 = 元価格 - 500）';
+                } else {
+                    priceInput.value = '';
+                    hintElement.textContent = '商品を選択してください';
+                }
             }
+        }
+        
+        // 価格タイプ変更時の処理
+        function updateCustomPrice() {
+            updateLinkPrice();
         }
 
         // 決済リンク保存
         function savePaymentLink(linkId) {
             const productId = document.getElementById('link-product').value;
+            const priceType = document.getElementById('link-price-type').value;
             const price = parseInt(document.getElementById('link-price').value);
+            const description = document.getElementById('link-description').value;
             const url = document.getElementById('link-url').value;
             const active = document.getElementById('link-active').value === 'true';
             
@@ -2125,7 +2176,9 @@
                 if (link) {
                     link.productId = productId;
                     link.productName = product.name;
+                    link.priceType = priceType;
                     link.price = price;
+                    link.description = description;
                     link.url = url;
                     link.active = active;
                     link.updated = new Date().toISOString();
@@ -2133,10 +2186,12 @@
             } else {
                 // 新規作成
                 const newLink = {
-                    id: `${productId}_${price}`,
+                    id: `${productId}_${priceType}_${price}_${Date.now()}`,
                     productId: productId,
                     productName: product.name,
+                    priceType: priceType,
                     price: price,
+                    description: description,
                     url: url,
                     active: active,
                     created: new Date().toISOString()

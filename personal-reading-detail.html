@@ -1363,13 +1363,13 @@
                 
                 // クーポンシステムでクーポンを検証
                 if (window.couponSystem) {
-                    const coupon = window.couponSystem.validateCoupon(couponCode, [serviceType]);
-                    if (coupon) {
-                        appliedCoupon = coupon;
-                        updateServicePrice(name, price, coupon);
-                        updatePaymentButton(name, price, coupon);
+                    const validation = window.couponSystem.validateCoupon(couponCode, [serviceType], price);
+                    if (validation.valid) {
+                        appliedCoupon = validation;
+                        updateServicePrice(name, price, validation);
+                        updatePaymentButton(name, price, validation);
                     } else {
-                        alert('無効なクーポンコードまたはこのサービスに適用できません');
+                        alert('無効なクーポンコード: ' + validation.error);
                     }
                 }
             });
@@ -1379,17 +1379,12 @@
         }
         
         // サービス価格更新
-        function updateServicePrice(serviceName, originalPrice, coupon) {
+        function updateServicePrice(serviceName, originalPrice, validation) {
             let finalPrice = originalPrice;
-            let discountAmount = 0;
+            let discountAmount = validation.discountAmount || 0;
             
-            if (coupon.discountType === 'percentage') {
-                discountAmount = originalPrice * (coupon.discountValue / 100);
-                finalPrice = Math.max(0, originalPrice - discountAmount);
-            } else {
-                discountAmount = coupon.discountValue;
-                finalPrice = Math.max(0, originalPrice - discountAmount);
-            }
+            // validation オブジェクトから割引額を直接取得
+            finalPrice = Math.max(0, originalPrice - discountAmount);
             
             // 割引額表示
             document.getElementById(`${serviceName}-discount-row`).style.display = 'block';
@@ -1405,15 +1400,9 @@
         }
         
         // 決済ボタン更新
-        function updatePaymentButton(serviceName, originalPrice, coupon) {
+        function updatePaymentButton(serviceName, originalPrice, validation) {
             const btn = document.getElementById(`${serviceName}-payment-btn`);
-            let finalPrice = originalPrice;
-            
-            if (coupon.discountType === 'percentage') {
-                finalPrice = Math.max(0, originalPrice * (1 - coupon.discountValue / 100));
-            } else {
-                finalPrice = Math.max(0, originalPrice - coupon.discountValue);
-            }
+            let finalPrice = Math.max(0, originalPrice - (validation.discountAmount || 0));
             
             if (finalPrice === 0) {
                 btn.style.background = 'linear-gradient(45deg, #4caf50, #66bb6a)';
@@ -1446,21 +1435,15 @@
         }
         
         // クーポン決済処理
-        function handleCouponPayment(serviceName, serviceType, originalPrice, coupon) {
-            let finalPrice = originalPrice;
-            
-            if (coupon.discountType === 'percentage') {
-                finalPrice = Math.max(0, originalPrice * (1 - coupon.discountValue / 100));
-            } else {
-                finalPrice = Math.max(0, originalPrice - coupon.discountValue);
-            }
+        function handleCouponPayment(serviceName, serviceType, originalPrice, validation) {
+            let finalPrice = Math.max(0, originalPrice - (validation.discountAmount || 0));
             
             if (finalPrice === 0) {
                 // 無料クーポンの場合
                 const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
                 if (userEmail && userEmail.includes('@')) {
                     const result = window.couponSystem.useCoupon(
-                        coupon.code,
+                        validation.code,
                         serviceType,
                         userEmail,
                         originalPrice
@@ -1468,7 +1451,7 @@
                     
                     if (result.success) {
                         alert('🎉 無料クーポンが適用されました！\n鑑定フォームに進みます。');
-                        window.location.href = `payment-success.html?coupon=${coupon.code}&email=${encodeURIComponent(userEmail)}&service=${serviceName}`;
+                        window.location.href = `payment-success.html?coupon=${validation.code}&email=${encodeURIComponent(userEmail)}&service=${serviceName}`;
                     } else {
                         alert('エラー: ' + result.error);
                     }
@@ -1477,7 +1460,7 @@
                 }
             } else {
                 // 有料決済
-                proceedToPayment(serviceName, Math.round(finalPrice), coupon.code);
+                proceedToPayment(serviceName, Math.round(finalPrice), validation.code);
             }
         }
 
@@ -1637,21 +1620,68 @@
             }
         }
 
-        // Square決済に進む
+        // Square決済に進む（価格別リンク対応）
         function proceedToPayment(type, finalPrice, couponCode) {
-            const paymentUrls = {
-                tarot: 'https://square.link/u/pr9IPpWD',
-                star: 'https://square.link/u/og2lry9q',
-                bundle: 'https://square.link/u/KFP9scSR'
-            };
-
-            let url = paymentUrls[type];
+            // 統合管理画面から決済リンクを取得
+            const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
             
-            if (couponCode) {
-                url += `?coupon=${couponCode}&final=${finalPrice}&type=${type}`;
+            // デフォルトの決済リンク（価格別）
+            const defaultPaymentUrls = {
+                tarot: {
+                    5000: 'https://square.link/u/pr9IPpWD',
+                    4500: 'https://square.link/u/NEW_4500_TAROT_LINK',
+                    4000: 'https://square.link/u/NEW_4000_TAROT_LINK',
+                    default: 'https://square.link/u/pr9IPpWD'
+                },
+                star: {
+                    5000: 'https://square.link/u/og2lry9q',
+                    4500: 'https://square.link/u/NEW_4500_STAR_LINK',
+                    4000: 'https://square.link/u/NEW_4000_STAR_LINK',
+                    default: 'https://square.link/u/og2lry9q'
+                },
+                bundle: {
+                    8000: 'https://square.link/u/KFP9scSR',
+                    7500: 'https://square.link/u/NEW_7500_BUNDLE_LINK',
+                    7000: 'https://square.link/u/NEW_7000_BUNDLE_LINK',
+                    default: 'https://square.link/u/KFP9scSR'
+                }
+            };
+            
+            // 統合管理画面から対応する決済リンクを取得
+            let url = null;
+            if (adminData.paymentLinks) {
+                const serviceMapping = {
+                    tarot: 'personal_tarot',
+                    star: 'personal_birthday',
+                    bundle: 'personal_set'
+                };
+                
+                const serviceType = serviceMapping[type];
+                const paymentLink = adminData.paymentLinks.find(link => 
+                    link.productId === serviceType && 
+                    link.active &&
+                    (link.pricePoint === finalPrice || !link.pricePoint)
+                );
+                
+                if (paymentLink && paymentLink.url) {
+                    url = paymentLink.url;
+                }
             }
             
-            window.location.href = url;
+            // 統合管理画面にない場合はデフォルトを使用
+            if (!url) {
+                const typeUrls = defaultPaymentUrls[type];
+                url = typeUrls[finalPrice] || typeUrls.default;
+            }
+            
+            // クーポンパラメータを追加
+            if (couponCode) {
+                const separator = url.includes('?') ? '&' : '?';
+                url += `${separator}coupon=${couponCode}&final=${finalPrice}&type=${type}`;
+            }
+            
+            console.log(`💰 決済リンク: ${type} - ¥${finalPrice} -> ${url}`);
+            window.open(url, '_blank');
         }
     </script>
 </body>

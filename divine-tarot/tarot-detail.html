@@ -199,7 +199,69 @@
                 </div>
             </div>
             
-            <button id="payment-btn" class="btn-primary" onclick="window.open('https://square.link/u/SwNECrMb', '_blank')">
+            <!-- クーポンシステム -->
+            <div class="coupon-system-individual" style="
+                background: rgba(255, 215, 0, 0.1);
+                border: 1px solid rgba(255, 215, 0, 0.3);
+                border-radius: 15px;
+                padding: 20px;
+                margin: 20px 0;
+                text-align: center;
+            ">
+                <h3 style="color: #ffd700; margin-bottom: 15px;">🎫 クーポンコード</h3>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center; justify-content: center;">
+                    <input type="text" id="shintaku-coupon-input" placeholder="クーポンコードを入力" style="
+                        width: 200px;
+                        padding: 10px 15px;
+                        border: 2px solid rgba(255, 215, 0, 0.5);
+                        border-radius: 10px;
+                        background: rgba(255, 255, 255, 0.1);
+                        color: white;
+                        font-size: 16px;
+                        text-align: center;
+                    ">
+                    <button id="shintaku-apply-coupon" style="
+                        padding: 10px 20px;
+                        background: linear-gradient(45deg, #ffd700, #ffed4e);
+                        color: #000;
+                        border: none;
+                        border-radius: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        font-size: 16px;
+                    ">適用</button>
+                    <button id="shintaku-clear-coupon" style="
+                        padding: 10px 15px;
+                        background: rgba(255, 255, 255, 0.2);
+                        color: white;
+                        border: 1px solid rgba(255, 255, 255, 0.3);
+                        border-radius: 10px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        display: none;
+                    ">リセット</button>
+                </div>
+                
+                <!-- 価格計算表示 -->
+                <div id="shintaku-price-calculation" style="
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 10px;
+                    padding: 15px;
+                    margin: 15px 0;
+                    font-size: 16px;
+                ">
+                    <div>元の価格: <span id="shintaku-original-display">1,500円</span></div>
+                    <div id="shintaku-discount-row" style="display: none; color: #4caf50; margin: 5px 0;">
+                        割引額: <span id="shintaku-discount-amount">0円</span>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 10px 0; padding-top: 10px; font-weight: bold; font-size: 18px;">
+                        お支払い金額: <span id="shintaku-final-price" style="color: #ffd700;">1,500円</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="payment-btn" class="btn-primary">
                 <span class="btn-icon">🔮</span>
                 <span class="btn-text">今すぐ鑑定を申し込む</span>
                 <span class="btn-sub">安心の決済システム</span>
@@ -319,8 +381,8 @@
             originalPrice = getCurrentPrice();
             console.log('神託システム現在価格:', originalPrice);
             
-            // クーポンUIを初期化
-            couponUI = window.initializeCouponUI('shintaku', originalPrice);
+            // 新しいクーポンシステムを初期化
+            initializeShintakuCouponSystem();
             
             // 確実にクーポン適用済み表示を隠す（強制実行）
             setTimeout(function() {
@@ -361,8 +423,174 @@
             });
         });
         
-        // 決済ボタンのイベントリスナーは onclick で処理するため削除
-        // クーポン機能は将来的に再実装予定
+        // 神託システム用クーポンシステム
+        function initializeShintakuCouponSystem() {
+            let appliedValidation = null;
+            
+            // 元の価格を表示更新
+            document.getElementById('shintaku-original-display').textContent = `${originalPrice.toLocaleString()}円`;
+            document.getElementById('shintaku-final-price').textContent = `${originalPrice.toLocaleString()}円`;
+            
+            // クーポン適用ボタン
+            document.getElementById('shintaku-apply-coupon').addEventListener('click', function() {
+                const couponCode = document.getElementById('shintaku-coupon-input').value.trim();
+                if (!couponCode) {
+                    alert('クーポンコードを入力してください');
+                    return;
+                }
+                
+                // クーポンシステムでクーポンを検証
+                if (window.couponSystem) {
+                    const validation = window.couponSystem.validateCoupon(couponCode, ['shintaku'], originalPrice);
+                    if (validation.valid) {
+                        appliedValidation = validation;
+                        updateShintakuPriceDisplay(validation);
+                        showClearButton();
+                        updatePaymentButtonHandler();
+                    } else {
+                        alert('無効なクーポンコード: ' + validation.error);
+                    }
+                }
+            });
+            
+            // クーポンリセットボタン
+            document.getElementById('shintaku-clear-coupon').addEventListener('click', function() {
+                appliedValidation = null;
+                resetShintakuPriceDisplay();
+                hideClearButton();
+                updatePaymentButtonHandler();
+            });
+            
+            // 価格表示更新
+            function updateShintakuPriceDisplay(validation) {
+                const discountAmount = validation.discountAmount || 0;
+                const finalPrice = Math.max(0, originalPrice - discountAmount);
+                
+                // 割引額表示
+                document.getElementById('shintaku-discount-row').style.display = 'block';
+                document.getElementById('shintaku-discount-amount').textContent = `${Math.round(discountAmount).toLocaleString()}円`;
+                
+                // 最終価格表示
+                const finalPriceElement = document.getElementById('shintaku-final-price');
+                if (finalPrice === 0) {
+                    finalPriceElement.innerHTML = '<span style="color: #4caf50;">無料</span>';
+                } else {
+                    finalPriceElement.textContent = `${Math.round(finalPrice).toLocaleString()}円`;
+                }
+                
+                // 入力欄を無効化
+                document.getElementById('shintaku-coupon-input').disabled = true;
+                document.getElementById('shintaku-apply-coupon').textContent = '適用済み';
+                document.getElementById('shintaku-apply-coupon').disabled = true;
+            }
+            
+            // 価格表示リセット
+            function resetShintakuPriceDisplay() {
+                document.getElementById('shintaku-discount-row').style.display = 'none';
+                document.getElementById('shintaku-final-price').textContent = `${originalPrice.toLocaleString()}円`;
+                
+                // 入力欄を有効化
+                document.getElementById('shintaku-coupon-input').disabled = false;
+                document.getElementById('shintaku-coupon-input').value = '';
+                document.getElementById('shintaku-apply-coupon').textContent = '適用';
+                document.getElementById('shintaku-apply-coupon').disabled = false;
+            }
+            
+            // クリアボタン表示
+            function showClearButton() {
+                document.getElementById('shintaku-clear-coupon').style.display = 'inline-block';
+            }
+            
+            // クリアボタン非表示
+            function hideClearButton() {
+                document.getElementById('shintaku-clear-coupon').style.display = 'none';
+            }
+            
+            // 決済ボタンのハンドラー更新
+            function updatePaymentButtonHandler() {
+                const paymentBtn = document.getElementById('payment-btn');
+                paymentBtn.onclick = function() {
+                    const finalPrice = appliedValidation ? 
+                        Math.max(0, originalPrice - (appliedValidation.discountAmount || 0)) : 
+                        originalPrice;
+                    
+                    proceedToShintakuPayment(finalPrice, appliedValidation);
+                };
+            }
+            
+            // 神託決済処理
+            function proceedToShintakuPayment(finalPrice, validation) {
+                if (validation && finalPrice === 0) {
+                    // 無料クーポンの場合
+                    const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
+                    if (userEmail && userEmail.includes('@')) {
+                        const result = window.couponSystem.useCoupon(
+                            validation.code,
+                            'shintaku',
+                            userEmail,
+                            originalPrice
+                        );
+                        
+                        if (result.success) {
+                            alert('🎉 無料クーポンが適用されました！\n鑑定フォームに進みます。');
+                            window.location.href = `payment-success.html?coupon=${validation.code}&email=${encodeURIComponent(userEmail)}&service=shintaku`;
+                        } else {
+                            alert('エラー: ' + result.error);
+                        }
+                    } else {
+                        alert('有効なメールアドレスを入力してください。');
+                    }
+                } else {
+                    // 有料決済（価格別リンク対応）
+                    proceedToShintakuSquarePayment(finalPrice, validation ? validation.code : null);
+                }
+            }
+            
+            // Square決済リンク（価格別対応）
+            function proceedToShintakuSquarePayment(finalPrice, couponCode) {
+                // 統合管理画面から決済リンクを取得
+                const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                
+                // 価格別デフォルトリンク
+                const priceUrls = {
+                    1500: 'https://square.link/u/SwNECrMb',
+                    1000: 'https://square.link/u/NEW_1000_SHINTAKU_LINK',
+                    500: 'https://square.link/u/NEW_500_SHINTAKU_LINK',
+                    default: 'https://square.link/u/SwNECrMb'
+                };
+                
+                // 統合管理画面から適切なリンクを検索
+                let url = null;
+                if (adminData.paymentLinks) {
+                    const paymentLink = adminData.paymentLinks.find(link => 
+                        link.productId === 'shintaku' && 
+                        link.active &&
+                        (link.pricePoint === finalPrice || !link.pricePoint)
+                    );
+                    
+                    if (paymentLink && paymentLink.url) {
+                        url = paymentLink.url;
+                    }
+                }
+                
+                // デフォルトリンクを使用
+                if (!url) {
+                    url = priceUrls[finalPrice] || priceUrls.default;
+                }
+                
+                // クーポンパラメータを追加
+                if (couponCode) {
+                    const separator = url.includes('?') ? '&' : '?';
+                    url += `${separator}coupon=${couponCode}&final=${finalPrice}&service=shintaku`;
+                }
+                
+                console.log(`💰 神託決済: ¥${finalPrice} -> ${url}`);
+                window.open(url, '_blank');
+            }
+            
+            // 初期状態の決済ボタン設定
+            updatePaymentButtonHandler();
+        }
 
         // スムーズスクロール
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {

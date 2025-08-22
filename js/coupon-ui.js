@@ -296,12 +296,12 @@ class CouponUI {
         const result = this.couponSystem.validateCoupon(code, serviceTypeForValidation, this.originalPrice);
         
         if (result.valid) {
-            this.appliedCoupon = result.coupon;
-            this.finalPrice = result.finalPrice;
+            this.appliedCoupon = result;
+            this.finalPrice = this.originalPrice - (result.discountAmount || 0);
             
             this.showMessage('', '');
             this.showDiscountInfo(result);
-            this.updatePriceDisplay(result.discountAmount, result.finalPrice);
+            this.updatePriceDisplay(result.discountAmount, this.finalPrice);
             
             // 入力欄を無効化
             couponInput.disabled = true;

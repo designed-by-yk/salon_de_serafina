@@ -367,7 +367,69 @@
                 </p>
             </div>
             
-            <button id="payment-btn" class="payment-button" onclick="window.open('https://square.link/u/7XZ2ip4k', '_blank')">
+            <!-- クーポンシステム -->
+            <div class="coupon-system-individual" style="
+                background: rgba(255, 215, 0, 0.1);
+                border: 1px solid rgba(255, 215, 0, 0.3);
+                border-radius: 15px;
+                padding: 20px;
+                margin: 20px 0;
+                text-align: center;
+            ">
+                <h3 style="color: #ffd700; margin-bottom: 15px;">🎫 クーポンコード</h3>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center; justify-content: center;">
+                    <input type="text" id="star-coupon-input" placeholder="クーポンコードを入力" style="
+                        width: 200px;
+                        padding: 10px 15px;
+                        border: 2px solid rgba(255, 215, 0, 0.5);
+                        border-radius: 10px;
+                        background: rgba(255, 255, 255, 0.1);
+                        color: white;
+                        font-size: 16px;
+                        text-align: center;
+                    ">
+                    <button id="star-apply-coupon" style="
+                        padding: 10px 20px;
+                        background: linear-gradient(45deg, #ffd700, #ffed4e);
+                        color: #000;
+                        border: none;
+                        border-radius: 10px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        font-size: 16px;
+                    ">適用</button>
+                    <button id="star-clear-coupon" style="
+                        padding: 10px 15px;
+                        background: rgba(255, 255, 255, 0.2);
+                        color: white;
+                        border: 1px solid rgba(255, 255, 255, 0.3);
+                        border-radius: 10px;
+                        cursor: pointer;
+                        font-size: 14px;
+                        display: none;
+                    ">リセット</button>
+                </div>
+                
+                <!-- 価格計算表示 -->
+                <div id="star-price-calculation" style="
+                    background: rgba(255, 255, 255, 0.1);
+                    border-radius: 10px;
+                    padding: 15px;
+                    margin: 15px 0;
+                    font-size: 16px;
+                ">
+                    <div>元の価格: <span id="star-original-display">980円</span></div>
+                    <div id="star-discount-row" style="display: none; color: #4caf50; margin: 5px 0;">
+                        割引額: <span id="star-discount-amount">0円</span>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 10px 0; padding-top: 10px; font-weight: bold; font-size: 18px;">
+                        お支払い金額: <span id="star-final-price" style="color: #ffd700;">980円</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="payment-btn" class="payment-button">
                 💎 今すぐ鑑定を申し込む
             </button>
 
@@ -551,8 +613,8 @@
             originalPrice = getCurrentPrice();
             console.log('星詠みシステム現在価格:', originalPrice);
             
-            // クーポンUIを初期化
-            couponUI = window.initializeCouponUI('star_yomi', originalPrice);
+            // 新しいクーポンシステムを初期化
+            initializeStarCouponSystem();
             
             // 確実にクーポン適用済み表示を隠す（強制実行）
             setTimeout(function() {
@@ -588,6 +650,175 @@
             });
         });
         
+        // 星詠みシステム用クーポンシステム
+        function initializeStarCouponSystem() {
+            let appliedValidation = null;
+            
+            // 元の価格を表示更新
+            document.getElementById('star-original-display').textContent = `${originalPrice.toLocaleString()}円`;
+            document.getElementById('star-final-price').textContent = `${originalPrice.toLocaleString()}円`;
+            
+            // クーポン適用ボタン
+            document.getElementById('star-apply-coupon').addEventListener('click', function() {
+                const couponCode = document.getElementById('star-coupon-input').value.trim();
+                if (!couponCode) {
+                    alert('クーポンコードを入力してください');
+                    return;
+                }
+                
+                // クーポンシステムでクーポンを検証
+                if (window.couponSystem) {
+                    const validation = window.couponSystem.validateCoupon(couponCode, ['star_yomi'], originalPrice);
+                    if (validation.valid) {
+                        appliedValidation = validation;
+                        updateStarPriceDisplay(validation);
+                        showClearButton();
+                        updatePaymentButtonHandler();
+                    } else {
+                        alert('無効なクーポンコード: ' + validation.error);
+                    }
+                }
+            });
+            
+            // クーポンリセットボタン
+            document.getElementById('star-clear-coupon').addEventListener('click', function() {
+                appliedValidation = null;
+                resetStarPriceDisplay();
+                hideClearButton();
+                updatePaymentButtonHandler();
+            });
+            
+            // 価格表示更新
+            function updateStarPriceDisplay(validation) {
+                const discountAmount = validation.discountAmount || 0;
+                const finalPrice = Math.max(0, originalPrice - discountAmount);
+                
+                // 割引額表示
+                document.getElementById('star-discount-row').style.display = 'block';
+                document.getElementById('star-discount-amount').textContent = `${Math.round(discountAmount).toLocaleString()}円`;
+                
+                // 最終価格表示
+                const finalPriceElement = document.getElementById('star-final-price');
+                if (finalPrice === 0) {
+                    finalPriceElement.innerHTML = '<span style="color: #4caf50;">無料</span>';
+                } else {
+                    finalPriceElement.textContent = `${Math.round(finalPrice).toLocaleString()}円`;
+                }
+                
+                // 入力欄を無効化
+                document.getElementById('star-coupon-input').disabled = true;
+                document.getElementById('star-apply-coupon').textContent = '適用済み';
+                document.getElementById('star-apply-coupon').disabled = true;
+            }
+            
+            // 価格表示リセット
+            function resetStarPriceDisplay() {
+                document.getElementById('star-discount-row').style.display = 'none';
+                document.getElementById('star-final-price').textContent = `${originalPrice.toLocaleString()}円`;
+                
+                // 入力欄を有効化
+                document.getElementById('star-coupon-input').disabled = false;
+                document.getElementById('star-coupon-input').value = '';
+                document.getElementById('star-apply-coupon').textContent = '適用';
+                document.getElementById('star-apply-coupon').disabled = false;
+            }
+            
+            // クリアボタン表示
+            function showClearButton() {
+                document.getElementById('star-clear-coupon').style.display = 'inline-block';
+            }
+            
+            // クリアボタン非表示
+            function hideClearButton() {
+                document.getElementById('star-clear-coupon').style.display = 'none';
+            }
+            
+            // 決済ボタンのハンドラー更新
+            function updatePaymentButtonHandler() {
+                const paymentBtn = document.getElementById('payment-btn');
+                paymentBtn.onclick = function() {
+                    const finalPrice = appliedValidation ? 
+                        Math.max(0, originalPrice - (appliedValidation.discountAmount || 0)) : 
+                        originalPrice;
+                    
+                    proceedToStarPayment(finalPrice, appliedValidation);
+                };
+            }
+            
+            // 星詠み決済処理
+            function proceedToStarPayment(finalPrice, validation) {
+                if (validation && finalPrice === 0) {
+                    // 無料クーポンの場合
+                    const userEmail = prompt('鑑定結果をお送りするメールアドレスを入力してください:');
+                    if (userEmail && userEmail.includes('@')) {
+                        const result = window.couponSystem.useCoupon(
+                            validation.code,
+                            'star_yomi',
+                            userEmail,
+                            originalPrice
+                        );
+                        
+                        if (result.success) {
+                            alert('🎉 無料クーポンが適用されました！\n鑑定フォームに進みます。');
+                            window.location.href = `payment-success.html?coupon=${validation.code}&email=${encodeURIComponent(userEmail)}&service=star_yomi`;
+                        } else {
+                            alert('エラー: ' + result.error);
+                        }
+                    } else {
+                        alert('有効なメールアドレスを入力してください。');
+                    }
+                } else {
+                    // 有料決済（価格別リンク対応）
+                    proceedToStarSquarePayment(finalPrice, validation ? validation.code : null);
+                }
+            }
+            
+            // Square決済リンク（価格別対応）
+            function proceedToStarSquarePayment(finalPrice, couponCode) {
+                // 統合管理画面から決済リンクを取得
+                const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                
+                // 価格別デフォルトリンク
+                const priceUrls = {
+                    980: 'https://square.link/u/7XZ2ip4k',
+                    700: 'https://square.link/u/NEW_700_STAR_LINK',
+                    500: 'https://square.link/u/NEW_500_STAR_LINK',
+                    default: 'https://square.link/u/7XZ2ip4k'
+                };
+                
+                // 統合管理画面から適切なリンクを検索
+                let url = null;
+                if (adminData.paymentLinks) {
+                    const paymentLink = adminData.paymentLinks.find(link => 
+                        link.productId === 'star_yomi' && 
+                        link.active &&
+                        (link.pricePoint === finalPrice || !link.pricePoint)
+                    );
+                    
+                    if (paymentLink && paymentLink.url) {
+                        url = paymentLink.url;
+                    }
+                }
+                
+                // デフォルトリンクを使用
+                if (!url) {
+                    url = priceUrls[finalPrice] || priceUrls.default;
+                }
+                
+                // クーポンパラメータを追加
+                if (couponCode) {
+                    const separator = url.includes('?') ? '&' : '?';
+                    url += `${separator}coupon=${couponCode}&final=${finalPrice}&service=star_yomi`;
+                }
+                
+                console.log(`💰 星詠み決済: ¥${finalPrice} -> ${url}`);
+                window.open(url, '_blank');
+            }
+            
+            // 初期状態の決済ボタン設定
+            updatePaymentButtonHandler();
+        }
+
         function handlePayment() {
             // クーポンが適用されている場合の処理
             if (couponUI) {
