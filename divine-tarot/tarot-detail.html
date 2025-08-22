@@ -372,13 +372,52 @@
                     // 割引ありの場合はSquareの金額を調整
                     // 実際の実装では、Square APIに割引後の金額を渡す
                     const discountQuery = `?discount=${appliedCoupon.discountAmount}&final=${appliedCoupon.finalPrice}&coupon=${appliedCoupon.coupon.code}`;
-                    window.location.href = 'https://square.link/u/SwNECrMb' + discountQuery;
+                    // 統合管理画面から決済リンクを取得
+                    const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                    let paymentUrl = 'https://square.link/u/SwNECrMb'; // デフォルト
+                    
+                    if (adminData.paymentLinks) {
+                        const shintakuLink = adminData.paymentLinks.find(link => 
+                            link.productId === 'shintaku' && link.active
+                        );
+                        if (shintakuLink && shintakuLink.url) {
+                            paymentUrl = shintakuLink.url;
+                        }
+                    }
+                    
+                    window.location.href = paymentUrl + discountQuery;
                 } else {
                     // 通常の決済
-                    window.location.href = 'https://square.link/u/SwNECrMb';
+                    // 統合管理画面から決済リンクを取得
+                    const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                    let paymentUrl = 'https://square.link/u/SwNECrMb'; // デフォルト
+                    
+                    if (adminData.paymentLinks) {
+                        const shintakuLink = adminData.paymentLinks.find(link => 
+                            link.productId === 'shintaku' && link.active
+                        );
+                        if (shintakuLink && shintakuLink.url) {
+                            paymentUrl = shintakuLink.url;
+                        }
+                    }
+                    
+                    window.location.href = paymentUrl;
                 }
             } else {
-                window.location.href = 'https://square.link/u/SwNECrMb';
+                // 統合管理画面から決済リンクを取得
+                const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                let paymentUrl = 'https://square.link/u/SwNECrMb'; // デフォルト
+                
+                if (adminData.paymentLinks) {
+                    const shintakuLink = adminData.paymentLinks.find(link => 
+                        link.productId === 'shintaku' && link.active
+                    );
+                    if (shintakuLink && shintakuLink.url) {
+                        paymentUrl = shintakuLink.url;
+                    }
+                }
+                
+                window.location.href = paymentUrl;
             }
         });
 

@@ -598,13 +598,52 @@
                     
                     // 割引ありの場合はSquareの金額を調整
                     const discountQuery = `?discount=${appliedCoupon.discountAmount}&final=${appliedCoupon.finalPrice}&coupon=${appliedCoupon.coupon.code}`;
-                    window.location.href = 'https://square.link/u/7XZ2ip4k' + discountQuery;
+                    // 統合管理画面から決済リンクを取得
+                    const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                    let paymentUrl = 'https://square.link/u/7XZ2ip4k'; // デフォルト
+                    
+                    if (adminData.paymentLinks) {
+                        const starYomiLink = adminData.paymentLinks.find(link => 
+                            link.productId === 'star_yomi' && link.active
+                        );
+                        if (starYomiLink && starYomiLink.url) {
+                            paymentUrl = starYomiLink.url;
+                        }
+                    }
+                    
+                    window.location.href = paymentUrl + discountQuery;
                 } else {
                     // 通常の決済
-                    window.location.href = 'https://square.link/u/7XZ2ip4k';
+                    // 統合管理画面から決済リンクを取得
+                    const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                    let paymentUrl = 'https://square.link/u/7XZ2ip4k'; // デフォルト
+                    
+                    if (adminData.paymentLinks) {
+                        const starYomiLink = adminData.paymentLinks.find(link => 
+                            link.productId === 'star_yomi' && link.active
+                        );
+                        if (starYomiLink && starYomiLink.url) {
+                            paymentUrl = starYomiLink.url;
+                        }
+                    }
+                    
+                    window.location.href = paymentUrl;
                 }
             } else {
-                window.location.href = 'https://square.link/u/7XZ2ip4k';
+                // 統合管理画面から決済リンクを取得
+                const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                let paymentUrl = 'https://square.link/u/7XZ2ip4k'; // デフォルト
+                
+                if (adminData.paymentLinks) {
+                    const starYomiLink = adminData.paymentLinks.find(link => 
+                        link.productId === 'star_yomi' && link.active
+                    );
+                    if (starYomiLink && starYomiLink.url) {
+                        paymentUrl = starYomiLink.url;
+                    }
+                }
+                
+                window.location.href = paymentUrl;
             }
         }
         
