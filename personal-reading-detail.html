@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Cache Buster: 2024-12-14 21:05:00 -->
+<!-- Cache Buster: 2025-08-22 18:08:00 CSS Style Update -->
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -13,6 +13,12 @@
     <!-- クーポンシステム -->
     <script src="js/coupon-system.js"></script>
     <script src="js/coupon-ui.js"></script>
+    <!-- 統合管理連携スクリプト -->
+    <script src="js/admin-integration.js?v=20250822i"></script>
+
+
+
+
     <script src="js/payment-redirect.js"></script>
     
     <style>
@@ -173,10 +179,10 @@
         }
         
         .original-price {
-            font-size: 1.2em;
-            text-decoration: line-through;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 10px;
+            font-size: 1.1em !important;
+            text-decoration: line-through !important;
+            color: rgba(255, 255, 255, 0.6) !important;
+            margin-bottom: 10px !important;
         }
         
         .special-price {
@@ -846,11 +852,11 @@
                     </div>
                     
                     <div class="option-pricing">
-                        <p class="original-price">通常 7,000円</p>
-                        <p class="current-price">オープン記念 <span id="tarot-price" class="price">5,000円</span></p>
+                        <p class="original-price price" data-service="personal_tarot" data-price-type="regular">通常 7,000円</p>
+                        <p class="current-price"><span class="display-text" data-service="personal_tarot" data-text-type="discount">オープン記念</span> <span id="tarot-price" class="price" data-service="personal_tarot">5,000円</span></p>
                     </div>
                     
-                    <button id="tarot-payment-btn" class="option-button tarot-btn" onclick="handlePersonalPayment('tarot', 5000)">
+                    <button id="tarot-payment-btn" class="option-button tarot-btn" data-service="personal_tarot" onclick="handlePersonalPayment('tarot', 5000)">
                         🔮 タロット鑑定を申し込む
                     </button>
                 </div>
@@ -883,11 +889,11 @@
                     </div>
                     
                     <div class="option-pricing">
-                        <p class="original-price">通常 7,000円</p>
-                        <p class="current-price">オープン記念 <span id="star-price" class="price">5,000円</span></p>
+                        <p class="original-price price" data-service="personal_birthday" data-price-type="regular">通常 7,000円</p>
+                        <p class="current-price"><span class="display-text" data-service="personal_birthday" data-text-type="discount">オープン記念</span> <span id="star-price" class="price" data-service="personal_birthday">5,000円</span></p>
                     </div>
                     
-                    <button id="star-payment-btn" class="option-button star-btn" onclick="handlePersonalPayment('star', 5000)">
+                    <button id="star-payment-btn" class="option-button star-btn" data-service="personal_birthday" onclick="handlePersonalPayment('star', 5000)">
                         ⭐ 星詠み鑑定を申し込む
                     </button>
                 </div>
@@ -907,9 +913,9 @@
                         </ul>
                     </div>
                     <div class="bundle-pricing">
-                        <p class="bundle-original">単品合計 10,000円</p>
-                        <p class="bundle-price">セット価格 <span id="bundle-price" class="price">8,000円</span></p>
-                        <p class="bundle-savings">2,000円お得！</p>
+                        <p class="bundle-original price" data-service="personal_set" data-price-type="regular">単品合計 10,000円</p>
+                        <p class="bundle-price">セット価格 <span id="bundle-price" class="price" data-service="personal_set">8,000円</span></p>
+                        <p class="bundle-savings display-text" data-service="personal_set" data-text-type="discount">2,000円お得！</p>
                     </div>
                 </div>
                 <div class="set-notice">
@@ -918,7 +924,7 @@
                     <p>（2つの鑑定書を丁寧に作成するため）</p>
                 </div>
 
-                <button id="bundle-payment-btn" class="bundle-button" onclick="handlePersonalPayment('bundle', 8000)">
+                <button id="bundle-payment-btn" class="bundle-button" data-service="personal_set" onclick="handlePersonalPayment('bundle', 8000)">
                     セットで申し込む（2,000円お得）
                 </button>
             </div>

@@ -27,6 +27,8 @@
     <!-- クーポンシステム -->
     <script src="../js/coupon-system.js"></script>
     <script src="../js/coupon-ui.js"></script>
+    <!-- 統合管理連携スクリプト -->
+    <script src="../js/admin-integration.js?v=20250822i"></script>
     <script src="../js/payment-redirect.js"></script>
     
     <!-- クーポン表示制御CSS -->
@@ -155,14 +157,14 @@
         <section class="pricing">
             <div class="price-box">
                 <div class="price-header">
-                    <h3>🌟 オープン記念価格</h3>
+                    <h3 class="display-text" data-service="shintaku" data-text-type="header">🌟 オープン記念価格</h3>
                 </div>
-                <p class="original-price">通常価格 2,000円</p>
+                <p class="original-price price" data-service="shintaku" data-price-type="regular">通常価格 3,000円</p>
                 <p class="special-price">
-                    <span class="price-large">今だけ 1,500円</span>
-                    <span class="discount">25% OFF</span>
+                    <span class="price-large"><span class="price" data-service="shintaku" data-price-type="sale">3,000円</span></span>
+                    <span class="discount display-text" data-service="shintaku" data-text-type="discount">オープン記念価格</span>
                 </p>
-                <div class="savings">500円お得！</div>
+                <div class="savings" data-service="shintaku" data-price-type="savings">お得！</div>
                 <div class="urgency">※ この価格は予告なく終了する場合があります</div>
                 
                 <!-- 安心・安全なお支払い情報 -->

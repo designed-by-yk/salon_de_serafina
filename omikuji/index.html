@@ -491,23 +491,23 @@
       <div class="oracle-system-label">「神託システム」による魂の鑑定へ</div>
 
       <!-- 5. 神託システムタロット占いのボタン -->
-      <a href="../divine-tarot/tarot-detail.html" id="divine-tarot-link">
-        <button id="pro-tarot-btn" class="btn pro-tarot-btn">
+      <a href="../divine-tarot/tarot-detail.html" id="divine-tarot-link" data-service="shintaku">
+        <button id="pro-tarot-btn" class="btn pro-tarot-btn" data-service="shintaku">
           <span class="main-text">神託システムタロット占い</span>
           <span class="sub-text">本格的なタロット鑑定</span>
         </button>
       </a>
       
       <!-- 6. 星詠みシステム星座占いのボタン -->
-      <a href="../mini-horoscope/star-yomi-detail.html" id="premium-zodiac-link">
-        <button id="pro-birthday-btn" class="btn pro-birthday-btn">
+      <a href="../mini-horoscope/star-yomi-detail.html" id="premium-zodiac-link" data-service="star_yomi">
+        <button id="pro-birthday-btn" class="btn pro-birthday-btn" data-service="star_yomi">
           <span class="main-text">星詠みシステム星座占い</span>
           <span class="sub-text">詳細な運勢と開運法</span>
         </button>
       </a>
 
       <!-- 7. セラフィナの個人鑑定のボタン -->
-      <button id="personal-reading-btn" class="btn personal-reading-btn">
+      <button id="personal-reading-btn" class="btn personal-reading-btn" data-service="personal_set">
         <span class="main-text">セラフィナの個人鑑定</span>
         <span class="sub-text">完全オーダーメイド鑑定</span>
       </button>
@@ -814,6 +814,36 @@
     });
   </script>
 
+  <!-- 統合管理連携スクリプト -->
+      <script src="../js/admin-integration.js?v=20250822"></script>
+  
+  <!-- 価格表示スタイル -->
+  <style>
+    .price-display {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      color: #FFD700;
+      margin-top: 5px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    
+    /* AdminIntegration連携テスト用 */
+    .admin-integration-test {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      z-index: 9999;
+      display: none;
+    }
+  </style>
+
   <!-- 隠し管理者アクセスボタン -->
   <div id="hidden-admin-btn" style="
     position: fixed;
@@ -836,5 +866,184 @@
   " onclick="openAdminPortal()">
     🔐 管理者ポータル
   </div>
+
+
+
+  <script>
+    // 連携テスト用の関数
+    function testPriceSync() {
+      const resultDiv = document.getElementById('integration-test-result');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = '🔄 価格同期テスト実行中...';
+      
+      console.log('🧪 価格同期テスト開始');
+      
+      try {
+        // 管理データを確認
+        const adminData = localStorage.getItem('salon_integrated_admin');
+        if (!adminData) {
+          resultDiv.innerHTML = '❌ 管理データなし<br>統合管理画面で初期化してください';
+          setTimeout(() => resultDiv.style.display = 'none', 3000);
+          return;
+        }
+        
+        const data = JSON.parse(adminData);
+        console.log('📊 管理データ:', data);
+        
+        // AdminIntegrationをテスト
+        if (window.adminIntegration) {
+          const result = window.adminIntegration.manualSyncTest();
+          resultDiv.innerHTML = `✅ 同期完了<br>商品数: ${data.products?.length || 0}`;
+        } else {
+          // 手動で価格と表示文言を更新
+          updatePricesManually(data);
+          updateDisplayTextsManually(data);
+          resultDiv.innerHTML = '✅ 手動同期完了';
+        }
+        
+        setTimeout(() => resultDiv.style.display = 'none', 3000);
+        
+      } catch (error) {
+        console.error('❌ 同期エラー:', error);
+        resultDiv.innerHTML = '❌ 同期エラー<br>' + error.message;
+        setTimeout(() => resultDiv.style.display = 'none', 5000);
+      }
+    }
+    
+    // 手動価格更新
+    function updatePricesManually(data) {
+      if (!data || !data.products) return;
+      
+              const serviceMapping = {
+          'shintaku': '神託システムタロット占い',
+          'star_yomi': '星詠みシステム星座占い',
+          'personal_tarot': '個人鑑定タロット',
+          'personal_birthday': '個人鑑定誕生日',
+          'personal_set': '個人鑑定セット'
+        };
+      
+      data.products.forEach(product => {
+        for (const [key, name] of Object.entries(serviceMapping)) {
+          if (product.name === name) {
+            const priceElements = document.querySelectorAll(`[data-service="${key}"] .price, [data-service="${key}"][data-price-type]`);
+            const salePrice = product.salePrice || product.regularPrice;
+            const regularPrice = product.regularPrice || salePrice;
+            
+            priceElements.forEach(element => {
+              const priceType = element.getAttribute('data-price-type');
+              let displayPrice;
+              
+              if (priceType === 'regular') {
+                displayPrice = `${regularPrice.toLocaleString()}円`;
+              } else if (priceType === 'sale') {
+                displayPrice = `${salePrice.toLocaleString()}円`;
+              } else if (priceType === 'savings') {
+                const savings = regularPrice - salePrice;
+                displayPrice = savings > 0 ? `${savings.toLocaleString()}円お得！` : 'オープン記念価格';
+              } else {
+                displayPrice = `¥${salePrice.toLocaleString()}`;
+              }
+              
+              element.textContent = displayPrice;
+              console.log(`💰 ${key} 価格更新[${priceType || 'default'}]: ${displayPrice}`);
+            });
+            break;
+          }
+        }
+      });
+    }
+
+    // 手動表示文言更新
+    function updateDisplayTextsManually(data) {
+      if (!data || !data.products) return;
+      
+      const serviceMapping = {
+        'shintaku': '神託システムタロット占い',
+        'star_yomi': '星詠みシステム星座占い',
+        'personal_tarot': '個人鑑定タロット',
+        'personal_birthday': '個人鑑定誕生日',
+        'personal_set': '個人鑑定セット'
+      };
+      
+      data.products.forEach(product => {
+        for (const [key, name] of Object.entries(serviceMapping)) {
+          if (product.name === name && product.displayText) {
+            const textElements = document.querySelectorAll(`[data-service="${key}"] .display-text, [data-service="${key}"][data-text-type]`);
+            
+            textElements.forEach(element => {
+              const textType = element.getAttribute('data-text-type');
+              const oldText = element.textContent;
+              let newText = product.displayText;
+              
+              // テキストタイプに応じて調整
+              if (textType === 'header') {
+                newText = `🌟 ${product.displayText}`;
+              } else if (textType === 'discount') {
+                newText = product.displayText;
+              }
+              
+              element.textContent = newText;
+              console.log(`📝 ${key} 表示文言更新[${textType || 'default'}]: "${oldText}" → "${newText}"`);
+            });
+            break;
+          }
+        }
+      });
+    }
+    
+    // テストボタンの表示制御（管理者アクセス時）
+    document.addEventListener('keydown', function(event) {
+      console.log('キー押下:', event.key, 'Ctrl:', event.ctrlKey, 'Shift:', event.shiftKey);
+      
+      if (event.ctrlKey && event.shiftKey && event.key === 'T') {
+        event.preventDefault();
+        event.stopPropagation();
+        
+        const testBtn = document.getElementById('integration-test-btn');
+        const adminBtn = document.getElementById('hidden-admin-btn');
+        
+        if (testBtn.style.display === 'none' || testBtn.style.display === '') {
+          testBtn.style.display = 'block';
+          adminBtn.style.display = 'block';
+          console.log('✅ テストボタンを表示しました');
+          alert('🔄 価格同期テストボタンを表示しました');
+        } else {
+          testBtn.style.display = 'none';
+          console.log('❌ テストボタンを非表示にしました');
+        }
+      }
+    });
+
+    // ページ読み込み完了時にテストボタンを強制表示
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🔧 ページ読み込み完了、テストボタンを設定中...');
+      
+      setTimeout(function() {
+        const testBtn = document.getElementById('integration-test-btn');
+        if (testBtn) {
+          testBtn.style.display = 'block';
+          testBtn.style.visibility = 'visible';
+          testBtn.style.opacity = '1';
+          console.log('✅ テストボタンを強制表示しました');
+          
+          // ボタンの位置と状態をログ出力
+          const rect = testBtn.getBoundingClientRect();
+          console.log('📍 テストボタンの位置:', {
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+            display: testBtn.style.display,
+            visibility: testBtn.style.visibility
+          });
+        } else {
+          console.error('❌ テストボタンが見つかりません');
+        }
+      }, 1000);
+    });
+  </script>
+
+
+
 </body>
 </html>

@@ -6,18 +6,114 @@
 class PaymentRedirect {
     constructor() {
         this.baseUrl = 'square-payment.html';
+        this.adminDataKey = 'salon_integrated_admin';
+        this.defaultConfig = this.getDefaultConfig();
         console.log('🔗 PaymentRedirect システム初期化');
+    }
+
+    /**
+     * デフォルト設定を取得
+     */
+    getDefaultConfig() {
+        return {
+            'shintaku': {
+                service: 'shintaku',
+                price: 3000,
+                name: '神託システムタロット占い',
+                description: 'AIと人間の直感を組み合わせた深層タロット鑑定'
+            },
+            'star_yomi': {
+                service: 'star_yomi',
+                price: 3000,
+                name: '星詠みシステム星座占い',
+                description: '生年月日から導く詳細運勢'
+            },
+            'personal_tarot': {
+                service: 'personal_tarot',
+                price: 5000,
+                name: '個人鑑定タロット',
+                description: 'セラフィナによる完全個人鑑定'
+            },
+            'personal_birthday': {
+                service: 'personal_birthday',
+                price: 5000,
+                name: '個人鑑定誕生日占い',
+                description: 'セラフィナによる誕生日個人鑑定'
+            },
+            'personal_set': {
+                service: 'personal_set',
+                price: 8000,
+                name: '個人鑑定セット',
+                description: 'タロット＋誕生日のセット鑑定'
+            }
+        };
+    }
+
+    /**
+     * 管理画面データを取得
+     */
+    getAdminData() {
+        try {
+            const data = localStorage.getItem(this.adminDataKey);
+            return data ? JSON.parse(data) : null;
+        } catch (error) {
+            console.error('❌ 管理データ読み込みエラー:', error);
+            return null;
+        }
+    }
+
+    /**
+     * サービス設定を取得（管理画面優先）
+     */
+    getServiceConfig(serviceKey) {
+        const adminData = this.getAdminData();
+        let config = this.defaultConfig[serviceKey] || {};
+
+        if (adminData && adminData.products) {
+            const product = adminData.products.find(p => 
+                this.getServiceKeyFromProduct(p) === serviceKey
+            );
+            if (product) {
+                config.price = product.salePrice || product.regularPrice || config.price;
+                config.name = product.productName || config.name;
+            }
+        }
+
+        return config;
+    }
+
+    /**
+     * 商品からサービスキーを取得
+     */
+    getServiceKeyFromProduct(product) {
+        const mapping = {
+            '神託システムタロット占い': 'shintaku',
+            '星詠みシステム星座占い': 'star_yomi',
+            '個人鑑定タロット': 'personal_tarot',
+            '個人鑑定誕生日占い': 'personal_birthday',
+            '個人鑑定セット': 'personal_set'
+        };
+        return mapping[product.productName] || null;
+    }
+
+    /**
+     * サービス設定を動的に更新
+     */
+    updateServiceConfig(serviceKey, newConfig) {
+        this.defaultConfig[serviceKey] = { ...this.defaultConfig[serviceKey], ...newConfig };
+        console.log(`🔄 ${serviceKey} 設定を更新:`, newConfig);
     }
 
     /**
      * 神託システムタロット占い決済
      */
     redirectToShintakuPayment(userEmail = null) {
+        const config = this.getServiceConfig('shintaku');
         const params = {
-            service: 'shintaku',
-            price: 3000,
-            name: '神託システムタロット占い',
-            description: 'AIと人間の直感を組み合わせた深層タロット鑑定',
+            service: config.service,
+            price: config.price,
+            name: config.name,
+            description: config.description,
             email: userEmail || ''
         };
         
@@ -28,11 +124,12 @@ class PaymentRedirect {
      * 星詠みシステム星座占い決済
      */
     redirectToStarYomiPayment(userEmail = null) {
+        const config = this.getServiceConfig('star_yomi');
         const params = {
-            service: 'star_yomi',
-            price: 3000,
-            name: '星詠みシステム星座占い',
-            description: '生年月日から読み解く詳細な星座鑑定',
+            service: config.service,
+            price: config.price,
+            name: config.name,
+            description: config.description,
             email: userEmail || ''
         };
         
@@ -43,11 +140,12 @@ class PaymentRedirect {
      * 個人鑑定タロット決済
      */
     redirectToPersonalTarotPayment(userEmail = null) {
+        const config = this.getServiceConfig('personal_tarot');
         const params = {
-            service: 'personal_tarot',
-            price: 5000,
-            name: '個人鑑定タロット',
-            description: 'セラフィナによる完全個人向けタロット鑑定',
+            service: config.service,
+            price: config.price,
+            name: config.name,
+            description: config.description,
             email: userEmail || ''
         };
         
@@ -58,11 +156,12 @@ class PaymentRedirect {
      * 個人鑑定誕生日占い決済
      */
     redirectToPersonalBirthdayPayment(userEmail = null) {
+        const config = this.getServiceConfig('personal_birthday');
         const params = {
-            service: 'personal_birthday',
-            price: 5000,
-            name: '個人鑑定誕生日占い',
-            description: 'セラフィナによる生年月日を基にした個人鑑定',
+            service: config.service,
+            price: config.price,
+            name: config.name,
+            description: config.description,
             email: userEmail || ''
         };
         
@@ -73,11 +172,12 @@ class PaymentRedirect {
      * 個人鑑定セット決済
      */
     redirectToPersonalSetPayment(userEmail = null) {
+        const config = this.getServiceConfig('personal_set');
         const params = {
-            service: 'personal_set',
-            price: 8000,
-            name: '個人鑑定セット',
-            description: 'タロット + 誕生日占いのお得なセット鑑定',
+            service: config.service,
+            price: config.price,
+            name: config.name,
+            description: config.description,
             email: userEmail || ''
         };
         

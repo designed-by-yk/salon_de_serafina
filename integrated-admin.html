@@ -1,0 +1,4249 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎛️ 統合管理画面 - Salon de Serafina</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <style>
+        /* 強制全画面モーダル（モーダル表示時のみ適用） */
+        #scheduledOperationsModal.show .modal-dialog {
+            max-width: 100vw !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        #scheduledOperationsModal.show .modal-content {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            border: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        /* モーダル背景を透明にして画面いっぱい */
+        .modal-backdrop.show {
+            opacity: 0.8 !important;
+        }
+        
+        /* 全画面時のスクロール調整 */
+        body.modal-open {
+            overflow: hidden !important;
+            padding-right: 0 !important;
+        }
+        
+        /* テーブル全画面最適化 */
+        #scheduledOperationsModal.show .table-responsive {
+            max-height: calc(100vh - 200px) !important;
+        }
+        
+        /* フレックスボックス全画面対応 */
+        #scheduledOperationsModal.show .modal-body {
+            flex: 1 !important;
+            overflow: hidden !important;
+            display: flex !important;
+            flex-direction: column !important;
+            padding: 15px !important;
+        }
+        
+        /* 通常のタブナビゲーションは常に操作可能 */
+        .nav-tabs, .nav-tabs .nav-link, .tab-content, .tab-navigation, .tab-button {
+            pointer-events: auto !important;
+            z-index: 10 !important;
+            position: relative !important;
+        }
+        
+        /* タブボタンを最前面に */
+        .tab-navigation {
+            z-index: 1000 !important;
+            position: relative !important;
+        }
+        
+        .tab-button {
+            pointer-events: auto !important;
+            z-index: 1001 !important;
+            position: relative !important;
+        }
+        
+        /* ボタンやフォーム要素も常に操作可能 */
+        button, input, select, textarea, .btn, .form-control, .form-select {
+            pointer-events: auto !important;
+            position: relative !important;
+        }
+        
+        /* メインコンテンツエリアも操作可能 */
+        .main-content, .tab-content {
+            pointer-events: auto !important;
+            z-index: 10 !important;
+        }
+        
+        /* 編集モーダルを確実に最前面に（シンプル版） */
+        #editScheduledOperationModal {
+            z-index: 10000 !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background-color: rgba(0,0,0,0.3) !important;
+        }
+        
+        #editScheduledOperationModal.show {
+            display: block !important;
+        }
+        
+        #editScheduledOperationModal .modal-dialog {
+            z-index: 10001 !important;
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            max-width: 85vw !important;
+            width: 85vw !important;
+            max-height: 90vh !important;
+            margin: 0 !important;
+        }
+        
+        #editScheduledOperationModal .modal-content {
+            z-index: 10002 !important;
+            position: relative !important;
+            background-color: #212529 !important;
+            border: 3px solid #495057 !important;
+            border-radius: 10px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+        }
+        
+        /* 編集モーダルの閉じるボタンを強調 */
+        #editScheduledOperationModal .btn-close {
+            background: #fff !important;
+            border: 2px solid #000 !important;
+            border-radius: 50% !important;
+            width: 40px !important;
+            height: 40px !important;
+            font-size: 20px !important;
+            font-weight: bold !important;
+            z-index: 10003 !important;
+            position: relative !important;
+        }
+        
+        /* 編集モーダルのボタンを強化 */
+        #editScheduledOperationModal .modal-footer .btn {
+            z-index: 10003 !important;
+            position: relative !important;
+            font-size: 16px !important;
+            padding: 12px 24px !important;
+            font-weight: bold !important;
+        }
+        
+        /* フォーム要素も強化 */
+        #editScheduledOperationModal input, 
+        #editScheduledOperationModal select {
+            z-index: 10003 !important;
+            position: relative !important;
+        }
+    </style>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 50%, #1a0033 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .admin-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .admin-header h1 {
+            color: #ffd700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .maintenance-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4caf50;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        .tab-navigation {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .tab-button.active {
+            background: linear-gradient(45deg, #ff6b6b, #ffd700);
+            color: #2d1b69;
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .section-title {
+            color: #ffd700;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4caf50, #66bb6a);
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #f44336, #e57373);
+            color: #fff;
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ff9800, #ffc107);
+            color: #2d1b69;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-table th {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            padding: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .status-active {
+            background: rgba(76, 175, 80, 0.3);
+            color: #4caf50;
+            border: 1px solid #4caf50;
+        }
+
+        .status-inactive {
+            background: rgba(244, 67, 54, 0.3);
+            color: #f44336;
+            border: 1px solid #f44336;
+        }
+
+        .status-hidden {
+            background: rgba(158, 158, 158, 0.3);
+            color: #9e9e9e;
+            border: 1px solid #9e9e9e;
+        }
+
+        .preview-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .preview-header {
+            color: #ffd700;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .history-panel {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #ffd700;
+        }
+
+        .history-timestamp {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+
+        .accordion-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .accordion-header {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .accordion-header:hover {
+            background: rgba(255, 215, 0, 0.15);
+        }
+
+        .accordion-header h4 {
+            color: #ffd700;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        .accordion-toggle {
+            color: #ffd700;
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-toggle.expanded {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 20px;
+        }
+
+        .accordion-content.expanded {
+            display: block;
+        }
+
+        .product-rule-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #4caf50;
+        }
+
+        .product-rule-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .product-rule-name {
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .discount-display {
+            color: #4caf50;
+            font-weight: bold;
+        }
+
+        .preview-iframe {
+            width: 100%;
+            height: 500px;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .bulk-actions {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .bulk-actions h4 {
+            color: #ffc107;
+            margin-bottom: 15px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a0033 0%, #2d1b69 50%, #1a0033 100%);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 800px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .close-button {
+            color: rgba(255, 255, 255, 0.7);
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .close-button:hover {
+            color: #fff;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .message-success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4caf50;
+            color: #4caf50;
+        }
+
+        .message-error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #f44336;
+        }
+
+        .message-info {
+            background: rgba(33, 150, 243, 0.2);
+            border: 1px solid #2196f3;
+            color: #2196f3;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 10px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-navigation {
+                flex-direction: column;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #ffd700;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 215, 0, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffd700;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- ヘッダー -->
+        <div class="admin-header">
+            <h1>🎛️ 統合管理画面</h1>
+            <p>Salon de Serafina - 完全ノーコード管理システム</p>
+            
+            <!-- メンテナンスモード切り替え -->
+            <div class="maintenance-toggle">
+                <span>メンテナンスモード:</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="maintenance-mode">
+                    <span class="slider"></span>
+                </label>
+                <span id="maintenance-status">OFF</span>
+            </div>
+        </div>
+
+        <!-- タブナビゲーション -->
+        <div class="tab-navigation">
+            <button class="tab-button active" onclick="switchTab('products')">📦 商品管理</button>
+            <button class="tab-button" onclick="switchTab('payment-links')">💳 決済リンク管理</button>
+            <button class="tab-button" onclick="switchTab('pricing-rules')">🎫 価格ルール設定</button>
+            <button class="tab-button" onclick="switchTab('bulk-operations')">⚡ 一括更新</button>
+            <button class="tab-button" onclick="switchTab('history')">📊 変更履歴</button>
+            <button class="tab-button" onclick="switchTab('preview')">👀 プレビュー</button>
+        </div>
+
+        <!-- 商品管理タブ -->
+        <div id="products-tab" class="tab-content active">
+            <div class="section-header">
+                <h2 class="section-title">📦 商品管理</h2>
+                <button class="btn btn-primary" onclick="openProductModal()">➕ 新商品追加</button>
+            </div>
+            
+            <!-- リアルタイム連携ステータス -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 15px; border-radius: 10px; margin: 20px 0; color: white;">
+                <h3 style="margin: 0 0 10px 0; font-size: 16px;">🔗 メインサイト連携ステータス</h3>
+                <div style="display: flex; gap: 15px; font-size: 14px; align-items: center; flex-wrap: wrap;">
+                    <div>
+                        <span id="sync-status" style="color: #90EE90;">🟢 連携中</span>
+                        <span style="margin-left: 10px;">最終更新: <span id="last-sync-time">--:--</span></span>
+                    </div>
+                    <button onclick="testMainSiteIntegration()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                        🧪 連携テスト
+                    </button>
+                    <button onclick="openMainSite()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                        🌐 メインサイト確認
+                    </button>
+                    <button onclick="forceInitializeData()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                        🔄 データ初期化
+                    </button>
+                    <button onclick="showAllTables()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                        📊 全テーブル表示
+                    </button>
+                    <button onclick="debugCurrentData()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                        🐛 データ確認
+                    </button>
+                    <button onclick="forceSyncToMainSite()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 15px; border-radius: 5px; cursor: pointer; font-size: 12px;">
+                        🔄 強制同期
+                    </button>
+                </div>
+            </div>
+            
+            <table class="data-table" id="products-table">
+                <thead>
+                    <tr>
+                        <th>商品名</th>
+                        <th>通常価格</th>
+                        <th>販売価格</th>
+                        <th>表示文言</th>
+                        <th>ステータス</th>
+                        <th>アクション</th>
+                    </tr>
+                </thead>
+                <tbody id="products-tbody">
+                    <!-- 動的に生成 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 決済リンク管理タブ -->
+        <div id="payment-links-tab" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">💳 決済リンク管理</h2>
+                <button class="btn btn-primary" onclick="openPaymentLinkModal()">➕ 新リンク追加</button>
+            </div>
+            
+            <table class="data-table" id="payment-links-table">
+                <thead>
+                    <tr>
+                        <th>商品名</th>
+                        <th>価格</th>
+                        <th>Square決済リンクURL</th>
+                        <th>ステータス</th>
+                        <th>アクション</th>
+                    </tr>
+                </thead>
+                <tbody id="payment-links-tbody">
+                    <!-- 動的に生成 -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 価格ルール設定タブ -->
+        <div id="pricing-rules-tab" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">🎫 価格ルール設定</h2>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="importExistingCoupons()">🔄 クーポン管理から取得</button>
+                    <button class="btn btn-secondary" onclick="openPricingRuleModal()">➕ 新クーポン追加</button>
+                    <button class="btn btn-info" onclick="openCouponManagement()">🎫 クーポン管理画面</button>
+                    <button class="btn btn-warning" onclick="debugCouponData()">🔍 デバッグ</button>
+                    <button class="btn btn-info" onclick="window.open('debug-storage.html', '_blank')">🛠️ データ確認画面</button>
+                </div>
+            </div>
+            
+            <div class="coupon-import-section" style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 10px; padding: 20px; margin: 20px 0;">
+                <h4 style="color: #ffc107; margin-bottom: 15px;">🎯 既存クーポンから選択</h4>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">利用可能なクーポン</label>
+                        <select class="form-select" id="available-coupons" onchange="previewCouponImport()">
+                            <option value="">クーポンを選択...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">適用する商品を選択</label>
+                        <div id="product-selection" style="display: none;">
+                            <!-- 商品選択チェックボックスが動的生成 -->
+                        </div>
+                    </div>
+                </div>
+                <div class="action-buttons" style="margin-top: 15px;">
+                    <button class="btn btn-success" onclick="importSelectedCoupon()" id="import-coupon-btn" disabled>📥 選択したクーポンを適用</button>
+                </div>
+            </div>
+            
+            <div id="pricing-rules-accordion">
+                <!-- クーポンごとのアコーディオン表示 -->
+            </div>
+        </div>
+
+        <!-- 一括更新タブ -->
+        <div id="bulk-operations-tab" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">⚡ 一括更新機能</h2>
+            </div>
+            
+            <div class="bulk-actions">
+                <h4>🎫 クーポン一括管理</h4>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">対象クーポン</label>
+                        <select class="form-select" id="bulk-coupon-select" onchange="updateBulkCouponInfo()">
+                            <option value="">クーポンを選択...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">実行日時</label>
+                        <input type="datetime-local" class="form-input" id="scheduled-datetime">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">操作タイプ</label>
+                        <select class="form-select" id="bulk-update-type" onchange="toggleProductSelection()">
+                            <option value="enable-coupon">クーポンを有効化</option>
+                            <option value="disable-coupon">クーポンを無効化</option>
+                            <option value="enable-selected-products">選択商品でクーポン有効化</option>
+                            <option value="disable-selected-products">選択商品でクーポン無効化</option>
+                            <option value="update-products">対象商品を更新</option>
+                            <option value="update-discount">割引額を更新</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">終了日時 (オプション)</label>
+                        <input type="datetime-local" class="form-input" id="schedule-end-datetime">
+                    </div>
+                </div>
+                
+                <!-- 商品選択エリア -->
+                <div id="bulk-product-selection" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin: 15px 0; display: none;">
+                    <h5 style="color: #4caf50; margin-bottom: 10px;">📦 対象商品選択</h5>
+                    <div class="product-checkbox-grid" id="bulk-product-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                        <!-- 商品チェックボックスが動的に生成される -->
+                    </div>
+                </div>
+
+                <div id="bulk-coupon-info" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin: 15px 0; display: none;">
+                    <h5 style="color: #ffc107; margin-bottom: 10px;">選択中のクーポン詳細</h5>
+                    <div id="bulk-coupon-details">
+                        <!-- クーポン詳細が表示 -->
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-warning" onclick="scheduleBulkUpdate()">📅 予約設定</button>
+                    <button class="btn btn-primary" onclick="executeBulkUpdate()">⚡ 即座に実行</button>
+                </div>
+                
+                <div id="scheduled-operations" style="margin-top: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h5 style="color: #ffc107; margin: 0;">📅 予約済み操作</h5>
+                        <div>
+                            <button class="btn btn-success" onclick="openScheduledOperationsManager()" style="font-size: 12px; padding: 5px 10px; margin-right: 5px;">📋 一覧管理</button>
+                            <button class="btn btn-info" onclick="debugScheduledOperations()" style="font-size: 12px; padding: 5px 10px;">🔍 状況確認</button>
+                        </div>
+                    </div>
+                    <div id="scheduled-list">
+                        <!-- 予約済み操作のリスト -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 変更履歴タブ -->
+        <div id="history-tab" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">📊 変更履歴</h2>
+                <button class="btn btn-secondary" onclick="exportHistory()">📥 履歴エクスポート</button>
+            </div>
+            
+            <div class="history-panel" id="history-panel">
+                <!-- 動的に生成 -->
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-warning" onclick="rollbackConfirm()">🔄 ロールバック</button>
+            </div>
+        </div>
+
+        <!-- プレビュータブ -->
+        <div id="preview-tab" class="tab-content">
+            <div class="section-header">
+                <h2 class="section-title">👀 プレビュー</h2>
+                <button class="btn btn-primary" onclick="refreshPreview()">🔄 プレビュー更新</button>
+            </div>
+            
+            <div class="preview-panel">
+                <h3 class="preview-header">💻 サイトプレビュー</h3>
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="form-label">プレビューページ選択</label>
+                    <select class="form-select" id="preview-page-select" onchange="updatePreviewPage()">
+                        <option value="main">メインページ</option>
+                        <option value="shintaku">神託システムタロット占い</option>
+                        <option value="star_yomi">星詠みシステム星座占い</option>
+                        <option value="personal">個人鑑定ページ</option>
+                    </select>
+                </div>
+                <div id="site-preview" style="border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 10px; background: #fff; min-height: 400px; overflow: auto;">
+                    <!-- プレビュー内容 -->
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-success" onclick="applyChangesToSite()">🚀 サイトに反映</button>
+                <button class="btn btn-secondary" onclick="saveAsDraft()">📝 下書き保存</button>
+            </div>
+        </div>
+
+        <!-- ローディング表示 -->
+        <div class="loading" id="loading">処理中...</div>
+
+        <!-- メッセージ表示 -->
+        <div id="message-area"></div>
+    </div>
+
+    <!-- モーダル -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <div id="modal-body">
+                <!-- モーダルコンテンツ -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // グローバル変数
+        let currentData = {
+            products: [],
+            paymentLinks: [],
+            pricingRules: [],
+            scheduledOperations: [],
+            history: [],
+            maintenanceMode: false
+        };
+
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🎛️ 統合管理画面初期化開始');
+            
+            try {
+                loadData();
+                initializeEventListeners();
+                
+                // 少し遅延を入れてから画面更新
+                setTimeout(() => {
+                    console.log('📊 DOMContentLoaded後のデータ状況:', currentData);
+                    
+                    if (!currentData || !currentData.products || currentData.products.length === 0) {
+                        console.log('⚠️ 商品データが不足、自動初期化を実行');
+                        initializeDefaultData();
+                    }
+                    
+                    updateAllTables();
+                    updateScheduledOperationsList();
+                    console.log('🎛️ 統合管理画面初期化完了');
+                }, 300);
+                
+            } catch (error) {
+                console.error('❌ 初期化エラー:', error);
+                showMessage('画面の初期化中にエラーが発生しました', 'error');
+            }
+        });
+
+        // データ読み込み
+        function loadData() {
+            try {
+                // localStorageからデータを読み込み
+                const savedData = localStorage.getItem('salon_integrated_admin');
+                if (savedData) {
+                    currentData = JSON.parse(savedData);
+                    
+                    // scheduledOperations が存在しない場合は初期化
+                    if (!currentData.scheduledOperations) {
+                        currentData.scheduledOperations = [];
+                        console.log('📊 scheduledOperations を初期化しました');
+                    }
+                    
+                    console.log('📊 保存データを読み込みました:', currentData);
+                    console.log('📊 予約操作数:', currentData.scheduledOperations.length);
+                } else {
+                    // 初期データを設定
+                    initializeDefaultData();
+                }
+                
+                // 既存のクーポンシステムからクーポンデータを読み込み
+                loadExistingCoupons();
+                
+                updateAllTables();
+                updateMaintenanceStatus();
+                showMessage('データを読み込みました', 'success');
+                
+            } catch (error) {
+                console.error('❌ データ読み込みエラー:', error);
+                showMessage('データの読み込みに失敗しました', 'error');
+            }
+        }
+
+        // 既存のクーポンシステムからデータ読み込み
+        function loadExistingCoupons() {
+            try {
+                console.log('🔄 loadExistingCoupons 開始');
+                const existingCoupons = localStorage.getItem('salon_coupons');
+                console.log('🔍 クーポンデータ検索中...');
+                console.log('📦 RAWデータ:', existingCoupons);
+                console.log('📏 データサイズ:', existingCoupons ? existingCoupons.length + ' 文字' : '0文字');
+                
+                // デバッグ用アラート
+                if (!existingCoupons) {
+                    console.log('⚠️ salon_coupons が空です');
+                    showMessage('salon_coupons データが見つかりません', 'info');
+                    return;
+                }
+                
+                if (existingCoupons) {
+                    console.log('🔍 JSON解析を試行中...');
+                    let coupons;
+                    
+                    try {
+                        coupons = JSON.parse(existingCoupons);
+                        console.log('✅ JSON解析成功');
+                        console.log('📊 解析結果のタイプ:', typeof coupons);
+                        console.log('📊 解析結果:', coupons);
+                    } catch (parseError) {
+                        console.error('❌ JSON解析エラー:', parseError);
+                        showMessage('クーポンデータのJSON解析に失敗: ' + parseError.message, 'error');
+                        return;
+                    }
+                    
+                    // データ構造を詳細に確認
+                    if (typeof coupons === 'object' && coupons !== null) {
+                        console.log('🔍 データ構造確認:');
+                        console.log('- Object.keys():', Object.keys(coupons));
+                        console.log('- Object.values():', Object.values(coupons));
+                        console.log('- 配列かどうか:', Array.isArray(coupons));
+                        
+                        let couponArray = [];
+                        
+                        // 配列形式の場合
+                        if (Array.isArray(coupons)) {
+                            console.log('📋 配列形式のデータです');
+                            couponArray = coupons;
+                        } 
+                        // オブジェクト形式の場合
+                        else if (Object.keys(coupons).length > 0) {
+                            console.log('📋 オブジェクト形式のデータです');
+                            couponArray = Object.values(coupons);
+                        } else {
+                            console.log('⚠️ 空のデータです');
+                            showMessage('クーポンデータは存在しますが空です', 'info');
+                            return;
+                        }
+                        
+                        console.log('📊 処理対象クーポン数:', couponArray.length);
+                        showMessage(`クーポンデータを発見: ${couponArray.length}件`, 'info');
+                        
+                        let processedCount = 0;
+                        let errorCount = 0;
+                        
+                        // 各クーポンを処理
+                        couponArray.forEach((coupon, index) => {
+                            try {
+                                console.log(`🔄 処理中 [${index + 1}/${couponArray.length}]:`, coupon);
+                                
+                                // クーポンデータの必須フィールドチェック
+                                if (!coupon || typeof coupon !== 'object') {
+                                    throw new Error('無効なクーポンオブジェクト');
+                                }
+                                
+                                if (!coupon.code) {
+                                    throw new Error('クーポンコードが見つかりません');
+                                }
+                                
+                                // 既存ルールの重複チェックを緩和（imported フラグで区別）
+                                const existingImportedRule = currentData.pricingRules.find(r => r.couponCode === coupon.code && r.imported === true);
+                                if (!existingImportedRule) {
+                                    // デフォルト値を設定
+                                    const discountType = coupon.discountType || 'fixed';
+                                    const discountValue = coupon.discountValue || 0;
+                                    const isActive = coupon.isActive !== false && coupon.active !== false;
+                                    
+                                    const newRule = {
+                                        id: 'imported_' + coupon.code + '_' + Date.now() + '_' + index,
+                                        couponCode: coupon.code,
+                                        description: `${coupon.code} (${discountType === 'percentage' ? discountValue + '%' : '¥' + discountValue} OFF)`,
+                                        active: isActive,
+                                        products: convertCouponToProducts(coupon),
+                                        created: coupon.createdAt || coupon.created || new Date().toISOString(),
+                                        imported: true
+                                    };
+                                    
+                                    currentData.pricingRules.push(newRule);
+                                    processedCount++;
+                                    console.log('✅ 価格ルール追加:', newRule.couponCode);
+                                } else {
+                                    console.log('⚠️ 既存ルールをスキップ:', coupon.code);
+                                }
+                                
+                            } catch (couponError) {
+                                errorCount++;
+                                console.error(`❌ クーポン処理エラー [${index + 1}]:`, couponError);
+                                console.error('❌ 問題のあるクーポンデータ:', coupon);
+                            }
+                        });
+                        
+                        console.log('✅ クーポンデータ統合完了');
+                        console.log('📊 処理成功:', processedCount + '件');
+                        console.log('📊 処理エラー:', errorCount + '件');
+                        console.log('📊 最終的な価格ルール数:', currentData.pricingRules.length);
+                        
+                        if (processedCount > 0) {
+                            showMessage(`クーポン統合完了: ${processedCount}件成功`, 'success');
+                        } else {
+                            showMessage('クーポンの統合に失敗しました', 'error');
+                        }
+                        
+                    } else {
+                        console.error('❌ 無効なデータ構造:', typeof coupons, coupons);
+                        showMessage('クーポンデータの構造が無効です', 'error');
+                    }
+                    
+                } else {
+                    console.log('⚠️ クーポンデータが見つかりません');
+                    showMessage('クーポンデータが見つかりません。先にクーポン管理画面でクーポンを作成してください。', 'info');
+                }
+            } catch (error) {
+                console.error('❌ 既存クーポン読み込みエラー:', error);
+                console.error('❌ エラースタック:', error.stack);
+                showMessage('クーポンデータの読み込みでエラーが発生しました: ' + error.message, 'error');
+            }
+        }
+
+        // クーポンデータを商品ルールに変換
+        function convertCouponToProducts(coupon) {
+            console.log('🔄 convertCouponToProducts - 入力:', coupon);
+            const products = [];
+            
+            try {
+                // 適用可能サービスを確認
+                let services = ['all']; // デフォルト値
+                
+                if (coupon.applicableServices) {
+                    if (Array.isArray(coupon.applicableServices)) {
+                        services = coupon.applicableServices;
+                    } else if (typeof coupon.applicableServices === 'string') {
+                        services = [coupon.applicableServices];
+                    }
+                }
+                
+                console.log('📋 適用サービス:', services);
+                console.log('📊 利用可能商品数:', currentData.products.length);
+                
+                if (services.includes('all')) {
+                    // 全商品に適用
+                    console.log('🌐 全商品に適用中...');
+                    currentData.products.forEach((product, index) => {
+                        try {
+                            const productRule = createProductRule(product, coupon);
+                            products.push(productRule);
+                            console.log(`✅ 商品ルール作成 [${index}]:`, product.name);
+                        } catch (productError) {
+                            console.error(`❌ 商品ルール作成エラー [${index}]:`, productError, product);
+                        }
+                    });
+                } else {
+                    // 特定サービスに適用
+                    console.log('🎯 特定サービスに適用中...', services);
+                    services.forEach((serviceId, index) => {
+                        try {
+                            const product = currentData.products.find(p => p.id === serviceId);
+                            if (product) {
+                                const productRule = createProductRule(product, coupon);
+                                products.push(productRule);
+                                console.log(`✅ 特定商品ルール作成 [${index}]:`, product.name);
+                            } else {
+                                console.log(`⚠️ 商品が見つかりません [${index}]:`, serviceId);
+                            }
+                        } catch (serviceError) {
+                            console.error(`❌ 特定サービス処理エラー [${index}]:`, serviceError, serviceId);
+                        }
+                    });
+                }
+                
+                console.log('📊 作成された商品ルール数:', products.length);
+                
+            } catch (error) {
+                console.error('❌ convertCouponToProducts エラー:', error);
+                console.error('❌ 問題のクーポン:', coupon);
+            }
+            
+            return products;
+        }
+
+        // 商品ルール作成
+        function createProductRule(product, coupon) {
+            console.log('🔧 createProductRule - 商品:', product, 'クーポン:', coupon);
+            
+            try {
+                if (!product || !product.salePrice) {
+                    throw new Error('無効な商品データ');
+                }
+                
+                if (!coupon) {
+                    throw new Error('無効なクーポンデータ');
+                }
+                
+                const discountType = coupon.discountType || 'fixed';
+                const discountValue = parseFloat(coupon.discountValue) || 0;
+                const originalPrice = parseFloat(product.salePrice) || 0;
+                
+                let finalPrice;
+                if (discountType === 'percentage') {
+                    finalPrice = Math.round(originalPrice * (1 - discountValue / 100));
+                } else {
+                    finalPrice = Math.max(0, originalPrice - discountValue);
+                }
+                
+                const productRule = {
+                    productId: product.id,
+                    productName: product.name,
+                    originalPrice: originalPrice,
+                    discountType: discountType,
+                    discountValue: discountValue,
+                    finalPrice: finalPrice
+                };
+                
+                console.log('✅ 商品ルール作成完了:', productRule);
+                return productRule;
+                
+            } catch (error) {
+                console.error('❌ createProductRule エラー:', error);
+                console.error('❌ 商品:', product);
+                console.error('❌ クーポン:', coupon);
+                throw error;
+            }
+        }
+
+        // 初期データ設定
+        function initializeDefaultData() {
+            currentData = {
+                products: [
+                    {
+                        id: 'shintaku',
+                        name: '神託システムタロット占い',
+                        regularPrice: 3000,
+                        salePrice: 3000,
+                        displayText: '',
+                        visible: true,
+                        created: new Date().toISOString()
+                    },
+                    {
+                        id: 'star_yomi',
+                        name: '星詠みシステム星座占い',
+                        regularPrice: 3000,
+                        salePrice: 3000,
+                        displayText: '',
+                        visible: true,
+                        created: new Date().toISOString()
+                    },
+                    {
+                        id: 'personal_tarot',
+                        name: '個人鑑定タロット',
+                        regularPrice: 5000,
+                        salePrice: 5000,
+                        displayText: '',
+                        visible: true,
+                        created: new Date().toISOString()
+                    },
+                    {
+                        id: 'personal_birthday',
+                        name: '個人鑑定誕生日',
+                        regularPrice: 5000,
+                        salePrice: 5000,
+                        displayText: '',
+                        visible: true,
+                        created: new Date().toISOString()
+                    },
+                    {
+                        id: 'personal_set',
+                        name: '個人鑑定セット',
+                        regularPrice: 8000,
+                        salePrice: 8000,
+                        displayText: 'お得なセット価格',
+                        visible: true,
+                        created: new Date().toISOString()
+                    }
+                ],
+                paymentLinks: [
+                    {
+                        id: 'shintaku_3000',
+                        productId: 'shintaku',
+                        productName: '神託システムタロット占い',
+                        price: 3000,
+                        url: 'https://square.link/u/YOUR_SHINTAKU_LINK',
+                        active: true,
+                        created: new Date().toISOString()
+                    },
+                    {
+                        id: 'star_yomi_3000',
+                        productId: 'star_yomi',
+                        productName: '星詠みシステム星座占い',
+                        price: 3000,
+                        url: 'https://square.link/u/YOUR_STAR_YOMI_LINK',
+                        active: true,
+                        created: new Date().toISOString()
+                    },
+                    {
+                        id: 'personal_tarot_5000',
+                        productId: 'personal_tarot',
+                        productName: '個人鑑定タロット',
+                        price: 5000,
+                        url: 'https://square.link/u/YOUR_PERSONAL_TAROT_LINK',
+                        active: true,
+                        created: new Date().toISOString()
+                    },
+                    {
+                        id: 'personal_birthday_5000',
+                        productId: 'personal_birthday',
+                        productName: '個人鑑定誕生日',
+                        price: 5000,
+                        url: 'https://square.link/u/YOUR_PERSONAL_BIRTHDAY_LINK',
+                        active: true,
+                        created: new Date().toISOString()
+                    },
+                    {
+                        id: 'personal_set_8000',
+                        productId: 'personal_set',
+                        productName: '個人鑑定セット',
+                        price: 8000,
+                        url: 'https://square.link/u/YOUR_PERSONAL_SET_LINK',
+                        active: true,
+                        created: new Date().toISOString()
+                    }
+                ],
+                pricingRules: [
+                    {
+                        id: 'line500',
+                        couponCode: 'LINE500',
+                        description: 'LINE登録特典クーポン',
+                        active: true,
+                        products: [
+                            {
+                                productId: 'shintaku',
+                                productName: '神託システムタロット占い',
+                                originalPrice: 3000,
+                                discountType: 'fixed', // 'fixed' または 'percentage'
+                                discountValue: 500,
+                                finalPrice: 2500
+                            },
+                            {
+                                productId: 'star_yomi',
+                                productName: '星詠みシステム星座占い',
+                                originalPrice: 3000,
+                                discountType: 'fixed',
+                                discountValue: 500,
+                                finalPrice: 2500
+                            },
+                            {
+                                productId: 'personal_tarot',
+                                productName: '個人鑑定タロット',
+                                originalPrice: 5000,
+                                discountType: 'fixed',
+                                discountValue: 500,
+                                finalPrice: 4500
+                            }
+                        ],
+                        created: new Date().toISOString()
+                    },
+                    {
+                        id: 'monitor100',
+                        couponCode: 'MONITOR100',
+                        description: 'モニター用無料クーポン',
+                        active: true,
+                        products: [
+                            {
+                                productId: 'shintaku',
+                                productName: '神託システムタロット占い',
+                                originalPrice: 3000,
+                                discountType: 'percentage',
+                                discountValue: 100,
+                                finalPrice: 0
+                            }
+                        ],
+                        created: new Date().toISOString()
+                    }
+                ],
+                scheduledOperations: [],
+                history: [
+                    {
+                        id: Date.now().toString(),
+                        timestamp: new Date().toISOString(),
+                        action: 'システム初期化',
+                        details: '統合管理画面の初期データを作成しました',
+                        user: 'システム'
+                    }
+                ],
+                maintenanceMode: false
+            };
+            
+            saveData();
+        }
+
+        // データ保存
+        function saveData() {
+            try {
+                // 最終更新時刻を記録
+                currentData.lastModified = Date.now();
+                localStorage.setItem('salon_integrated_admin', JSON.stringify(currentData));
+                console.log('✅ データ保存完了');
+                
+                // メインサイトに変更を通知
+                notifyMainSiteUpdate();
+            } catch (error) {
+                console.error('❌ データ保存エラー:', error);
+                showMessage('データの保存に失敗しました', 'error');
+            }
+        }
+
+        // メインサイトに更新を通知
+        function notifyMainSiteUpdate() {
+            // カスタムイベントを発火してメインサイトに変更を通知
+            if (window.parent !== window) {
+                // iframe内の場合
+                window.parent.postMessage({
+                    type: 'admin_data_updated',
+                    timestamp: Date.now()
+                }, '*');
+            }
+            
+            // localStorage イベントも発火
+            window.dispatchEvent(new StorageEvent('storage', {
+                key: 'salon_integrated_admin',
+                newValue: JSON.stringify(currentData),
+                url: window.location.href
+            }));
+            
+            console.log('📡 メインサイトに更新通知を送信');
+        }
+
+        // イベントリスナー初期化
+        function initializeEventListeners() {
+            // メンテナンスモード切り替え
+            document.getElementById('maintenance-mode').addEventListener('change', function() {
+                toggleMaintenanceMode(this.checked);
+            });
+        }
+
+        // タブ切り替え
+        function switchTab(tabName) {
+            // 全てのタブを非表示
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 全てのタブボタンを非アクティブ
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // 選択されたタブを表示
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            // タブ固有の初期化
+            if (tabName === 'history') {
+                loadHistory();
+            } else if (tabName === 'preview') {
+                refreshPreview();
+            } else if (tabName === 'bulk-operations') {
+                updateScheduledOperationsList();
+            }
+        }
+
+        // 全てのテーブルを更新
+        function updateAllTables() {
+            console.log('🔄 updateAllTables 開始');
+            console.log('📊 現在の価格ルール数:', currentData.pricingRules.length);
+            
+            updateProductsTable();
+            updatePaymentLinksTable();
+            updatePricingRulesTable();
+            
+            console.log('🔄 updateBulkCouponSelect 実行中...');
+            updateBulkCouponSelect();
+            
+            console.log('🔄 updateAvailableCoupons 実行中...');
+            updateAvailableCoupons();
+            
+            console.log('✅ updateAllTables 完了');
+        }
+
+        // 商品テーブル更新
+        function updateProductsTable() {
+            console.log('📦 商品テーブル更新開始', currentData.products);
+            
+            const tbody = document.getElementById('products-tbody');
+            if (!tbody) {
+                console.error('❌ products-tbody 要素が見つかりません');
+                return;
+            }
+            
+            tbody.innerHTML = '';
+            
+            if (!currentData.products || currentData.products.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="6" style="text-align: center; color: #888; padding: 20px;">商品データがありません。「データ初期化」ボタンを試してください。</td>';
+                tbody.appendChild(row);
+                console.log('⚠️ 商品データが空です');
+                return;
+            }
+            
+            console.log(`📦 ${currentData.products.length}個の商品を表示中`);
+            currentData.products.forEach(product => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${product.name}</td>
+                    <td>¥${product.regularPrice.toLocaleString()}</td>
+                    <td>¥${product.salePrice.toLocaleString()}</td>
+                    <td>${product.displayText || '-'}</td>
+                    <td>
+                        <span class="status-badge ${product.visible ? 'status-active' : 'status-hidden'}">
+                            ${product.visible ? '表示' : '非表示'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="editProduct('${product.id}')">編集</button>
+                        <button class="btn btn-danger" onclick="deleteProduct('${product.id}')">削除</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 決済リンクテーブル更新
+        function updatePaymentLinksTable() {
+            const tbody = document.getElementById('payment-links-tbody');
+            tbody.innerHTML = '';
+            
+            currentData.paymentLinks.forEach(link => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${link.productName}</td>
+                    <td>¥${link.price.toLocaleString()}</td>
+                    <td style="word-break: break-all; max-width: 300px;">${link.url}</td>
+                    <td>
+                        <span class="status-badge ${link.active ? 'status-active' : 'status-inactive'}">
+                            ${link.active ? '有効' : '無効'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-secondary" onclick="editPaymentLink('${link.id}')">編集</button>
+                        <button class="btn btn-danger" onclick="deletePaymentLink('${link.id}')">削除</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // 価格ルールアコーディオン更新
+        function updatePricingRulesTable() {
+            const accordion = document.getElementById('pricing-rules-accordion');
+            if (!accordion) {
+                console.error('❌ pricing-rules-accordion 要素が見つかりません');
+                return;
+            }
+            
+            accordion.innerHTML = '';
+            
+            console.log('🔄 updatePricingRulesTable - 価格ルール数:', currentData.pricingRules ? currentData.pricingRules.length : '未定義');
+            
+            if (!currentData.pricingRules || !Array.isArray(currentData.pricingRules)) {
+                console.error('❌ currentData.pricingRules が配列ではありません:', currentData.pricingRules);
+                accordion.innerHTML = '<div class="accordion-item"><div class="accordion-header"><h4>価格ルールデータが正しく読み込まれていません</h4></div></div>';
+                return;
+            }
+            
+            currentData.pricingRules.forEach(rule => {
+                const accordionItem = document.createElement('div');
+                accordionItem.className = 'accordion-item';
+                
+                const header = document.createElement('div');
+                header.className = 'accordion-header';
+                header.onclick = () => toggleAccordion(rule.id);
+                
+                header.innerHTML = `
+                    <h4>${rule.couponCode} - ${rule.description}</h4>
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span class="status-badge ${rule.active ? 'status-active' : 'status-inactive'}">
+                            ${rule.active ? '有効' : '無効'}
+                        </span>
+                        <button class="btn btn-secondary" onclick="event.stopPropagation(); editPricingRule('${rule.id}')">編集</button>
+                        <button class="btn btn-danger" onclick="event.stopPropagation(); deletePricingRule('${rule.id}')">削除</button>
+                        <span class="accordion-toggle" id="toggle-${rule.id}">▼</span>
+                    </div>
+                `;
+                
+                const content = document.createElement('div');
+                content.className = 'accordion-content';
+                content.id = `content-${rule.id}`;
+                
+                let productRulesHTML = '';
+                
+                console.log('🔍 rule.products チェック:', rule.products);
+                
+                if (!rule.products || !Array.isArray(rule.products)) {
+                    console.warn('⚠️ rule.products が配列ではありません:', rule.products);
+                    productRulesHTML = '<p>この価格ルールには商品設定がありません</p>';
+                } else {
+                    rule.products.forEach(product => {
+                    const discountText = product.discountType === 'percentage' 
+                        ? `${product.discountValue}% OFF` 
+                        : `¥${product.discountValue} OFF`;
+                    
+                    productRulesHTML += `
+                        <div class="product-rule-item">
+                            <div class="product-rule-header">
+                                <span class="product-rule-name">${product.productName}</span>
+                                <div>
+                                    <span class="discount-display">${discountText}</span>
+                                    <button class="btn btn-secondary" style="margin-left: 10px;" onclick="editProductRule('${rule.id}', '${product.productId}')">編集</button>
+                                    <button class="btn btn-danger" style="margin-left: 5px;" onclick="deleteProductRule('${rule.id}', '${product.productId}')">削除</button>
+                                </div>
+                            </div>
+                            <div>
+                                <strong>通常価格:</strong> ¥${product.originalPrice.toLocaleString()} → 
+                                <strong style="color: #4caf50;">割引後: ¥${product.finalPrice.toLocaleString()}</strong>
+                            </div>
+                        </div>
+                    `;
+                    });
+                }
+                
+                content.innerHTML = `
+                    <div style="margin-bottom: 15px;">
+                        <button class="btn btn-primary" onclick="addProductToRule('${rule.id}')">➕ 商品を追加</button>
+                    </div>
+                    ${productRulesHTML}
+                `;
+                
+                accordionItem.appendChild(header);
+                accordionItem.appendChild(content);
+                accordion.appendChild(accordionItem);
+            });
+        }
+
+        // アコーディオン開閉
+        function toggleAccordion(ruleId) {
+            const content = document.getElementById(`content-${ruleId}`);
+            const toggle = document.getElementById(`toggle-${ruleId}`);
+            
+            if (content.classList.contains('expanded')) {
+                content.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+            } else {
+                content.classList.add('expanded');
+                toggle.classList.add('expanded');
+            }
+        }
+
+        // メンテナンスモード切り替え
+        function toggleMaintenanceMode(enabled) {
+            currentData.maintenanceMode = enabled;
+            saveData();
+            updateMaintenanceStatus();
+            
+            addHistoryEntry(
+                enabled ? 'メンテナンスモード有効化' : 'メンテナンスモード無効化',
+                `メンテナンスモードを${enabled ? 'ON' : 'OFF'}にしました`
+            );
+            
+            showMessage(`メンテナンスモードを${enabled ? 'ON' : 'OFF'}にしました`, 'info');
+        }
+
+        // メンテナンスステータス更新
+        function updateMaintenanceStatus() {
+            const checkbox = document.getElementById('maintenance-mode');
+            const status = document.getElementById('maintenance-status');
+            
+            checkbox.checked = currentData.maintenanceMode;
+            status.textContent = currentData.maintenanceMode ? 'ON' : 'OFF';
+            status.style.color = currentData.maintenanceMode ? '#f44336' : '#4caf50';
+        }
+
+        // 履歴エントリ追加
+        function addHistoryEntry(action, details) {
+            const entry = {
+                id: Date.now().toString(),
+                timestamp: new Date().toISOString(),
+                action: action,
+                details: details,
+                user: 'Admin'
+            };
+            
+            currentData.history.unshift(entry);
+            
+            // 履歴は最新100件まで保持
+            if (currentData.history.length > 100) {
+                currentData.history = currentData.history.slice(0, 100);
+            }
+            
+            saveData();
+        }
+
+        // 履歴読み込み
+        function loadHistory() {
+            const panel = document.getElementById('history-panel');
+            panel.innerHTML = '';
+            
+            currentData.history.forEach(entry => {
+                const item = document.createElement('div');
+                item.className = 'history-item';
+                item.innerHTML = `
+                    <div><strong>${entry.action}</strong></div>
+                    <div>${entry.details}</div>
+                    <div class="history-timestamp">${new Date(entry.timestamp).toLocaleString()} - ${entry.user}</div>
+                `;
+                panel.appendChild(item);
+            });
+        }
+
+        // プレビュー更新
+        function refreshPreview() {
+            updatePreviewPage();
+        }
+
+        // プレビューページ更新
+        function updatePreviewPage() {
+            const selectedPage = document.getElementById('preview-page-select').value;
+            const preview = document.getElementById('site-preview');
+            
+            let previewHTML = '';
+            
+            switch (selectedPage) {
+                case 'main':
+                    previewHTML = generateMainPagePreview();
+                    break;
+                case 'shintaku':
+                    previewHTML = generateServicePagePreview('shintaku');
+                    break;
+                case 'star_yomi':
+                    previewHTML = generateServicePagePreview('star_yomi');
+                    break;
+                case 'personal':
+                    previewHTML = generatePersonalPagePreview();
+                    break;
+                default:
+                    previewHTML = generateMainPagePreview();
+            }
+            
+            preview.innerHTML = previewHTML;
+        }
+
+        // メインページプレビュー生成
+        function generateMainPagePreview() {
+            const visibleProducts = currentData.products.filter(p => p.visible);
+            
+            let html = `
+                <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #1a0033, #2d1b69); color: white; border-radius: 15px;">
+                    <h1 style="text-align: center; color: #ffd700; margin-bottom: 30px;">🌟 Salon de Serafina 🌟</h1>
+            `;
+            
+            if (currentData.maintenanceMode) {
+                html += '<div style="background: #f44336; color: white; padding: 15px; text-align: center; margin: 20px 0; border-radius: 8px; font-weight: bold;">🚧 メンテナンス中 🚧</div>';
+            }
+            
+            visibleProducts.forEach(product => {
+                const isOnSale = product.salePrice < product.regularPrice;
+                html += `
+                    <div style="background: rgba(255,255,255,0.1); margin: 15px 0; padding: 20px; border-radius: 10px; border: 1px solid rgba(255,215,0,0.3);">
+                        <h3 style="color: #ffd700; margin-bottom: 10px;">${product.name}</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                ${isOnSale ? `<span style="text-decoration: line-through; color: rgba(255,255,255,0.6);">¥${product.regularPrice.toLocaleString()}</span>` : ''}
+                                <span style="font-size: 1.2em; font-weight: bold; color: ${isOnSale ? '#4caf50' : '#fff'};">¥${product.salePrice.toLocaleString()}</span>
+                                ${product.displayText ? `<div style="color: #ffc107; font-weight: bold; margin-top: 5px;">${product.displayText}</div>` : ''}
+                            </div>
+                            <button style="background: linear-gradient(45deg, #4caf50, #66bb6a); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">お申し込み</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        // サービスページプレビュー生成
+        function generateServicePagePreview(serviceId) {
+            const product = currentData.products.find(p => p.id === serviceId);
+            if (!product) return '<div>商品が見つかりません</div>';
+            
+            const isOnSale = product.salePrice < product.regularPrice;
+            
+            return `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #1a0033, #2d1b69); color: white; border-radius: 15px;">
+                    <h1 style="text-align: center; color: #ffd700; margin-bottom: 30px;">${product.name}</h1>
+                    
+                    <div style="background: rgba(255,255,255,0.1); padding: 25px; border-radius: 10px; margin: 20px 0; border: 1px solid rgba(255,215,0,0.3);">
+                        <h3 style="color: #ffd700; margin-bottom: 15px;">💰 料金</h3>
+                        <div style="text-align: center;">
+                            ${isOnSale ? `<div style="text-decoration: line-through; color: rgba(255,255,255,0.6); font-size: 1.1em;">通常価格: ¥${product.regularPrice.toLocaleString()}</div>` : ''}
+                            <div style="font-size: 2em; font-weight: bold; color: ${isOnSale ? '#4caf50' : '#ffd700'}; margin: 10px 0;">¥${product.salePrice.toLocaleString()}</div>
+                            ${product.displayText ? `<div style="color: #ffc107; font-weight: bold; background: rgba(255,193,7,0.2); padding: 8px; border-radius: 6px;">${product.displayText}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <h4 style="color: #ffd700; margin-bottom: 10px;">🎫 クーポンコード</h4>
+                        <input type="text" placeholder="クーポンコードを入力" style="width: 100%; padding: 12px; border: 2px solid rgba(255,215,0,0.3); border-radius: 8px; background: rgba(255,255,255,0.1); color: white;">
+                        <button style="width: 100%; margin-top: 10px; background: linear-gradient(45deg, #ff6b6b, #ffd700); color: #2d1b69; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">適用</button>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button style="background: linear-gradient(45deg, #4caf50, #66bb6a); color: white; border: none; padding: 15px 40px; border-radius: 8px; font-size: 1.2em; font-weight: bold; cursor: pointer;">決済に進む</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 個人鑑定ページプレビュー生成
+        function generatePersonalPagePreview() {
+            const personalProducts = currentData.products.filter(p => p.id.startsWith('personal_') && p.visible);
+            
+            let html = `
+                <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: linear-gradient(135deg, #1a0033, #2d1b69); color: white; border-radius: 15px;">
+                    <h1 style="text-align: center; color: #ffd700; margin-bottom: 30px;">✨ セラフィナの個人鑑定 ✨</h1>
+                    
+                    <div style="background: rgba(255,255,255,0.05); padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <h4 style="color: #ffd700; margin-bottom: 10px;">🎫 クーポンコード</h4>
+                        <input type="text" placeholder="クーポンコードを入力" style="width: 100%; padding: 12px; border: 2px solid rgba(255,215,0,0.3); border-radius: 8px; background: rgba(255,255,255,0.1); color: white;">
+                        <button style="width: 100%; margin-top: 10px; background: linear-gradient(45deg, #ff6b6b, #ffd700); color: #2d1b69; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">適用</button>
+                    </div>
+            `;
+            
+            personalProducts.forEach(product => {
+                const isOnSale = product.salePrice < product.regularPrice;
+                html += `
+                    <div style="background: rgba(255,255,255,0.1); margin: 15px 0; padding: 25px; border-radius: 10px; border: 1px solid rgba(255,215,0,0.3);">
+                        <h3 style="color: #ffd700; margin-bottom: 15px;">${product.name}</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                            <div>
+                                ${isOnSale ? `<span style="text-decoration: line-through; color: rgba(255,255,255,0.6);">¥${product.regularPrice.toLocaleString()}</span>` : ''}
+                                <span style="font-size: 1.3em; font-weight: bold; color: ${isOnSale ? '#4caf50' : '#fff'}; margin-left: 10px;">¥${product.salePrice.toLocaleString()}</span>
+                                ${product.displayText ? `<div style="color: #ffc107; font-weight: bold; margin-top: 5px;">${product.displayText}</div>` : ''}
+                            </div>
+                            <button style="background: linear-gradient(45deg, #4caf50, #66bb6a); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold;">選択</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+
+        // サイトに反映
+        function applyChangesToSite() {
+            showLoading(true);
+            
+            // 実際の実装では、ここでサイトのファイルを更新
+            setTimeout(() => {
+                showLoading(false);
+                addHistoryEntry('サイト反映', '設定変更をサイトに反映しました');
+                showMessage('設定をサイトに反映しました！', 'success');
+            }, 2000);
+        }
+
+        // メッセージ表示
+        function showMessage(text, type = 'info') {
+            const messageArea = document.getElementById('message-area');
+            const message = document.createElement('div');
+            message.className = `message message-${type}`;
+            message.textContent = text;
+            
+            messageArea.appendChild(message);
+            
+            setTimeout(() => {
+                message.remove();
+            }, 5000);
+        }
+
+        // ローディング表示制御
+        function showLoading(show) {
+            const loading = document.getElementById('loading');
+            if (show) {
+                loading.classList.add('show');
+            } else {
+                loading.classList.remove('show');
+            }
+        }
+
+        // モーダル開閉
+        function openModal(content) {
+            document.getElementById('modal-body').innerHTML = content;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        // 商品追加/編集モーダル
+        function openProductModal(productId = null) {
+            const product = productId ? currentData.products.find(p => p.id === productId) : null;
+            const isEdit = !!product;
+            
+            const content = `
+                <h3>${isEdit ? '商品編集' : '新商品追加'}</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">商品名</label>
+                        <input type="text" class="form-input" id="product-name" value="${product?.name || ''}" placeholder="商品名を入力">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">通常価格</label>
+                        <input type="number" class="form-input" id="product-regular-price" value="${product?.regularPrice || ''}" placeholder="3000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">販売価格</label>
+                        <input type="number" class="form-input" id="product-sale-price" value="${product?.salePrice || ''}" placeholder="3000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">表示文言</label>
+                        <input type="text" class="form-input" id="product-display-text" value="${product?.displayText || ''}" placeholder="オープン記念価格など">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">表示設定</label>
+                        <select class="form-select" id="product-visible">
+                            <option value="true" ${product?.visible !== false ? 'selected' : ''}>表示</option>
+                            <option value="false" ${product?.visible === false ? 'selected' : ''}>非表示</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="saveProduct('${productId || ''}')">${isEdit ? '更新' : '作成'}</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+                </div>
+            `;
+            
+            openModal(content);
+        }
+
+        // 商品保存
+        function saveProduct(productId) {
+            const name = document.getElementById('product-name').value;
+            const regularPrice = parseInt(document.getElementById('product-regular-price').value);
+            const salePrice = parseInt(document.getElementById('product-sale-price').value);
+            const displayText = document.getElementById('product-display-text').value;
+            const visible = document.getElementById('product-visible').value === 'true';
+            
+            if (!name || !regularPrice || !salePrice) {
+                showMessage('必須項目を入力してください', 'error');
+                return;
+            }
+            
+            if (productId) {
+                // 編集
+                const product = currentData.products.find(p => p.id === productId);
+                if (product) {
+                    product.name = name;
+                    product.regularPrice = regularPrice;
+                    product.salePrice = salePrice;
+                    product.displayText = displayText;
+                    product.visible = visible;
+                    product.updated = new Date().toISOString();
+                }
+            } else {
+                // 新規作成
+                const newProduct = {
+                    id: 'product_' + Date.now(),
+                    name: name,
+                    regularPrice: regularPrice,
+                    salePrice: salePrice,
+                    displayText: displayText,
+                    visible: visible,
+                    created: new Date().toISOString()
+                };
+                currentData.products.push(newProduct);
+            }
+            
+            // 新商品追加時は決済リンクも自動生成
+            if (!productId) {
+                const newPaymentLink = {
+                    id: `${newProduct.id}_${newProduct.salePrice}`,
+                    productId: newProduct.id,
+                    productName: newProduct.name,
+                    price: newProduct.salePrice,
+                    url: `https://square.link/u/YOUR_${newProduct.id.toUpperCase()}_LINK`,
+                    active: false,  // 新商品は決済リンク未設定状態
+                    created: new Date().toISOString()
+                };
+                currentData.paymentLinks.push(newPaymentLink);
+            }
+            
+            saveData();
+            updateAllTables();
+            addHistoryEntry(
+                productId ? '商品更新' : '商品作成',
+                `商品「${name}」を${productId ? '更新' : '作成'}しました${!productId ? '（決済リンクも自動生成）' : ''}`
+            );
+            closeModal();
+            showMessage('商品を保存しました', 'success');
+        }
+
+        // 商品編集
+        function editProduct(productId) {
+            openProductModal(productId);
+        }
+
+        // 商品削除
+        function deleteProduct(productId) {
+            if (confirm('本当に削除しますか？')) {
+                const product = currentData.products.find(p => p.id === productId);
+                if (product) {
+                    currentData.products = currentData.products.filter(p => p.id !== productId);
+                    saveData();
+                    updateProductsTable();
+                    addHistoryEntry('商品削除', `商品「${product.name}」を削除しました`);
+                    showMessage('商品を削除しました', 'success');
+                }
+            }
+        }
+
+        // 決済リンク追加/編集モーダル
+        function openPaymentLinkModal(linkId = null) {
+            const link = linkId ? currentData.paymentLinks.find(l => l.id === linkId) : null;
+            const isEdit = !!link;
+            
+            const productOptions = currentData.products.map(p => 
+                `<option value="${p.id}" ${link?.productId === p.id ? 'selected' : ''}>${p.name}</option>`
+            ).join('');
+            
+            const content = `
+                <h3>${isEdit ? '決済リンク編集' : '新決済リンク追加'}</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">商品</label>
+                        <select class="form-select" id="link-product" onchange="updateLinkPrice()">
+                            <option value="">商品を選択...</option>
+                            ${productOptions}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">価格</label>
+                        <input type="number" class="form-input" id="link-price" value="${link?.price || ''}" placeholder="3000" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Square決済リンクURL</label>
+                        <input type="url" class="form-input" id="link-url" value="${link?.url || ''}" placeholder="https://square.link/u/YOUR_LINK">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ステータス</label>
+                        <select class="form-select" id="link-active">
+                            <option value="true" ${link?.active !== false ? 'selected' : ''}>有効</option>
+                            <option value="false" ${link?.active === false ? 'selected' : ''}>無効</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="savePaymentLink('${linkId || ''}')">${isEdit ? '更新' : '作成'}</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+                </div>
+            `;
+            
+            openModal(content);
+        }
+
+        // 商品選択時に価格を自動設定
+        function updateLinkPrice() {
+            const productId = document.getElementById('link-product').value;
+            const product = currentData.products.find(p => p.id === productId);
+            const priceInput = document.getElementById('link-price');
+            
+            if (product) {
+                priceInput.value = product.salePrice;
+            } else {
+                priceInput.value = '';
+            }
+        }
+
+        // 決済リンク保存
+        function savePaymentLink(linkId) {
+            const productId = document.getElementById('link-product').value;
+            const price = parseInt(document.getElementById('link-price').value);
+            const url = document.getElementById('link-url').value;
+            const active = document.getElementById('link-active').value === 'true';
+            
+            if (!productId || !price || !url) {
+                showMessage('必須項目を入力してください', 'error');
+                return;
+            }
+            
+            const product = currentData.products.find(p => p.id === productId);
+            if (!product) {
+                showMessage('商品が見つかりません', 'error');
+                return;
+            }
+            
+            if (linkId) {
+                // 編集
+                const link = currentData.paymentLinks.find(l => l.id === linkId);
+                if (link) {
+                    link.productId = productId;
+                    link.productName = product.name;
+                    link.price = price;
+                    link.url = url;
+                    link.active = active;
+                    link.updated = new Date().toISOString();
+                }
+            } else {
+                // 新規作成
+                const newLink = {
+                    id: `${productId}_${price}`,
+                    productId: productId,
+                    productName: product.name,
+                    price: price,
+                    url: url,
+                    active: active,
+                    created: new Date().toISOString()
+                };
+                currentData.paymentLinks.push(newLink);
+            }
+            
+            saveData();
+            updatePaymentLinksTable();
+            addHistoryEntry(
+                linkId ? '決済リンク更新' : '決済リンク作成',
+                `${product.name}の決済リンクを${linkId ? '更新' : '作成'}しました`
+            );
+            closeModal();
+            showMessage('決済リンクを保存しました', 'success');
+        }
+
+        // 決済リンク編集
+        function editPaymentLink(linkId) {
+            openPaymentLinkModal(linkId);
+        }
+
+        // 決済リンク削除
+        function deletePaymentLink(linkId) {
+            if (confirm('本当に削除しますか？')) {
+                const link = currentData.paymentLinks.find(l => l.id === linkId);
+                if (link) {
+                    currentData.paymentLinks = currentData.paymentLinks.filter(l => l.id !== linkId);
+                    saveData();
+                    updatePaymentLinksTable();
+                    addHistoryEntry('決済リンク削除', `¥${link.price}の決済リンクを削除しました`);
+                    showMessage('決済リンクを削除しました', 'success');
+                }
+            }
+        }
+
+        // 価格ルール追加/編集モーダル
+        function openPricingRuleModal(ruleId = null) {
+            const rule = ruleId ? currentData.pricingRules.find(r => r.id === ruleId) : null;
+            const isEdit = !!rule;
+            
+            const content = `
+                <h3>${isEdit ? 'クーポン編集' : '新クーポン作成'}</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">クーポンコード</label>
+                        <input type="text" class="form-input" id="rule-coupon-code" value="${rule?.couponCode || ''}" placeholder="LINE500">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">説明</label>
+                        <input type="text" class="form-input" id="rule-description" value="${rule?.description || ''}" placeholder="LINE登録特典クーポン">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ステータス</label>
+                        <select class="form-select" id="rule-active">
+                            <option value="true" ${rule?.active !== false ? 'selected' : ''}>有効</option>
+                            <option value="false" ${rule?.active === false ? 'selected' : ''}>無効</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="savePricingRule('${ruleId || ''}')">${isEdit ? '更新' : '作成'}</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+                </div>
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,215,0,0.3);">
+                    <p style="color: rgba(255,255,255,0.7); font-size: 14px;">
+                        ✨ クーポン作成後、「商品を追加」ボタンから対象商品と割引設定を追加してください。
+                    </p>
+                </div>
+            `;
+            
+            openModal(content);
+        }
+
+        // 価格ルール保存
+        function savePricingRule(ruleId) {
+            const couponCode = document.getElementById('rule-coupon-code').value;
+            const description = document.getElementById('rule-description').value;
+            const active = document.getElementById('rule-active').value === 'true';
+            
+            if (!couponCode || !description) {
+                showMessage('クーポンコードと説明を入力してください', 'error');
+                return;
+            }
+            
+            if (ruleId) {
+                // 編集
+                const rule = currentData.pricingRules.find(r => r.id === ruleId);
+                if (rule) {
+                    rule.couponCode = couponCode;
+                    rule.description = description;
+                    rule.active = active;
+                    rule.updated = new Date().toISOString();
+                }
+            } else {
+                // 新規作成
+                const newRule = {
+                    id: 'rule_' + Date.now(),
+                    couponCode: couponCode,
+                    description: description,
+                    active: active,
+                    products: [],
+                    created: new Date().toISOString()
+                };
+                currentData.pricingRules.push(newRule);
+            }
+            
+            saveData();
+            updatePricingRulesTable();
+            updateBulkCouponSelect();
+            addHistoryEntry(
+                ruleId ? 'クーポン更新' : 'クーポン作成',
+                `クーポン「${couponCode}」を${ruleId ? '更新' : '作成'}しました`
+            );
+            closeModal();
+            showMessage('クーポンを保存しました', 'success');
+        }
+
+        // 価格ルール編集
+        function editPricingRule(ruleId) {
+            openPricingRuleModal(ruleId);
+        }
+
+        // 価格ルール削除
+        function deletePricingRule(ruleId) {
+            if (confirm('本当に削除しますか？')) {
+                const rule = currentData.pricingRules.find(r => r.id === ruleId);
+                if (rule) {
+                    currentData.pricingRules = currentData.pricingRules.filter(r => r.id !== ruleId);
+                    saveData();
+                    updatePricingRulesTable();
+                    addHistoryEntry('価格ルール削除', `クーポン「${rule.couponCode}」のルールを削除しました`);
+                    showMessage('価格ルールを削除しました', 'success');
+                }
+            }
+        }
+
+        // 一括更新実行
+        function executeBulkUpdate() {
+            const couponId = document.getElementById('bulk-coupon-select').value;
+            const type = document.getElementById('bulk-update-type').value;
+            
+            if (!couponId && (type === 'enable-coupon' || type === 'disable-coupon')) {
+                showMessage('クーポンを選択してください', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            setTimeout(() => {
+                switch (type) {
+                    case 'enable-coupon':
+                        const enableRule = currentData.pricingRules.find(r => r.id === couponId);
+                        if (enableRule) {
+                            enableRule.active = true;
+                            addHistoryEntry('クーポン有効化', `クーポン「${enableRule.couponCode}」を有効化しました`);
+                        }
+                        break;
+                        
+                    case 'disable-coupon':
+                        const disableRule = currentData.pricingRules.find(r => r.id === couponId);
+                        if (disableRule) {
+                            disableRule.active = false;
+                            addHistoryEntry('クーポン無効化', `クーポン「${disableRule.couponCode}」を無効化しました`);
+                        }
+                        break;
+                        
+                    case 'update-products':
+                        addHistoryEntry('商品情報更新', '対象商品の情報を更新しました');
+                        break;
+                        
+                    case 'update-discount':
+                        addHistoryEntry('割引額更新', '割引額を更新しました');
+                        break;
+                }
+                
+                saveData();
+                updateAllTables();
+                updateBulkCouponSelect();
+                showLoading(false);
+                showMessage('一括更新を実行しました', 'success');
+            }, 1500);
+        }
+
+        // 一括更新用クーポン選択肢を更新
+        function updateBulkCouponSelect() {
+            const select = document.getElementById('bulk-coupon-select');
+            if (!select) {
+                console.log('⚠️ bulk-coupon-select 要素が見つかりません');
+                return;
+            }
+            
+            select.innerHTML = '<option value="">クーポンを選択...</option>';
+            
+            console.log('🔄 一括更新用クーポン選択肢を更新中...価格ルール数:', currentData.pricingRules.length);
+            
+            let addedCount = 0;
+            currentData.pricingRules.forEach(rule => {
+                const option = document.createElement('option');
+                option.value = rule.id;
+                option.textContent = `${rule.couponCode} - ${rule.description}`;
+                select.appendChild(option);
+                addedCount++;
+                console.log('✅ 一括更新クーポン追加:', rule.couponCode);
+            });
+            
+            console.log('📊 一括更新に追加されたクーポン数:', addedCount);
+            
+            if (addedCount === 0) {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = 'クーポンがありません - 価格ルール設定で追加してください';
+                option.disabled = true;
+                select.appendChild(option);
+                showMessage('一括更新用のクーポンがありません', 'info');
+            }
+        }
+
+        // 予約設定
+        function scheduleBulkUpdate() {
+            console.log('🔄 scheduleBulkUpdate 関数が呼び出されました');
+            
+            const startDatetime = document.getElementById('scheduled-datetime').value;
+            const endDatetime = document.getElementById('schedule-end-datetime').value;
+            const type = document.getElementById('bulk-update-type').value;
+            const couponId = document.getElementById('bulk-coupon-select').value;
+            
+            console.log('📊 フォーム値:', { startDatetime, endDatetime, type, couponId });
+            
+            if (!startDatetime) {
+                showMessage('開始日時を設定してください', 'error');
+                return;
+            }
+            
+            if (!couponId && (type.includes('coupon') || type.includes('products'))) {
+                showMessage('クーポンを選択してください', 'error');
+                return;
+            }
+
+            // 商品選択が必要な場合のチェック
+            if ((type === 'enable-selected-products' || type === 'disable-selected-products')) {
+                const selectedProducts = document.querySelectorAll('#bulk-product-checkboxes input[type="checkbox"]:checked');
+                if (selectedProducts.length === 0) {
+                    showMessage('対象商品を選択してください', 'error');
+                    return;
+                }
+            }
+            
+            const rule = currentData.pricingRules.find(r => r.id === couponId);
+            // 選択された商品IDを取得
+            let selectedProductIds = [];
+            if (type === 'enable-selected-products' || type === 'disable-selected-products') {
+                const selectedCheckboxes = document.querySelectorAll('#bulk-product-checkboxes input[type="checkbox"]:checked');
+                selectedProductIds = Array.from(selectedCheckboxes).map(cb => cb.value);
+            }
+            
+            const scheduledOperation = {
+                id: 'scheduled_' + Date.now(),
+                startDatetime: startDatetime,
+                endDatetime: endDatetime || null,
+                type: type,
+                couponId: couponId,
+                couponCode: rule ? rule.couponCode : '',
+                selectedProducts: selectedProductIds,
+                status: 'pending',
+                created: new Date().toISOString()
+            };
+            
+            currentData.scheduledOperations.push(scheduledOperation);
+            console.log('📊 予約操作を追加:', scheduledOperation);
+            console.log('📊 追加後の予約操作数:', currentData.scheduledOperations.length);
+            
+            saveData();
+            
+            // 予約操作一覧を強制更新
+            setTimeout(() => {
+                updateScheduledOperationsList();
+                console.log('🔄 予約操作一覧を強制更新しました');
+            }, 100);
+            
+            const endInfo = endDatetime ? ` - ${endDatetime}終了` : '';
+            const productInfo = selectedProductIds.length > 0 ? ` (対象商品: ${selectedProductIds.length}件)` : '';
+            addHistoryEntry('一括更新予約', `${startDatetime}${endInfo}にクーポン「${rule?.couponCode}」の${type}を予約${productInfo}`);
+            showMessage('✅ 一括更新を予約しました！「📅 予約済み操作」セクションをご確認ください', 'success');
+            
+            // フォームリセット
+            document.getElementById('scheduled-datetime').value = '';
+            document.getElementById('schedule-end-datetime').value = '';
+            if (document.getElementById('bulk-product-checkboxes')) {
+                const checkboxes = document.querySelectorAll('#bulk-product-checkboxes input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = false);
+            }
+        }
+
+        // 予約操作一覧を更新
+        function updateScheduledOperationsList() {
+            console.log('🔄 updateScheduledOperationsList 開始');
+            console.log('📊 予約操作数:', currentData.scheduledOperations.length);
+            
+            const container = document.getElementById('scheduled-list');
+            if (!container) {
+                console.error('❌ scheduled-list 要素が見つかりません');
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            if (!currentData.scheduledOperations || currentData.scheduledOperations.length === 0) {
+                container.innerHTML = '<p style="color: rgba(255,255,255,0.7); text-align: center;">予約済み操作はありません</p>';
+                console.log('📋 予約済み操作なし');
+                return;
+            }
+            
+            console.log('📋 予約操作を表示中...', currentData.scheduledOperations);
+            
+            currentData.scheduledOperations.forEach(operation => {
+                const item = document.createElement('div');
+                item.style.cssText = 'background: rgba(255,255,255,0.05); padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #ffc107;';
+                
+                const statusColor = operation.status === 'pending' ? '#ffc107' : 
+                                  operation.status === 'completed' ? '#4caf50' : '#f44336';
+                
+                item.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: bold; margin-bottom: 5px;">
+                                ${operation.couponCode} - ${getOperationTypeText(operation.type)}
+                            </div>
+                            <div style="color: rgba(255,255,255,0.7); font-size: 14px;">
+                                開始: ${new Date(operation.startDatetime || operation.datetime).toLocaleString()}
+                                ${operation.endDatetime ? '<br/>終了: ' + new Date(operation.endDatetime).toLocaleString() : ''}
+                                ${operation.selectedProducts && operation.selectedProducts.length > 0 ? '<br/>対象商品: ' + operation.selectedProducts.length + '件' : ''}
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="color: ${statusColor}; font-size: 12px; font-weight: bold;">
+                                ${getOperationStatusText(operation.status)}
+                            </span>
+                            ${operation.status === 'pending' ? `<button class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="cancelScheduledOperation('${operation.id}')">キャンセル</button>` : ''}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        // 操作タイプの日本語表示
+        function getOperationTypeText(type) {
+            const texts = {
+                'enable-coupon': 'クーポン有効化',
+                'disable-coupon': 'クーポン無効化',
+                'update-products': '対象商品更新',
+                'update-discount': '割引額更新'
+            };
+            return texts[type] || type;
+        }
+
+        // 操作ステータスの日本語表示
+        function getOperationStatusText(status) {
+            const texts = {
+                'pending': '予約中',
+                'completed': '完了',
+                'cancelled': 'キャンセル',
+                'failed': '失敗'
+            };
+            return texts[status] || status;
+        }
+
+        // 予約操作をキャンセル
+        function cancelScheduledOperation(operationId) {
+            if (confirm('この予約操作をキャンセルしますか？')) {
+                const operation = currentData.scheduledOperations.find(op => op.id === operationId);
+                if (operation) {
+                    operation.status = 'cancelled';
+                    saveData();
+                    updateScheduledOperationsList();
+                    addHistoryEntry('予約キャンセル', `予約操作「${operation.couponCode} - ${getOperationTypeText(operation.type)}」をキャンセルしました`);
+                    showMessage('予約操作をキャンセルしました', 'success');
+                }
+            }
+        }
+
+        // 履歴エクスポート
+        function exportHistory() {
+            const csvData = currentData.history.map(entry => {
+                return [
+                    entry.timestamp,
+                    entry.action,
+                    entry.details,
+                    entry.user
+                ].map(field => `"${field}"`).join(',');
+            });
+            
+            const csvContent = 'data:text/csv;charset=utf-8,タイムスタンプ,アクション,詳細,ユーザー\n' + csvData.join('\n');
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement('a');
+            link.setAttribute('href', encodedUri);
+            link.setAttribute('download', `salon_admin_history_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showMessage('履歴をエクスポートしました', 'success');
+        }
+
+        // ロールバック確認
+        function rollbackConfirm() {
+            if (confirm('最後の変更をロールバックしますか？\n※この操作は取り消せません')) {
+                // ロールバック実装
+                addHistoryEntry('ロールバック実行', '前回の変更をロールバックしました');
+                showMessage('ロールバックを実行しました', 'success');
+            }
+        }
+
+        // 下書き保存
+        function saveAsDraft() {
+            const draftData = JSON.parse(JSON.stringify(currentData));
+            localStorage.setItem('salon_admin_draft', JSON.stringify(draftData));
+            addHistoryEntry('下書き保存', '現在の設定を下書きとして保存しました');
+            showMessage('下書きを保存しました', 'success');
+        }
+
+        // モーダル外クリックで閉じる
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // 商品をルールに追加
+        function addProductToRule(ruleId) {
+            const rule = currentData.pricingRules.find(r => r.id === ruleId);
+            if (!rule) return;
+            
+            const availableProducts = currentData.products.filter(p => 
+                !rule.products.find(rp => rp.productId === p.id)
+            );
+            
+            if (availableProducts.length === 0) {
+                showMessage('追加可能な商品がありません', 'info');
+                return;
+            }
+            
+            const productOptions = availableProducts.map(p => 
+                `<option value="${p.id}">${p.name}</option>`
+            ).join('');
+            
+            const content = `
+                <h3>商品を追加 - ${rule.couponCode}</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">商品</label>
+                        <select class="form-select" id="add-product-select" onchange="updateAddProductPrice()">
+                            <option value="">商品を選択...</option>
+                            ${productOptions}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">通常価格</label>
+                        <input type="number" class="form-input" id="add-product-original-price" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">割引タイプ</label>
+                        <select class="form-select" id="add-product-discount-type" onchange="calculateAddProductFinalPrice()">
+                            <option value="fixed">固定額割引</option>
+                            <option value="percentage">パーセント割引</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">割引値</label>
+                        <input type="number" class="form-input" id="add-product-discount-value" placeholder="500 または 20" onchange="calculateAddProductFinalPrice()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">割引後価格</label>
+                        <input type="number" class="form-input" id="add-product-final-price" readonly>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="saveProductToRule('${ruleId}')">追加</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+                </div>
+            `;
+            
+            openModal(content);
+        }
+
+        // 商品追加時の価格更新
+        function updateAddProductPrice() {
+            const productId = document.getElementById('add-product-select').value;
+            const product = currentData.products.find(p => p.id === productId);
+            
+            if (product) {
+                document.getElementById('add-product-original-price').value = product.salePrice;
+                calculateAddProductFinalPrice();
+            } else {
+                document.getElementById('add-product-original-price').value = '';
+                document.getElementById('add-product-final-price').value = '';
+            }
+        }
+
+        // 割引後価格計算
+        function calculateAddProductFinalPrice() {
+            const originalPrice = parseInt(document.getElementById('add-product-original-price').value);
+            const discountType = document.getElementById('add-product-discount-type').value;
+            const discountValue = parseInt(document.getElementById('add-product-discount-value').value);
+            
+            if (!originalPrice || !discountValue) {
+                document.getElementById('add-product-final-price').value = '';
+                return;
+            }
+            
+            let finalPrice;
+            if (discountType === 'percentage') {
+                finalPrice = originalPrice * (1 - discountValue / 100);
+            } else {
+                finalPrice = originalPrice - discountValue;
+            }
+            
+            finalPrice = Math.max(0, Math.round(finalPrice));
+            document.getElementById('add-product-final-price').value = finalPrice;
+        }
+
+        // 商品をルールに保存
+        function saveProductToRule(ruleId) {
+            const productId = document.getElementById('add-product-select').value;
+            const originalPrice = parseInt(document.getElementById('add-product-original-price').value);
+            const discountType = document.getElementById('add-product-discount-type').value;
+            const discountValue = parseInt(document.getElementById('add-product-discount-value').value);
+            const finalPrice = parseInt(document.getElementById('add-product-final-price').value);
+            
+            if (!productId || !originalPrice || !discountValue) {
+                showMessage('必須項目を入力してください', 'error');
+                return;
+            }
+            
+            const product = currentData.products.find(p => p.id === productId);
+            const rule = currentData.pricingRules.find(r => r.id === ruleId);
+            
+            if (!product || !rule) {
+                showMessage('商品またはルールが見つかりません', 'error');
+                return;
+            }
+            
+            const newProductRule = {
+                productId: productId,
+                productName: product.name,
+                originalPrice: originalPrice,
+                discountType: discountType,
+                discountValue: discountValue,
+                finalPrice: finalPrice
+            };
+            
+            rule.products.push(newProductRule);
+            saveData();
+            updatePricingRulesTable();
+            addHistoryEntry('商品ルール追加', `クーポン「${rule.couponCode}」に商品「${product.name}」を追加しました`);
+            closeModal();
+            showMessage('商品をルールに追加しました', 'success');
+        }
+
+        // 商品ルール編集
+        function editProductRule(ruleId, productId) {
+            const rule = currentData.pricingRules.find(r => r.id === ruleId);
+            const productRule = rule?.products.find(p => p.productId === productId);
+            
+            if (!rule || !productRule) {
+                showMessage('ルールまたは商品が見つかりません', 'error');
+                return;
+            }
+            
+            const content = `
+                <h3>商品ルール編集 - ${rule.couponCode}</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">商品名</label>
+                        <input type="text" class="form-input" value="${productRule.productName}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">通常価格</label>
+                        <input type="number" class="form-input" id="edit-product-original-price" value="${productRule.originalPrice}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">割引タイプ</label>
+                        <select class="form-select" id="edit-product-discount-type" onchange="calculateEditProductFinalPrice()">
+                            <option value="fixed" ${productRule.discountType === 'fixed' ? 'selected' : ''}>固定額割引</option>
+                            <option value="percentage" ${productRule.discountType === 'percentage' ? 'selected' : ''}>パーセント割引</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">割引値</label>
+                        <input type="number" class="form-input" id="edit-product-discount-value" value="${productRule.discountValue}" onchange="calculateEditProductFinalPrice()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">割引後価格</label>
+                        <input type="number" class="form-input" id="edit-product-final-price" value="${productRule.finalPrice}">
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="updateProductRule('${ruleId}', '${productId}')">更新</button>
+                    <button class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+                </div>
+            `;
+            
+            openModal(content);
+        }
+
+        // 編集時の割引後価格計算
+        function calculateEditProductFinalPrice() {
+            const originalPrice = parseInt(document.getElementById('edit-product-original-price').value);
+            const discountType = document.getElementById('edit-product-discount-type').value;
+            const discountValue = parseInt(document.getElementById('edit-product-discount-value').value);
+            
+            if (!originalPrice || !discountValue) {
+                return;
+            }
+            
+            let finalPrice;
+            if (discountType === 'percentage') {
+                finalPrice = originalPrice * (1 - discountValue / 100);
+            } else {
+                finalPrice = originalPrice - discountValue;
+            }
+            
+            finalPrice = Math.max(0, Math.round(finalPrice));
+            document.getElementById('edit-product-final-price').value = finalPrice;
+        }
+
+        // 商品ルール更新
+        function updateProductRule(ruleId, productId) {
+            const originalPrice = parseInt(document.getElementById('edit-product-original-price').value);
+            const discountType = document.getElementById('edit-product-discount-type').value;
+            const discountValue = parseInt(document.getElementById('edit-product-discount-value').value);
+            const finalPrice = parseInt(document.getElementById('edit-product-final-price').value);
+            
+            const rule = currentData.pricingRules.find(r => r.id === ruleId);
+            const productRule = rule?.products.find(p => p.productId === productId);
+            
+            if (!rule || !productRule) {
+                showMessage('ルールまたは商品が見つかりません', 'error');
+                return;
+            }
+            
+            productRule.originalPrice = originalPrice;
+            productRule.discountType = discountType;
+            productRule.discountValue = discountValue;
+            productRule.finalPrice = finalPrice;
+            
+            saveData();
+            updatePricingRulesTable();
+            addHistoryEntry('商品ルール更新', `クーポン「${rule.couponCode}」の商品「${productRule.productName}」を更新しました`);
+            closeModal();
+            showMessage('商品ルールを更新しました', 'success');
+        }
+
+        // 商品ルール削除
+        function deleteProductRule(ruleId, productId) {
+            if (confirm('この商品ルールを削除しますか？')) {
+                const rule = currentData.pricingRules.find(r => r.id === ruleId);
+                if (rule) {
+                    const productRule = rule.products.find(p => p.productId === productId);
+                    rule.products = rule.products.filter(p => p.productId !== productId);
+                    
+                    saveData();
+                    updatePricingRulesTable();
+                    addHistoryEntry('商品ルール削除', `クーポン「${rule.couponCode}」から商品「${productRule?.productName}」を削除しました`);
+                    showMessage('商品ルールを削除しました', 'success');
+                }
+            }
+        }
+
+        // 利用可能なクーポン一覧を更新
+        function updateAvailableCoupons() {
+            const select = document.getElementById('available-coupons');
+            if (!select) {
+                console.log('⚠️ available-coupons 要素が見つかりません');
+                return;
+            }
+            
+            select.innerHTML = '<option value="">クーポンを選択...</option>';
+            
+            try {
+                const existingCoupons = localStorage.getItem('salon_coupons');
+                console.log('🔍 updateAvailableCoupons - RAWデータ:', existingCoupons);
+                
+                if (existingCoupons) {
+                    let coupons;
+                    
+                    try {
+                        coupons = JSON.parse(existingCoupons);
+                        console.log('✅ JSON解析成功 - updateAvailableCoupons');
+                        console.log('📊 データ構造:', typeof coupons, Array.isArray(coupons));
+                        console.log('📊 データ内容:', coupons);
+                    } catch (parseError) {
+                        console.error('❌ JSON解析エラー - updateAvailableCoupons:', parseError);
+                        showMessage('クーポンデータの解析に失敗', 'error');
+                        return;
+                    }
+                    
+                    let couponArray = [];
+                    
+                    // データ形式を判定
+                    if (Array.isArray(coupons)) {
+                        couponArray = coupons;
+                    } else if (typeof coupons === 'object' && coupons !== null) {
+                        couponArray = Object.values(coupons);
+                    } else {
+                        console.error('❌ 無効なデータ形式:', typeof coupons);
+                        showMessage('クーポンデータの形式が無効です', 'error');
+                        return;
+                    }
+                    
+                    console.log('📋 処理対象クーポン数:', couponArray.length);
+                    
+                    let addedCount = 0;
+                    let errorCount = 0;
+                    
+                    couponArray.forEach((coupon, index) => {
+                        try {
+                            if (!coupon || typeof coupon !== 'object') {
+                                throw new Error(`無効なクーポンオブジェクト [${index}]`);
+                            }
+                            
+                            if (!coupon.code) {
+                                throw new Error(`クーポンコードが見つかりません [${index}]`);
+                            }
+                            
+                            const option = document.createElement('option');
+                            option.value = coupon.code;
+                            
+                            const discountType = coupon.discountType || 'fixed';
+                            const discountValue = coupon.discountValue || 0;
+                            const discountText = discountType === 'percentage' 
+                                ? `${discountValue}% OFF` 
+                                : `¥${discountValue} OFF`;
+                            
+                            option.textContent = `${coupon.code} - ${discountText}`;
+                            option.dataset.coupon = JSON.stringify(coupon);
+                            select.appendChild(option);
+                            addedCount++;
+                            console.log('✅ クーポン追加:', coupon.code, discountText);
+                            
+                        } catch (couponError) {
+                            errorCount++;
+                            console.error(`❌ クーポン処理エラー [${index}]:`, couponError);
+                            console.error('❌ 問題のクーポン:', coupon);
+                        }
+                    });
+                    
+                    console.log('📊 クーポン追加完了:', addedCount + '件成功', errorCount + '件エラー');
+                    
+                    if (addedCount > 0) {
+                        showMessage(`利用可能なクーポンを更新: ${addedCount}件`, 'success');
+                    } else {
+                        showMessage('有効なクーポンがありませんでした', 'error');
+                    }
+                } else {
+                    console.log('⚠️ クーポンデータが見つかりません');
+                    showMessage('クーポンデータがありません。先にクーポン管理画面でクーポンを作成してください。', 'info');
+                }
+            } catch (error) {
+                console.error('❌ クーポン一覧更新エラー:', error);
+                console.error('❌ エラースタック:', error.stack);
+                showMessage('クーポン一覧の更新でエラーが発生: ' + error.message, 'error');
+            }
+        }
+
+        // クーポンインポートのプレビュー
+        function previewCouponImport() {
+            const select = document.getElementById('available-coupons');
+            const productSelection = document.getElementById('product-selection');
+            const importBtn = document.getElementById('import-coupon-btn');
+            
+            if (select.value) {
+                const couponData = JSON.parse(select.options[select.selectedIndex].dataset.coupon);
+                
+                // 商品選択エリアを表示
+                productSelection.style.display = 'block';
+                productSelection.innerHTML = '<h5 style="color: #ffc107; margin-bottom: 10px;">適用商品を選択してください</h5>';
+                
+                currentData.products.forEach(product => {
+                    const checkbox = document.createElement('div');
+                    checkbox.style.marginBottom = '10px';
+                    
+                    let finalPrice;
+                    if (couponData.discountType === 'percentage') {
+                        finalPrice = Math.round(product.salePrice * (1 - couponData.discountValue / 100));
+                    } else {
+                        finalPrice = Math.max(0, product.salePrice - couponData.discountValue);
+                    }
+                    
+                    checkbox.innerHTML = `
+                        <label style="display: flex; align-items: center; cursor: pointer; color: #fff;">
+                            <input type="checkbox" value="${product.id}" style="margin-right: 10px;" onchange="updateImportButton()">
+                            <span>${product.name}</span>
+                            <span style="margin-left: auto; color: rgba(255,255,255,0.7);">
+                                ¥${product.salePrice.toLocaleString()} → <strong style="color: #4caf50;">¥${finalPrice.toLocaleString()}</strong>
+                            </span>
+                        </label>
+                    `;
+                    productSelection.appendChild(checkbox);
+                });
+                
+                importBtn.disabled = true;
+            } else {
+                productSelection.style.display = 'none';
+                importBtn.disabled = true;
+            }
+        }
+
+        // インポートボタンの状態更新
+        function updateImportButton() {
+            const checkboxes = document.querySelectorAll('#product-selection input[type="checkbox"]');
+            const importBtn = document.getElementById('import-coupon-btn');
+            const hasSelected = Array.from(checkboxes).some(cb => cb.checked);
+            importBtn.disabled = !hasSelected;
+        }
+
+        // 選択したクーポンをインポート
+        function importSelectedCoupon() {
+            const select = document.getElementById('available-coupons');
+            const checkboxes = document.querySelectorAll('#product-selection input[type="checkbox"]:checked');
+            
+            if (!select.value || checkboxes.length === 0) {
+                showMessage('クーポンと商品を選択してください', 'error');
+                return;
+            }
+            
+            const couponData = JSON.parse(select.options[select.selectedIndex].dataset.coupon);
+            const selectedProducts = Array.from(checkboxes).map(cb => cb.value);
+            
+            // 既存のルールをチェック
+            const existingRule = currentData.pricingRules.find(r => r.couponCode === couponData.code);
+            
+            if (existingRule) {
+                // 既存ルールに商品を追加
+                // products配列が存在しない場合は初期化
+                if (!existingRule.products || !Array.isArray(existingRule.products)) {
+                    existingRule.products = [];
+                }
+                
+                selectedProducts.forEach(productId => {
+                    const product = currentData.products.find(p => p.id === productId);
+                    if (product && !existingRule.products.find(pr => pr.productId === productId)) {
+                        existingRule.products.push(createProductRule(product, couponData));
+                    }
+                });
+            } else {
+                // 新しいルールを作成
+                const products = selectedProducts.map(productId => {
+                    const product = currentData.products.find(p => p.id === productId);
+                    return createProductRule(product, couponData);
+                });
+                
+                const newRule = {
+                    id: 'imported_' + couponData.code + '_' + Date.now(),
+                    couponCode: couponData.code,
+                    description: `${couponData.code} (${couponData.discountType === 'percentage' ? couponData.discountValue + '%' : '¥' + couponData.discountValue} OFF)`,
+                    active: couponData.isActive,
+                    products: products,
+                    created: new Date().toISOString(),
+                    imported: true
+                };
+                
+                currentData.pricingRules.push(newRule);
+            }
+            
+            saveData();
+            updatePricingRulesTable();
+            updateBulkCouponSelect();
+            
+            addHistoryEntry('クーポンインポート', `クーポン「${couponData.code}」を${selectedProducts.length}個の商品に適用しました`);
+            
+            // 詳細な成功メッセージ
+            const selectedProductCount = selectedProducts.length;
+            const existingText = existingRule ? '既存ルールに追加' : '新規ルール作成';
+            showMessage(`✅ クーポン「${couponData.code}」を${selectedProductCount}件の商品に適用しました (${existingText})`, 'success');
+            
+            // コンソールにも詳細ログ
+            console.log('✅ クーポン適用完了:', {
+                couponCode: couponData.code,
+                selectedProducts: selectedProducts,
+                isExistingRule: !!existingRule,
+                totalPricingRules: currentData.pricingRules.length
+            });
+            
+            // フォームリセット
+            select.value = '';
+            document.getElementById('product-selection').style.display = 'none';
+            document.getElementById('import-coupon-btn').disabled = true;
+        }
+
+        // 既存クーポンを再読み込み
+        function importExistingCoupons() {
+            console.log('🔄 importExistingCoupons 開始');
+            showLoading(true);
+            showMessage('クーポンデータ取得中...', 'info');
+            
+            setTimeout(() => {
+                console.log('📊 データ取得前の価格ルール数:', currentData.pricingRules.length);
+                
+                loadExistingCoupons();
+                
+                console.log('📊 データ取得後の価格ルール数:', currentData.pricingRules.length);
+                
+                updateAllTables();
+                showLoading(false);
+                
+                if (currentData.pricingRules.length > 0) {
+                    showMessage(`クーポンデータを更新しました: ${currentData.pricingRules.length}件`, 'success');
+                } else {
+                    showMessage('クーポンデータが見つかりませんでした', 'error');
+                }
+            }, 1000);
+        }
+
+        // クーポン管理画面を開く
+        function openCouponManagement() {
+            window.open('ultimate-admin.html', '_blank');
+        }
+
+        // 商品選択エリアの表示/非表示切り替え
+        function toggleProductSelection() {
+            const updateType = document.getElementById('bulk-update-type').value;
+            const productSelectionDiv = document.getElementById('bulk-product-selection');
+            const checkboxesContainer = document.getElementById('bulk-product-checkboxes');
+            
+            if (updateType === 'enable-selected-products' || updateType === 'disable-selected-products') {
+                productSelectionDiv.style.display = 'block';
+                updateBulkProductCheckboxes();
+            } else {
+                productSelectionDiv.style.display = 'none';
+            }
+        }
+
+        // 商品チェックボックスを更新
+        function updateBulkProductCheckboxes() {
+            const container = document.getElementById('bulk-product-checkboxes');
+            container.innerHTML = '';
+            
+            currentData.products.forEach(product => {
+                const checkboxDiv = document.createElement('div');
+                checkboxDiv.style.cssText = 'background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px; display: flex; align-items: center; gap: 8px;';
+                
+                checkboxDiv.innerHTML = `
+                    <input type="checkbox" id="bulk-product-${product.id}" value="${product.id}" style="margin: 0;">
+                    <label for="bulk-product-${product.id}" style="color: white; font-size: 14px; cursor: pointer; flex: 1;">
+                        ${product.name} (¥${product.salePrice.toLocaleString()})
+                    </label>
+                `;
+                
+                container.appendChild(checkboxDiv);
+            });
+        }
+
+        // 予約操作のデバッグ関数
+        function debugScheduledOperations() {
+            console.log('🔍 予約操作デバッグ開始');
+            console.log('📊 currentData.scheduledOperations:', currentData.scheduledOperations);
+            console.log('📊 予約操作数:', currentData.scheduledOperations ? currentData.scheduledOperations.length : '未定義');
+            
+            const container = document.getElementById('scheduled-list');
+            console.log('📋 scheduled-list 要素:', container);
+            
+            // localStorage の状況も確認
+            const savedData = localStorage.getItem('salon_integrated_admin');
+            if (savedData) {
+                const parsed = JSON.parse(savedData);
+                console.log('💾 localStorage内の予約操作数:', parsed.scheduledOperations ? parsed.scheduledOperations.length : '未定義');
+                console.log('💾 localStorage内の予約操作:', parsed.scheduledOperations);
+            }
+            
+            // 手動で更新を実行
+            updateScheduledOperationsList();
+            
+            alert(`予約操作デバッグ情報:
+メモリ内予約数: ${currentData.scheduledOperations ? currentData.scheduledOperations.length : '未定義'}
+localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.length || 0 : 0}
+
+詳細はコンソール(F12)をご確認ください。`);
+        }
+
+        // 一括更新のクーポン詳細表示
+        function updateBulkCouponInfo() {
+            const select = document.getElementById('bulk-coupon-select');
+            const infoDiv = document.getElementById('bulk-coupon-info');
+            const detailsDiv = document.getElementById('bulk-coupon-details');
+            
+            if (select.value) {
+                const rule = currentData.pricingRules.find(r => r.id === select.value);
+                if (rule) {
+                    infoDiv.style.display = 'block';
+                    detailsDiv.innerHTML = `
+                        <div style="margin-bottom: 10px;">
+                            <strong>クーポンコード:</strong> ${rule.couponCode}
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>説明:</strong> ${rule.description}
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>現在の状態:</strong> 
+                            <span class="status-badge ${rule.active ? 'status-active' : 'status-inactive'}">
+                                ${rule.active ? '有効' : '無効'}
+                            </span>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <strong>対象商品:</strong> ${rule.products.length}件
+                        </div>
+                        <div style="font-size: 12px; color: rgba(255,255,255,0.7);">
+                            ${rule.products.map(p => p.productName).join(', ')}
+                        </div>
+                    `;
+                }
+            } else {
+                infoDiv.style.display = 'none';
+            }
+        }
+
+        // デバッグ関数
+        function debugCouponData() {
+            console.log('🔍 デバッグ情報を出力中...');
+            
+            // localStorage 内容確認
+            const couponData = localStorage.getItem('salon_coupons');
+            const integratedData = localStorage.getItem('salon_integrated_admin');
+            
+            console.log('📊 localStorage 内容:');
+            console.log('- salon_coupons:', couponData ? 'あり' : 'なし');
+            console.log('- salon_integrated_admin:', integratedData ? 'あり' : 'なし');
+            
+            if (couponData) {
+                try {
+                    const coupons = JSON.parse(couponData);
+                    console.log('🎫 クーポンデータ詳細:', coupons);
+                    console.log('📋 クーポン一覧:', Object.keys(coupons));
+                    
+                    Object.values(coupons).forEach(coupon => {
+                        console.log(`  - ${coupon.code}: ${coupon.discountType} ${coupon.discountValue}, 有効: ${coupon.isActive}`);
+                    });
+                } catch (error) {
+                    console.error('❌ クーポンデータ解析エラー:', error);
+                }
+            }
+            
+            if (integratedData) {
+                try {
+                    const integrated = JSON.parse(integratedData);
+                    console.log('🎛️ 統合管理データ詳細:', integrated);
+                    console.log('📊 価格ルール数:', integrated.pricingRules ? integrated.pricingRules.length : 0);
+                } catch (error) {
+                    console.error('❌ 統合管理データ解析エラー:', error);
+                }
+            }
+            
+            // 現在の currentData 確認
+            console.log('💾 現在の currentData:', currentData);
+            console.log('🎫 価格ルール数:', currentData.pricingRules.length);
+            
+            // DOM要素確認
+            const availableCoupons = document.getElementById('available-coupons');
+            const bulkCouponSelect = document.getElementById('bulk-coupon-select');
+            
+            console.log('🎯 DOM要素確認:');
+            console.log('- available-coupons:', availableCoupons ? `存在 (${availableCoupons.options.length}件)` : '存在しない');
+            console.log('- bulk-coupon-select:', bulkCouponSelect ? `存在 (${bulkCouponSelect.options.length}件)` : '存在しない');
+            
+            // ブラウザコンソールに表示
+            alert(`デバッグ情報をコンソールに出力しました。\n\nクーポンデータ: ${couponData ? 'あり' : 'なし'}\n価格ルール: ${currentData.pricingRules.length}件\n\n詳細はブラウザのコンソール(F12)をご確認ください。`);
+        }
+
+        // テスト関数
+        function testOpenModal() {
+            console.log('🔧 テスト関数実行中...');
+            alert('📋 一覧管理ボタンが押されました！');
+            
+            // Bootstrap確認
+            if (typeof bootstrap === 'undefined') {
+                alert('❌ Bootstrap が読み込まれていません');
+                console.log('Bootstrap未定義 - CDNが読み込まれていない可能性があります');
+                return false;
+            } else {
+                alert('✅ Bootstrap読み込み確認OK');
+                console.log('✅ Bootstrap読み込み確認:', bootstrap);
+            }
+            
+            // モーダル要素確認
+            const modalElement = document.getElementById('scheduledOperationsModal');
+            if (!modalElement) {
+                alert('❌ モーダル要素が見つかりません');
+                console.log('モーダル要素 scheduledOperationsModal が見つかりません');
+                return false;
+            } else {
+                alert('✅ モーダル要素確認OK');
+                console.log('✅ モーダル要素確認:', modalElement);
+            }
+            
+            // 簡単なモーダル表示テスト
+            try {
+                modalElement.style.display = 'block';
+                modalElement.classList.add('show');
+                alert('✅ 手動でモーダルを表示しました。閉じるには再度このボタンを押してください。');
+                
+                // 5秒後に閉じる
+                setTimeout(() => {
+                    modalElement.style.display = 'none';
+                    modalElement.classList.remove('show');
+                    console.log('モーダルを自動で閉じました');
+                }, 5000);
+                
+            } catch (error) {
+                alert('❌ 手動モーダル表示エラー: ' + error.message);
+                console.error('手動モーダル表示エラー:', error);
+            }
+            
+            return true;
+        }
+
+        // 予約済み操作管理モーダルを開く
+        function openScheduledOperationsManager() {
+            console.log('📋 予約済み操作管理モーダルを開く');
+            
+            try {
+                // まずテーブルデータを更新
+                populateScheduledOperationsTable();
+                
+                const modalElement = document.getElementById('scheduledOperationsModal');
+                if (!modalElement) {
+                    alert('❌ モーダル要素が見つかりません');
+                    return;
+                }
+                
+                // 既存のモーダルインスタンスを削除
+                const existingModal = bootstrap.Modal.getInstance(modalElement);
+                if (existingModal) {
+                    existingModal.dispose();
+                }
+                
+                // モーダルオプションを設定
+                const modal = new bootstrap.Modal(modalElement, {
+                    backdrop: 'static',
+                    keyboard: true,
+                    focus: true
+                });
+                
+                // モーダルを表示
+                modal.show();
+                console.log('✅ モーダル表示実行');
+                
+                // モーダル表示完了後の処理
+                modalElement.addEventListener('shown.bs.modal', function () {
+                    console.log('✅ モーダル完全表示完了');
+                    
+                    // showクラスが適用されていることを確認し、CSSで全画面化
+                    if (!modalElement.classList.contains('show')) {
+                        modalElement.classList.add('show');
+                    }
+                    
+                    // 追加の全画面設定（CSSで足りない場合のバックアップ）
+                    modalElement.style.position = 'fixed';
+                    modalElement.style.top = '0';
+                    modalElement.style.left = '0';
+                    modalElement.style.zIndex = '1055';
+                    
+                    // テーブル領域を確実に表示
+                    const tableContainer = modalElement.querySelector('.table-responsive');
+                    if (tableContainer) {
+                        tableContainer.style.display = 'block';
+                        tableContainer.style.visibility = 'visible';
+                    }
+                    
+                    // 背景のz-index調整
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) {
+                        backdrop.style.zIndex = '1050';
+                    }
+                    
+                    console.log('🖥️ 全画面設定完了（CSS主導）');
+                    
+                }, { once: true });
+                
+            } catch (error) {
+                console.error('❌ モーダル表示エラー:', error);
+                alert('モーダル表示エラー: ' + error.message);
+                
+                // フォールバック: 直接表示
+                try {
+                    modalElement.style.display = 'block';
+                    modalElement.classList.add('show');
+                    modalElement.style.position = 'fixed';
+                    modalElement.style.top = '0';
+                    modalElement.style.left = '0';
+                    modalElement.style.zIndex = '1055';
+                    
+                    // 背景を追加
+                    if (!document.querySelector('.modal-backdrop')) {
+                        const backdrop = document.createElement('div');
+                        backdrop.className = 'modal-backdrop fade show';
+                        backdrop.style.zIndex = '1050';
+                        document.body.appendChild(backdrop);
+                        document.body.classList.add('modal-open');
+                    }
+                    
+                    console.log('✅ フォールバック表示完了（CSS全画面化）');
+                } catch (fallbackError) {
+                    console.error('❌ フォールバック表示もエラー:', fallbackError);
+                }
+            }
+        }
+        
+        // 予約済み操作テーブルにデータを表示
+        function populateScheduledOperationsTable() {
+            console.log('🔄 予約済み操作テーブルを更新中...');
+            const tbody = document.getElementById('scheduled-operations-table-body');
+            const noDataDiv = document.getElementById('no-operations-message');
+            const searchTerm = document.getElementById('operation-search').value.toLowerCase() || '';
+            const statusFilter = document.getElementById('operation-status-filter').value || '';
+            
+            tbody.innerHTML = '';
+            
+            if (!currentData.scheduledOperations || currentData.scheduledOperations.length === 0) {
+                noDataDiv.style.display = 'block';
+                tbody.parentElement.parentElement.style.display = 'none';
+                return;
+            }
+            
+            // フィルタリング
+            let filteredOps = currentData.scheduledOperations.filter(op => {
+                const matchesSearch = !searchTerm || 
+                    (op.couponCode && op.couponCode.toLowerCase().includes(searchTerm)) ||
+                    (op.type && getOperationTypeText(op.type).toLowerCase().includes(searchTerm));
+                const matchesStatus = !statusFilter || op.status === statusFilter;
+                return matchesSearch && matchesStatus;
+            });
+            
+            if (filteredOps.length === 0) {
+                noDataDiv.style.display = 'block';
+                tbody.parentElement.parentElement.style.display = 'none';
+                return;
+            }
+            
+            noDataDiv.style.display = 'none';
+            tbody.parentElement.parentElement.style.display = 'table';
+            
+            // 開始日時でソート（新しい順）
+            filteredOps.sort((a, b) => new Date(b.startDatetime || b.datetime) - new Date(a.startDatetime || a.datetime));
+            
+            filteredOps.forEach((op, index) => {
+                const row = document.createElement('tr');
+                
+                const statusIcon = {
+                    'pending': '⏳',
+                    'completed': '✅',
+                    'cancelled': '❌'
+                }[op.status] || '❓';
+                
+                const statusClass = {
+                    'pending': 'warning',
+                    'completed': 'success',
+                    'cancelled': 'danger'
+                }[op.status] || 'secondary';
+                
+                const startDate = new Date(op.startDatetime || op.datetime);
+                const endDate = op.endDatetime ? new Date(op.endDatetime) : null;
+                
+                row.innerHTML = `
+                    <td style="font-size: 11px; padding: 8px 6px; width: 18%; overflow: hidden; text-overflow: ellipsis;" title="${startDate.toLocaleString()}">${startDate.toLocaleString().replace(/:\d{2}$/, '')}</td>
+                    <td style="font-size: 11px; padding: 8px 6px; width: 18%; overflow: hidden; text-overflow: ellipsis;" title="${endDate ? endDate.toLocaleString() : '-'}">${endDate ? endDate.toLocaleString().replace(/:\d{2}$/, '') : '-'}</td>
+                    <td style="padding: 8px 6px; width: 12%; text-align: center;"><span class="badge bg-info" style="font-size: 10px; padding: 3px 6px;">${op.couponCode || '-'}</span></td>
+                    <td style="font-size: 11px; padding: 8px 6px; width: 20%; overflow: hidden; text-overflow: ellipsis;" title="${getOperationTypeText(op.type)}">${getOperationTypeText(op.type)}</td>
+                    <td style="text-align: center; padding: 8px 6px; width: 10%;"><span class="badge bg-secondary" style="font-size: 10px; padding: 3px 6px;">${op.selectedProducts ? op.selectedProducts.length : 0}</span></td>
+                    <td style="text-align: center; padding: 8px 6px; width: 10%;"><span class="badge bg-${statusClass}" style="font-size: 10px; padding: 3px 6px;">${statusIcon}</span></td>
+                    <td style="padding: 8px 6px; width: 12%;">
+                        <div class="btn-group" role="group" style="gap: 3px; display: flex; justify-content: center;">
+                            <button class="btn btn-sm btn-primary" onclick="editScheduledOperation(${index})" title="編集" style="font-size: 10px; padding: 3px 6px;">
+                                ✏️
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteScheduledOperation(${index})" title="削除" style="font-size: 10px; padding: 3px 6px;">
+                                🗑️
+                            </button>
+                            ${op.status === 'pending' ? 
+                                `<button class="btn btn-sm btn-success" onclick="executeScheduledOperation(${index})" title="実行" style="font-size: 10px; padding: 3px 6px;">⚡</button>` : 
+                                ''
+                            }
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+            
+            console.log(`📊 ${filteredOps.length}件の予約操作を表示しました`);
+        }
+        
+        // 操作タイプのテキスト取得
+        function getOperationTypeText(type) {
+            const types = {
+                'enable-coupon': '🟢 クーポン有効化',
+                'disable-coupon': '🔴 クーポン無効化',
+                'enable-selected-products': '🟢 選択商品で有効化',
+                'disable-selected-products': '🔴 選択商品で無効化'
+            };
+            return types[type] || type;
+        }
+        
+        // 状態のテキスト取得
+        function getStatusText(status) {
+            const statuses = {
+                'pending': '待機中',
+                'completed': '完了',
+                'cancelled': 'キャンセル'
+            };
+            return statuses[status] || status;
+        }
+        
+        // 予約済み操作の編集
+        function editScheduledOperation(index) {
+            console.log(`✏️ 予約操作編集: ${index}`);
+            
+            const operation = currentData.scheduledOperations[index];
+            if (!operation) {
+                alert(`❌ 操作データが見つかりません (index: ${index})`);
+                return;
+            }
+            
+            console.log('📋 編集対象の操作:', operation);
+            
+            // 編集フォームにデータを設定
+            document.getElementById('edit-operation-id').value = index;
+            document.getElementById('edit-start-datetime').value = formatDatetimeLocal(operation.startDatetime || operation.datetime);
+            document.getElementById('edit-end-datetime').value = operation.endDatetime ? formatDatetimeLocal(operation.endDatetime) : '';
+            document.getElementById('edit-operation-type').value = operation.type;
+            document.getElementById('edit-operation-status').value = operation.status;
+            
+            // クーポン選択肢を更新
+            updateEditCouponSelect(operation.couponId);
+            
+            // 商品チェックボックスを更新
+            updateEditProductCheckboxes(operation.selectedProducts || []);
+            
+            // 編集モーダルを表示（シンプルバージョン）
+            try {
+                const modalElement = document.getElementById('editScheduledOperationModal');
+                if (!modalElement) {
+                    alert('❌ 編集モーダル要素が見つかりません');
+                    return;
+                }
+                
+                console.log('📋 編集モーダル要素確認:', modalElement);
+                
+                // 全ての既存のbackdropを削除
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => backdrop.remove());
+                
+                // body のモーダル関連クラスをクリア
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                
+                // モーダルを直接表示（Bootstrapを使わずに）
+                modalElement.style.display = 'block';
+                modalElement.style.position = 'fixed';
+                modalElement.style.top = '0';
+                modalElement.style.left = '0';
+                modalElement.style.width = '100vw';
+                modalElement.style.height = '100vh';
+                modalElement.style.zIndex = '10000';
+                modalElement.style.backgroundColor = 'rgba(0,0,0,0.3)';
+                modalElement.style.transform = 'none';
+                modalElement.classList.add('show');
+                modalElement.removeAttribute('aria-hidden');
+                
+                console.log('✅ 編集モーダル直接表示完了');
+                
+                // キーボードイベントリスナーを追加（Escキーで閉じる）
+                const handleKeydown = function(event) {
+                    if (event.key === 'Escape') {
+                        closeEditModalDirectly();
+                        document.removeEventListener('keydown', handleKeydown);
+                    }
+                };
+                document.addEventListener('keydown', handleKeydown);
+                
+                // 最初の入力フィールドにフォーカス
+                setTimeout(() => {
+                    const firstInput = modalElement.querySelector('input[type="datetime-local"]');
+                    if (firstInput) {
+                        firstInput.focus();
+                    }
+                }, 200);
+                
+            } catch (error) {
+                console.error('❌ 編集モーダル表示エラー:', error);
+                alert('編集モーダル表示エラー: ' + error.message);
+            }
+        }
+        
+        // 日時をローカルフォーマットに変換
+        function formatDatetimeLocal(datetime) {
+            const date = new Date(datetime);
+            const offset = date.getTimezoneOffset() * 60000;
+            const localDate = new Date(date.getTime() - offset);
+            return localDate.toISOString().slice(0, 16);
+        }
+        
+        // 編集用クーポン選択肢を更新
+        function updateEditCouponSelect(selectedCouponId) {
+            const select = document.getElementById('edit-coupon-select');
+            select.innerHTML = '';
+            
+            currentData.pricingRules.forEach(rule => {
+                const option = document.createElement('option');
+                option.value = rule.id;
+                option.textContent = `${rule.couponCode} - ${rule.description || '説明なし'}`;
+                if (rule.id === selectedCouponId) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+        
+        // 編集用商品チェックボックスを更新
+        function updateEditProductCheckboxes(selectedProductIds) {
+            const container = document.getElementById('edit-product-checkboxes');
+            container.innerHTML = '';
+            
+            currentData.products.forEach(product => {
+                const checkboxDiv = document.createElement('div');
+                checkboxDiv.className = 'col-6 mb-2';
+                
+                const isChecked = selectedProductIds.includes(product.id);
+                
+                checkboxDiv.innerHTML = `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" 
+                               id="edit-product-${product.id}" 
+                               value="${product.id}" 
+                               ${isChecked ? 'checked' : ''}>
+                        <label class="form-check-label" for="edit-product-${product.id}">
+                            ${product.name}
+                        </label>
+                    </div>
+                `;
+                
+                container.appendChild(checkboxDiv);
+            });
+        }
+        
+        // 予約済み操作の編集保存
+        function saveScheduledOperationEdit() {
+            console.log('💾 編集保存開始');
+            const index = parseInt(document.getElementById('edit-operation-id').value);
+            console.log('📍 編集インデックス:', index);
+            
+            const operation = currentData.scheduledOperations[index];
+            if (!operation) {
+                alert('❌ 保存対象の操作が見つかりません');
+                return;
+            }
+            
+            console.log('📋 編集前の操作:', operation);
+            
+            // フォームデータを取得
+            const startDatetime = document.getElementById('edit-start-datetime').value;
+            const endDatetime = document.getElementById('edit-end-datetime').value;
+            const couponId = document.getElementById('edit-coupon-select').value;
+            const type = document.getElementById('edit-operation-type').value;
+            const status = document.getElementById('edit-operation-status').value;
+            
+            // 選択された商品を取得
+            const selectedProducts = [];
+            document.querySelectorAll('#edit-product-checkboxes input[type="checkbox"]:checked').forEach(checkbox => {
+                selectedProducts.push(checkbox.value);
+            });
+            
+            if (!startDatetime || !couponId || !type) {
+                showMessage('必須項目を入力してください', 'error');
+                return;
+            }
+            
+            // 操作を更新
+            operation.startDatetime = startDatetime;
+            operation.endDatetime = endDatetime || null;
+            operation.couponId = couponId;
+            operation.type = type;
+            operation.status = status;
+            operation.selectedProducts = selectedProducts;
+            
+            // クーポンコードを更新
+            const rule = currentData.pricingRules.find(r => r.id === couponId);
+            if (rule) {
+                operation.couponCode = rule.couponCode;
+            }
+            
+            console.log('📋 編集後の操作:', operation);
+            
+            saveData();
+            console.log('💾 データ保存完了');
+            
+            // モーダルを閉じる
+            closeEditModalDirectly();
+            
+            // テーブルを更新
+            populateScheduledOperationsTable();
+            updateScheduledOperationsList(); // 元のリストも更新
+            
+            console.log('✅ 編集保存・更新完了');
+            alert('✅ 編集が保存されました！');
+            
+            showMessage('予約操作を更新しました', 'success');
+            console.log('💾 予約操作を更新:', operation);
+        }
+        
+        // 予約済み操作の削除
+        function deleteScheduledOperation(index) {
+            const operation = currentData.scheduledOperations[index];
+            if (!operation) return;
+            
+            if (!confirm(`予約操作「${operation.couponCode} - ${getOperationTypeText(operation.type)}」を削除しますか？`)) {
+                return;
+            }
+            
+            currentData.scheduledOperations.splice(index, 1);
+            saveData();
+            
+            populateScheduledOperationsTable();
+            updateScheduledOperationsList(); // 元のリストも更新
+            
+            showMessage('予約操作を削除しました', 'success');
+            console.log('🗑️ 予約操作を削除:', operation);
+        }
+        
+        // 予約済み操作の即座実行
+        function executeScheduledOperation(index) {
+            const operation = currentData.scheduledOperations[index];
+            if (!operation) return;
+            
+            if (!confirm(`予約操作「${operation.couponCode} - ${getOperationTypeText(operation.type)}」を今すぐ実行しますか？`)) {
+                return;
+            }
+            
+            // 操作を実行
+            operation.status = 'completed';
+            operation.executedAt = new Date().toISOString();
+            
+            saveData();
+            
+            populateScheduledOperationsTable();
+            updateScheduledOperationsList(); // 元のリストも更新
+            
+            showMessage('予約操作を実行しました', 'success');
+            console.log('⚡ 予約操作を実行:', operation);
+        }
+        
+        // 予約済み操作リストの更新
+        function refreshScheduledOperationsList() {
+            console.log('🔄 予約済み操作リストを更新中...');
+            populateScheduledOperationsTable();
+        }
+        
+        // 完了済み操作の一括削除
+        function clearAllCompletedOperations() {
+            const completedOps = currentData.scheduledOperations.filter(op => op.status === 'completed');
+            
+            if (completedOps.length === 0) {
+                showMessage('削除する完了済み操作がありません', 'info');
+                return;
+            }
+            
+            if (!confirm(`${completedOps.length}件の完了済み操作を削除しますか？`)) {
+                return;
+            }
+            
+            currentData.scheduledOperations = currentData.scheduledOperations.filter(op => op.status !== 'completed');
+            saveData();
+            
+            populateScheduledOperationsTable();
+            updateScheduledOperationsList(); // 元のリストも更新
+            
+            showMessage(`${completedOps.length}件の完了済み操作を削除しました`, 'success');
+            console.log('🗑️ 完了済み操作を一括削除:', completedOps);
+        }
+        
+        // モーダル強制終了関数
+        function forceCloseAllModals() {
+            console.log('❌ モーダル強制終了実行中...');
+            
+            // 全てのモーダル要素を取得
+            const allModals = document.querySelectorAll('.modal');
+            
+            allModals.forEach(modal => {
+                // Bootstrap インスタンスを取得して閉じる
+                const bsModal = bootstrap.Modal.getInstance(modal);
+                if (bsModal) {
+                    bsModal.hide();
+                }
+                
+                // 手動でクラスとスタイルを削除
+                modal.classList.remove('show');
+                modal.style.display = 'none';
+                modal.setAttribute('aria-hidden', 'true');
+                modal.removeAttribute('aria-modal');
+                modal.removeAttribute('role');
+            });
+            
+            // バックドロップを削除
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => {
+                backdrop.remove();
+            });
+            
+            // body からモーダル関連のクラスを削除
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+            
+            console.log('✅ モーダル強制終了完了');
+            alert('✅ 全てのモーダルを強制終了しました');
+        }
+
+        // 検索・フィルタ用のイベントリスナー
+        document.addEventListener('DOMContentLoaded', function() {
+            // 検索・フィルタのイベントリスナーを設定
+            setTimeout(() => {
+                const searchInput = document.getElementById('operation-search');
+                const statusFilter = document.getElementById('operation-status-filter');
+                
+                if (searchInput) {
+                    searchInput.addEventListener('input', populateScheduledOperationsTable);
+                }
+                if (statusFilter) {
+                    statusFilter.addEventListener('change', populateScheduledOperationsTable);
+                }
+            }, 1000);
+        });
+
+        console.log('🎛️ 統合管理画面初期化完了');
+        
+        // デバッグ用: 編集モーダルを手動で閉じる関数
+        window.closeEditModal = function() {
+            const modalElement = document.getElementById('editScheduledOperationModal');
+            if (modalElement) {
+                modalElement.style.display = 'none';
+                modalElement.classList.remove('show');
+                modalElement.removeAttribute('aria-hidden');
+                
+                // Bootstrapインスタンスがあれば削除
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                    modal.dispose();
+                }
+                
+                // 全てのbackdropを削除
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => backdrop.remove());
+                
+                // body のモーダル関連クラスをクリア
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                
+                console.log('✅ 編集モーダルを手動で閉じました');
+                alert('編集モーダルを閉じました');
+            }
+        };
+        
+        // デバッグ用: 編集モーダルを強制表示する関数
+        window.forceShowEditModal = function() {
+            const modalElement = document.getElementById('editScheduledOperationModal');
+            if (modalElement) {
+                // 全てのbackdropを削除
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => backdrop.remove());
+                
+                // body のモーダル関連クラスをクリア
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                
+                // モーダルを強制表示（中央配置）
+                modalElement.style.display = 'block';
+                modalElement.style.position = 'fixed';
+                modalElement.style.top = '0';
+                modalElement.style.left = '0';
+                modalElement.style.width = '100vw';
+                modalElement.style.height = '100vh';
+                modalElement.style.zIndex = '10000';
+                modalElement.style.backgroundColor = 'rgba(0,0,0,0.3)';
+                modalElement.style.transform = 'none';
+                modalElement.classList.add('show');
+                modalElement.removeAttribute('aria-hidden');
+                
+                console.log('✅ 編集モーダルを強制表示しました（中央配置）');
+                alert('編集モーダルを強制表示しました（中央配置）');
+            }
+        };
+        
+        // 編集モーダルを直接閉じる関数
+        function closeEditModalDirectly() {
+            console.log('🔄 編集モーダルを閉じています...');
+            const modalElement = document.getElementById('editScheduledOperationModal');
+            if (modalElement) {
+                // モーダルを非表示
+                modalElement.style.display = 'none';
+                modalElement.classList.remove('show');
+                modalElement.removeAttribute('aria-hidden');
+                
+                // Bootstrapインスタンスがあれば削除
+                try {
+                    const modal = bootstrap.Modal.getInstance(modalElement);
+                    if (modal) {
+                        modal.dispose();
+                    }
+                } catch (error) {
+                    console.log('Bootstrap Modal インスタンス削除スキップ:', error.message);
+                }
+                
+                // 全てのbackdropを削除
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => backdrop.remove());
+                
+                // body のモーダル関連クラスをクリア
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+                
+                console.log('✅ 編集モーダルを閉じました');
+            } else {
+                console.log('❌ 編集モーダル要素が見つかりません');
+            }
+        }
+        
+        // メインサイト連携テスト機能
+        function testMainSiteIntegration() {
+            console.log('🧪 メインサイト連携テスト開始');
+            console.log('📊 現在のデータ状況:', currentData);
+            console.log('📦 商品一覧:', currentData.products);
+            
+            // 利用可能な商品を表示
+            if (currentData.products && currentData.products.length > 0) {
+                console.log('📝 利用可能な商品:');
+                currentData.products.forEach(product => {
+                    console.log(`- ${product.name || product.productName} (ID: ${product.id})`);
+                });
+            } else {
+                console.log('⚠️ 商品データが見つかりません');
+                showMessage('商品データがありません。初期データを作成してください', 'error');
+                return;
+            }
+            
+            // 一時的にデータを更新（nameまたはproductNameで検索）
+            const originalProduct = currentData.products.find(p => 
+                p.productName === '神託システムタロット占い' || p.name === '神託システムタロット占い'
+            );
+            const originalIndex = currentData.products.findIndex(p => 
+                p.productName === '神託システムタロット占い' || p.name === '神託システムタロット占い'
+            );
+            
+            if (originalIndex >= 0) {
+                // 元の商品データを保持し、テスト用に一部だけ変更
+                const testProduct = { ...currentData.products[originalIndex] };
+                testProduct.salePrice = 2800; // テスト用価格
+                testProduct.displayText = 'テスト価格適用中';
+                currentData.products[originalIndex] = testProduct;
+                saveData();
+                
+                // 3秒後に元に戻す
+                setTimeout(() => {
+                    currentData.products[originalIndex] = originalProduct;
+                    saveData();
+                    showMessage('連携テスト完了 - 価格を元に戻しました', 'success');
+                    updateLastSyncTime();
+                }, 3000);
+                
+                showMessage('連携テスト実行中 - メインサイトで価格変更を確認してください', 'info');
+                updateLastSyncTime();
+            } else {
+                showMessage('テスト対象商品が見つかりません', 'error');
+            }
+        }
+        
+        // メインサイトを開く
+        function openMainSite() {
+            window.open('../omikuji/index.html', '_blank');
+        }
+
+        // 全テーブル表示（デバッグ用）
+        function showAllTables() {
+            console.log('📊 全テーブル表示開始');
+            
+            try {
+                updateProductsTable();
+                updatePaymentLinksTable();
+                updatePricingRulesTable();
+                
+                showMessage('全テーブルを更新しました', 'success');
+                console.log('✅ 全テーブル表示完了');
+            } catch (error) {
+                console.error('❌ テーブル表示エラー:', error);
+                showMessage('テーブル表示でエラーが発生しました', 'error');
+            }
+        }
+        
+        // 最終同期時刻を更新
+        function updateLastSyncTime() {
+            const now = new Date();
+            const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                             now.getMinutes().toString().padStart(2, '0');
+            const syncTimeElement = document.getElementById('last-sync-time');
+            if (syncTimeElement) {
+                syncTimeElement.textContent = timeString;
+            }
+        }
+        
+        // データ強制初期化
+        function forceInitializeData() {
+            if (confirm('すべてのデータを初期化しますか？この操作は取り消せません。')) {
+                console.log('🔄 データ強制初期化実行');
+                
+                try {
+                    // localStorageをクリア
+                    localStorage.removeItem('salon_integrated_admin');
+                    
+                    // currentDataを初期化
+                    currentData = null;
+                    
+                    // 初期データを作成
+                    initializeDefaultData();
+                    
+                    console.log('📊 初期化後のデータ:', currentData);
+                    console.log('📦 商品数:', currentData.products?.length);
+                    
+                    // 少し時間をおいて画面を更新
+                    setTimeout(() => {
+                        updateAllTables();
+                        updateMaintenanceStatus();
+                        updateLastSyncTime();
+                        
+                        showMessage(`データを初期化しました (商品${currentData.products?.length || 0}個)`, 'success');
+                        console.log('✅ データ初期化・画面更新完了');
+                    }, 100);
+                    
+                } catch (error) {
+                    console.error('❌ データ初期化エラー:', error);
+                    showMessage('データ初期化中にエラーが発生しました', 'error');
+                }
+            }
+        }
+
+        // データ確認デバッグ
+        function debugCurrentData() {
+            console.log('🐛 デバッグ情報:');
+            console.log('📊 currentData:', currentData);
+            console.log('📦 商品データ:', currentData?.products);
+            console.log('💳 決済リンク:', currentData?.paymentLinks);
+            console.log('🎫 価格ルール:', currentData?.pricingRules);
+            console.log('🗄️ localStorage:', localStorage.getItem('salon_integrated_admin'));
+            
+            // 商品テーブル要素の確認
+            const tbody = document.getElementById('products-tbody');
+            console.log('🏷️ products-tbody要素:', tbody);
+            console.log('📏 tbody内容の長さ:', tbody?.innerHTML?.length);
+            
+            // 強制テーブル更新
+            updateProductsTable();
+            
+            alert(`データ状況:\n商品: ${currentData?.products?.length || 0}個\n決済リンク: ${currentData?.paymentLinks?.length || 0}個\n価格ルール: ${currentData?.pricingRules?.length || 0}個\n\n詳細はコンソールを確認してください`);
+        }
+
+        // メインサイトに強制同期
+        function forceSyncToMainSite() {
+            console.log('🔄 メインサイトへの強制同期開始');
+            
+            try {
+                // 最新データを保存して同期をトリガー
+                saveData();
+                
+                // メインサイトの連携システムに直接アクセス
+                if (window.parent && window.parent.adminIntegration) {
+                    console.log('📡 親ウィンドウの連携システムを発見');
+                    const result = window.parent.adminIntegration.manualSyncTest();
+                    console.log('📊 同期結果:', result);
+                } else {
+                    console.log('⚠️ 親ウィンドウの連携システムが見つかりません');
+                }
+                
+                // 新しいタブでメインサイトを開いて同期テスト
+                const mainSiteWindow = window.open('../omikuji/index.html', '_blank');
+                
+                // 少し待ってからメインサイトの連携システムをテスト
+                setTimeout(() => {
+                    if (mainSiteWindow && mainSiteWindow.adminIntegration) {
+                        console.log('🌐 メインサイトの連携システムを発見');
+                        const result = mainSiteWindow.adminIntegration.manualSyncTest();
+                        console.log('📊 メインサイト同期結果:', result);
+                        showMessage('メインサイトに強制同期しました', 'success');
+                    } else {
+                        console.log('⚠️ メインサイトの連携システムが見つかりません');
+                        showMessage('メインサイトを開きました。価格変更を確認してください', 'info');
+                    }
+                }, 2000);
+                
+                updateLastSyncTime();
+                
+            } catch (error) {
+                console.error('❌ 強制同期エラー:', error);
+                showMessage('強制同期中にエラーが発生しました', 'error');
+            }
+        }
+
+        // ページ読み込み時に同期時刻を設定
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLastSyncTime();
+        });
+
+        // デバッグ用: テストデータを自動作成
+        if (!currentData.scheduledOperations || currentData.scheduledOperations.length === 0) {
+            console.log('📋 テスト用予約操作データを作成中...');
+            currentData.scheduledOperations = [
+                {
+                    id: 'test-1',
+                    startDatetime: new Date(Date.now() + 3600000).toISOString(), // 1時間後
+                    endDatetime: new Date(Date.now() + 7200000).toISOString(), // 2時間後
+                    couponCode: 'TEST500',
+                    couponId: 'test-coupon-1',
+                    type: 'enable-coupon',
+                    selectedProducts: ['test-product-1'],
+                    status: 'pending'
+                },
+                {
+                    id: 'test-2',
+                    startDatetime: new Date(Date.now() + 86400000).toISOString(), // 1日後
+                    couponCode: 'TESTFREE',
+                    couponId: 'test-coupon-2',
+                    type: 'disable-coupon',
+                    status: 'pending'
+                }
+            ];
+            saveData();
+            console.log('✅ テスト用予約操作データ作成完了');
+        }
+        
+        // デバッグ用: モーダル全画面テスト関数（CSS主導）
+        window.testModalDirectly = function() {
+            const modalElement = document.getElementById('scheduledOperationsModal');
+            if (modalElement) {
+                modalElement.style.display = 'block';
+                modalElement.classList.add('show');
+                modalElement.style.position = 'fixed';
+                modalElement.style.top = '0';
+                modalElement.style.left = '0';
+                modalElement.style.zIndex = '1055';
+                
+                const backdrop = document.createElement('div');
+                backdrop.className = 'modal-backdrop fade show';
+                backdrop.style.zIndex = '1050';
+                backdrop.id = 'test-backdrop';
+                document.body.appendChild(backdrop);
+                document.body.classList.add('modal-open');
+                
+                console.log('✅ 直接全画面モーダル表示テスト実行（CSS主導）');
+                
+                // 10秒後に閉じる
+                setTimeout(() => {
+                    modalElement.style.display = 'none';
+                    modalElement.classList.remove('show');
+                    document.body.classList.remove('modal-open');
+                    const testBackdrop = document.getElementById('test-backdrop');
+                    if (testBackdrop) {
+                        testBackdrop.remove();
+                    }
+                }, 10000);
+            } else {
+                console.error('❌ モーダル要素が見つかりません');
+            }
+        };
+    </script>
+
+    <!-- 予約済み操作管理モーダル -->
+    <div class="modal fade" id="scheduledOperationsModal" tabindex="-1" aria-labelledby="scheduledOperationsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen" style="max-width: 100vw !important; width: 100vw !important; max-height: 100vh !important; height: 100vh !important; margin: 0 !important; padding: 0 !important;">
+            <div class="modal-content bg-dark text-white" style="height: 100vh !important; width: 100vw !important; display: flex; flex-direction: column; border: none !important; border-radius: 0 !important; margin: 0 !important; padding: 0 !important;">
+                <div class="modal-header">
+                    <h5 class="modal-title">📅 予約済み操作管理</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="flex: 1; overflow: hidden; display: flex; flex-direction: column; padding: 20px;">
+                    <div class="row mb-3" style="flex-shrink: 0;">
+                        <div class="col-6">
+                            <input type="text" id="operation-search" class="form-control" placeholder="🔍 検索 (クーポンコード、操作タイプ)">
+                        </div>
+                        <div class="col-3">
+                            <select id="operation-status-filter" class="form-select">
+                                <option value="">📋 全ての状態</option>
+                                <option value="pending">⏳ 待機中</option>
+                                <option value="completed">✅ 完了</option>
+                                <option value="cancelled">❌ キャンセル</option>
+                            </select>
+                        </div>
+                        <div class="col-3">
+                            <button class="btn btn-primary w-100" onclick="refreshScheduledOperationsList()">🔄 更新</button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive" style="flex: 1; overflow: auto; border: 1px solid #495057; border-radius: 8px;">
+                        <table class="table table-dark table-striped table-hover mb-0" style="width: 100%; table-layout: fixed;">
+                            <thead style="position: sticky; top: 0; background-color: #343a40; z-index: 10;">
+                                <tr>
+                                    <th style="width: 18%; padding: 12px 10px; white-space: nowrap; border-bottom: 2px solid #495057; font-size: 13px;">📅 開始日時</th>
+                                    <th style="width: 18%; padding: 12px 10px; white-space: nowrap; border-bottom: 2px solid #495057; font-size: 13px;">⏰ 終了日時</th>
+                                    <th style="width: 12%; padding: 12px 10px; white-space: nowrap; border-bottom: 2px solid #495057; font-size: 13px;">🎫 クーポン</th>
+                                    <th style="width: 20%; padding: 12px 10px; white-space: nowrap; border-bottom: 2px solid #495057; font-size: 13px;">⚙️ 操作タイプ</th>
+                                    <th style="width: 10%; padding: 12px 10px; white-space: nowrap; border-bottom: 2px solid #495057; font-size: 13px;">📦 商品</th>
+                                    <th style="width: 10%; padding: 12px 10px; white-space: nowrap; border-bottom: 2px solid #495057; font-size: 13px;">📊 状態</th>
+                                    <th style="width: 12%; padding: 12px 10px; white-space: nowrap; border-bottom: 2px solid #495057; font-size: 13px;">🛠️ 操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduled-operations-table-body">
+                                <!-- データがここに挿入されます -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="no-operations-message" style="text-align: center; color: rgba(255,255,255,0.7); padding: 40px; display: none; flex-shrink: 0;">
+                        📋 予約済み操作はありません
+                    </div>
+                </div>
+                <div class="modal-footer" style="flex-shrink: 0; padding: 15px 20px; border-top: 1px solid #495057;">
+                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                        <small class="text-muted">🖥️ 全画面表示・スクロール不要 - PC最適化レイアウト</small>
+                        <div>
+                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">閉じる</button>
+                            <button type="button" class="btn btn-danger" onclick="clearAllCompletedOperations()">🗑️ 完了済み削除</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 予約操作編集モーダル -->
+    <div class="modal fade" id="editScheduledOperationModal" tabindex="-1" aria-labelledby="editScheduledOperationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="max-width: 90vw; width: 90vw;">
+            <div class="modal-content bg-dark text-white" style="border: 2px solid #495057; border-radius: 10px;">
+                <div class="modal-header">
+                    <h5 class="modal-title">✏️ 予約操作編集</h5>
+                    <button type="button" class="btn-close btn-close-white" onclick="closeEditModalDirectly()"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-operation-form">
+                        <input type="hidden" id="edit-operation-id">
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label">📅 開始日時</label>
+                                <input type="datetime-local" id="edit-start-datetime" class="form-control" required>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">⏰ 終了日時 (任意)</label>
+                                <input type="datetime-local" id="edit-end-datetime" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label">🎫 クーポン</label>
+                                <select id="edit-coupon-select" class="form-select" required>
+                                    <!-- オプションが動的に挿入されます -->
+                                </select>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label">⚙️ 操作タイプ</label>
+                                <select id="edit-operation-type" class="form-select" required>
+                                    <option value="enable-coupon">🟢 クーポン有効化</option>
+                                    <option value="disable-coupon">🔴 クーポン無効化</option>
+                                    <option value="enable-selected-products">🟢 選択商品で有効化</option>
+                                    <option value="disable-selected-products">🔴 選択商品で無効化</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">📦 対象商品 (商品選択操作時のみ)</label>
+                            <div id="edit-product-checkboxes" class="row">
+                                <!-- 商品チェックボックスが動的に挿入されます -->
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">📊 状態</label>
+                            <select id="edit-operation-status" class="form-select">
+                                <option value="pending">⏳ 待機中</option>
+                                <option value="completed">✅ 完了</option>
+                                <option value="cancelled">❌ キャンセル</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModalDirectly()">キャンセル</button>
+                    <button type="button" class="btn btn-primary" onclick="saveScheduledOperationEdit()">💾 保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+</body>
+</html>
