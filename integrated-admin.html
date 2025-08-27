@@ -2331,14 +2331,16 @@
             }
             
             let fixCount = 0;
+            let linkFixCount = 0;
             
+            // 商品の安定IDを修正
             currentData.products.forEach(product => {
                 // 安定IDが存在しない、または正しくない場合に修正
                 if (!product.stableId || product.stableId.startsWith('product_')) {
                     const correctStableId = generateStableIdFromProductName(product.name);
                     
                     if (product.stableId !== correctStableId) {
-                        console.log(`🔄 安定ID修正: ${product.name} - ${product.stableId || 'なし'} -> ${correctStableId}`);
+                        console.log(`🔄 商品安定ID修正: ${product.name} - ${product.stableId || 'なし'} -> ${correctStableId}`);
                         product.stableId = correctStableId;
                         product.updated = new Date().toISOString();
                         fixCount++;
@@ -2346,8 +2348,24 @@
                 }
             });
             
-            if (fixCount > 0) {
-                console.log(`🔄 安定ID修正完了: ${fixCount}件`);
+            // 決済リンクの安定IDを修正
+            if (currentData.paymentLinks) {
+                currentData.paymentLinks.forEach(link => {
+                    // 商品名に基づいて正しい安定IDを取得
+                    const correctStableId = generateStableIdFromProductName(link.productName);
+                    
+                    // 安定IDが存在しない、または正しくない場合に修正
+                    if (!link.stableId || link.stableId.startsWith('product_') || link.stableId !== correctStableId) {
+                        console.log(`🔄 決済リンク安定ID修正: ${link.productName} - ${link.stableId || 'なし'} -> ${correctStableId}`);
+                        link.stableId = correctStableId;
+                        link.updated = new Date().toISOString();
+                        linkFixCount++;
+                    }
+                });
+            }
+            
+            if (fixCount > 0 || linkFixCount > 0) {
+                console.log(`🔄 安定ID修正完了: 商品${fixCount}件, 決済リンク${linkFixCount}件`);
                 saveData();
                 updateAllTables();
             } else {
