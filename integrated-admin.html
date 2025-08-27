@@ -1206,6 +1206,11 @@
                 migrateLinkIds();
                 console.log('✅ リンクID移行完了');
                 
+                // 安定ID修正を実行（既存商品の安定IDを正しい値に設定）
+                console.log('🔄 安定ID修正開始...');
+                fixStableIds();
+                console.log('✅ 安定ID修正完了');
+                
                 showMessage('データを読み込みました', 'success');
                 console.log('✅ loadData 完了');
                 console.log('🔍 loadData完了時のcurrentData:', currentData);
@@ -1544,6 +1549,7 @@
                     {
                         id: 'shintaku',
                         productId: 'shintaku_3000',
+                        stableId: 'shintaku', // 安定IDを追加
                         name: '神託システムタロット占い',
                         regularPrice: 3000,
                         salePrice: 3000,
@@ -1554,6 +1560,7 @@
                     {
                         id: 'star_yomi',
                         productId: 'star_yomi_3000',
+                        stableId: 'star_yomi', // 安定IDを追加
                         name: '星詠みシステム星座占い',
                         regularPrice: 3000,
                         salePrice: 3000,
@@ -1564,6 +1571,7 @@
                     {
                         id: 'personal_tarot',
                         productId: 'personal_tarot_5000',
+                        stableId: 'personal', // 安定IDを追加
                         name: '個人鑑定タロット',
                         regularPrice: 5000,
                         salePrice: 5000,
@@ -1574,6 +1582,7 @@
                     {
                         id: 'personal_birthday',
                         productId: 'personal_birthday_5000',
+                        stableId: 'personal', // 安定IDを追加
                         name: '個人鑑定誕生日',
                         regularPrice: 5000,
                         salePrice: 5000,
@@ -1584,6 +1593,7 @@
                     {
                         id: 'personal_set',
                         productId: 'personal_set_8000',
+                        stableId: 'personal', // 安定IDを追加
                         name: '個人鑑定セット',
                         regularPrice: 8000,
                         salePrice: 8000,
@@ -2311,6 +2321,40 @@
             return `link_${baseId}_001`;
         }
         
+        // 既存商品の安定IDを正しい値に修正
+        function fixStableIds() {
+            console.log('🔄 安定ID修正開始');
+            
+            if (!currentData.products) {
+                console.log('🔄 商品データがありません');
+                return;
+            }
+            
+            let fixCount = 0;
+            
+            currentData.products.forEach(product => {
+                // 安定IDが存在しない、または正しくない場合に修正
+                if (!product.stableId || product.stableId.startsWith('product_')) {
+                    const correctStableId = generateStableIdFromProductName(product.name);
+                    
+                    if (product.stableId !== correctStableId) {
+                        console.log(`🔄 安定ID修正: ${product.name} - ${product.stableId || 'なし'} -> ${correctStableId}`);
+                        product.stableId = correctStableId;
+                        product.updated = new Date().toISOString();
+                        fixCount++;
+                    }
+                }
+            });
+            
+            if (fixCount > 0) {
+                console.log(`🔄 安定ID修正完了: ${fixCount}件`);
+                saveData();
+                updateAllTables();
+            } else {
+                console.log('🔄 安定ID修正不要: 既に正しい値');
+            }
+        }
+
         // 既存のリンクIDを新しい形式に移行
         function migrateLinkIds() {
             console.log('🔄 リンクID移行開始');
@@ -4142,6 +4186,29 @@
             }
         }
         
+        // 商品名から安定IDを自動生成
+        function generateStableIdFromProductName(productName) {
+            if (!productName) {
+                return 'unknown';
+            }
+            
+            // 商品名から安定IDを生成
+            if (productName.includes('神託') || productName.includes('タロット')) {
+                return 'shintaku';
+            } else if (productName.includes('星詠み') || productName.includes('星座')) {
+                return 'star_yomi';
+            } else if (productName.includes('個人鑑定')) {
+                return 'personal';
+            } else {
+                // その他の商品名から英数字のみを抽出
+                const baseId = productName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+                if (baseId.length > 20) {
+                    return baseId.substring(0, 20);
+                }
+                return baseId;
+            }
+        }
+
         // フォームの値から商品IDを自動生成
         function generateProductIdFromForm() {
             const name = document.getElementById('product-name').value;
@@ -4293,9 +4360,13 @@
                 console.log('🔧 新規作成モード');
                 console.log('🔧 新規作成前のcurrentData.products.length:', currentData.products.length);
                 
+                // 商品名から安定IDを自動生成
+                const stableId = generateStableIdFromProductName(name);
+                
                 newProduct = {
                     id: 'product_' + Date.now(),
                     productId: finalProductId,
+                    stableId: stableId, // 安定IDを追加
                     name: name,
                     regularPrice: regularPrice,
                     salePrice: salePrice,
@@ -4325,6 +4396,7 @@
                     id: linkId,
                     productId: newProduct.productId, // 統合IDを使用
                     productRefId: newProduct.id, // 安定した商品参照IDを追加
+                    stableId: newProduct.stableId, // 安定IDを追加
                     productName: newProduct.name,
                     priceType: 'sale',
                     price: newProduct.salePrice,
