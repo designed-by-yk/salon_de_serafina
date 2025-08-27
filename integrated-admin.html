@@ -840,6 +840,7 @@
         <button class="btn btn-info" onclick="checkDataStatus();">🔍 データ状況確認</button>
         <button class="btn btn-warning" onclick="debugProductPaymentLinkSync();">🔗 商品・決済リンク同期確認</button>
         <button class="btn btn-danger" onclick="forceSyncPaymentLinks();">🔄 強制同期実行</button>
+        <button class="btn btn-outline-danger" onclick="forceFixStableIds();">🔧 安定ID強制修正</button>
 
         <button class="btn btn-outline-success" onclick="testPaymentLinkSelection();">🧪 決済リンク選択テスト</button>
 
@@ -2376,6 +2377,19 @@
             }
         }
 
+        // 安定IDを強制的に修正
+        function forceFixStableIds() {
+            console.log('🔧 安定ID強制修正開始');
+            
+            // 不足している安定IDを追加
+            addMissingStableIds();
+            
+            // 安定ID修正を実行
+            fixStableIds();
+            
+            console.log('🔧 安定ID強制修正完了');
+        }
+
         // 既存の決済リンクに安定IDを追加
         function addMissingStableIds() {
             console.log('🔄 不足している安定IDを追加開始');
@@ -2388,22 +2402,23 @@
             let addCount = 0;
             
             currentData.paymentLinks.forEach(link => {
-                if (!link.stableId) {
+                // stableIdが存在しない、または古い形式の場合に修正
+                if (!link.stableId || link.stableId.startsWith('product_')) {
                     // 商品名に基づいて安定IDを生成
                     const stableId = generateStableIdFromProductName(link.productName);
                     link.stableId = stableId;
                     link.updated = new Date().toISOString();
-                    console.log(`🔄 安定ID追加: ${link.productName} -> ${stableId}`);
+                    console.log(`🔄 安定ID追加/修正: ${link.productName} - ${link.stableId || 'なし'} -> ${stableId}`);
                     addCount++;
                 }
             });
             
             if (addCount > 0) {
-                console.log(`🔄 安定ID追加完了: ${addCount}件`);
+                console.log(`🔄 安定ID追加/修正完了: ${addCount}件`);
                 saveData();
                 updateAllTables();
             } else {
-                console.log('🔄 安定ID追加不要: 既に全て設定済み');
+                console.log('🔄 安定ID追加/修正不要: 既に全て設定済み');
             }
         }
 
