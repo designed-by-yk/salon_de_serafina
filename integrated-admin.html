@@ -1300,6 +1300,9 @@
             console.log('🔧 チェック完了時のcurrentData.products:', currentData.products);
         }
 
+        // 不足している安定IDを追加
+        addMissingStableIds();
+
         // 既存のクーポンシステムからデータ読み込み
         function loadExistingCoupons() {
             try {
@@ -2370,6 +2373,37 @@
                 updateAllTables();
             } else {
                 console.log('🔄 安定ID修正不要: 既に正しい値');
+            }
+        }
+
+        // 既存の決済リンクに安定IDを追加
+        function addMissingStableIds() {
+            console.log('🔄 不足している安定IDを追加開始');
+            
+            if (!currentData.paymentLinks) {
+                console.log('🔄 決済リンクデータがありません');
+                return;
+            }
+            
+            let addCount = 0;
+            
+            currentData.paymentLinks.forEach(link => {
+                if (!link.stableId) {
+                    // 商品名に基づいて安定IDを生成
+                    const stableId = generateStableIdFromProductName(link.productName);
+                    link.stableId = stableId;
+                    link.updated = new Date().toISOString();
+                    console.log(`🔄 安定ID追加: ${link.productName} -> ${stableId}`);
+                    addCount++;
+                }
+            });
+            
+            if (addCount > 0) {
+                console.log(`🔄 安定ID追加完了: ${addCount}件`);
+                saveData();
+                updateAllTables();
+            } else {
+                console.log('🔄 安定ID追加不要: 既に全て設定済み');
             }
         }
 
@@ -4787,6 +4821,7 @@
                     link.description = description;
                     link.url = url;
                     link.active = active;
+                    link.stableId = product.stableId; // 商品の安定IDを設定
                     link.updated = new Date().toISOString();
                 }
             } else {
@@ -4801,6 +4836,7 @@
                     description: description,
                     url: url,
                     active: active,
+                    stableId: product.stableId, // 商品の安定IDを設定
                     created: new Date().toISOString()
                 };
                 currentData.paymentLinks.push(newLink);
