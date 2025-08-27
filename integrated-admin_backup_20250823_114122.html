@@ -99,139 +99,6 @@
             display: block !important;
         }
         
-        /* 同期状況モーダルのスタイル */
-        #syncStatusModal {
-            z-index: 10000 !important;
-        }
-        
-        #syncStatusModal .modal-dialog {
-            z-index: 10001 !important;
-        }
-        
-        #syncStatusModal .modal-content {
-            z-index: 10002 !important;
-        }
-        
-        /* アコーディオンボタンのスタイル */
-        .accordion-button:not(.collapsed) {
-            background-color: #e7f3ff !important;
-            color: #0c63e4 !important;
-        }
-        
-        .accordion-button:focus {
-            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
-        }
-        
-        /* 同期状況モーダルの全画面表示スタイル */
-        #syncStatusModal {
-            z-index: 10000 !important;
-        }
-        
-        #syncStatusModal .modal-dialog {
-            max-width: 100vw !important;
-            width: 100vw !important;
-            height: 100vh !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-        
-        #syncStatusModal .modal-content {
-            height: 100vh !important;
-            max-height: 100vh !important;
-            width: 100vw !important;
-            max-width: 100vw !important;
-            border: none !important;
-            border-radius: 0 !important;
-        }
-        
-        #syncStatusModal .modal-body {
-            overflow-y: auto !important;
-            max-height: calc(100vh - 140px) !important;
-            padding: 20px !important;
-        }
-        
-        #syncStatusModal .table-responsive {
-            max-height: 500px !important;
-            overflow-y: auto !important;
-        }
-        
-        #syncStatusModal .table {
-            font-size: 14px !important;
-            margin-bottom: 0 !important;
-            width: 100% !important;
-        }
-        
-        #syncStatusModal .table th {
-            position: sticky !important;
-            top: 0 !important;
-            background-color: #f8f9fa !important;
-            z-index: 10 !important;
-            font-weight: 600 !important;
-            white-space: nowrap !important;
-            padding: 12px 8px !important;
-        }
-        
-        #syncStatusModal .table td {
-            white-space: nowrap !important;
-            padding: 8px 12px !important;
-        }
-        
-        #syncStatusModal .card {
-            min-height: 100px !important;
-        }
-        
-        #syncStatusModal .card-title {
-            font-size: 1.5rem !important;
-            margin-bottom: 0.5rem !important;
-        }
-        
-        /* 全画面表示時の背景調整 */
-        #syncStatusModal.show .modal-backdrop {
-            opacity: 0.8 !important;
-        }
-        
-        /* 全画面表示時のスクロール調整 */
-        body.modal-open {
-            overflow: hidden !important;
-            padding-right: 0 !important;
-        }
-        
-        /* 決済リンク選択システムのスタイル */
-        .payment-link-selector {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-            color: white;
-        }
-        
-        .payment-link-option {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .payment-link-option:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-        
-        .payment-link-option.selected {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: #fff;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .price-display {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #ffd700;
-        }
-        
         #editScheduledOperationModal .modal-dialog {
             z-index: 10001 !important;
             position: absolute !important;
@@ -835,14 +702,7 @@
         <div id="products-tab" class="tab-content active">
             <div class="section-header">
                 <h2 class="section-title">📦 商品管理</h2>
-                <button class="btn btn-primary" onclick="console.log('🔧 新商品追加ボタンがクリックされました'); openProductModal();">➕ 新商品追加</button>
-                        <button class="btn btn-success" onclick="manualSaveData();">💾 データ更新</button>
-        <button class="btn btn-info" onclick="checkDataStatus();">🔍 データ状況確認</button>
-        <button class="btn btn-warning" onclick="debugProductPaymentLinkSync();">🔗 商品・決済リンク同期確認</button>
-        <button class="btn btn-danger" onclick="forceSyncPaymentLinks();">🔄 強制同期実行</button>
-
-        <button class="btn btn-outline-success" onclick="testPaymentLinkSelection();">🧪 決済リンク選択テスト</button>
-
+                <button class="btn btn-primary" onclick="openProductModal()">➕ 新商品追加</button>
             </div>
             
             <!-- リアルタイム連携ステータス -->
@@ -877,7 +737,6 @@
             <table class="data-table" id="products-table">
                 <thead>
                     <tr>
-                        <th>商品ID</th>
                         <th>商品名</th>
                         <th>通常価格</th>
                         <th>販売価格</th>
@@ -902,7 +761,6 @@
             <table class="data-table" id="payment-links-table">
                 <thead>
                     <tr>
-                        <th>商品ID</th>
                         <th>商品名</th>
                         <th>価格</th>
                         <th>価格タイプ</th>
@@ -1103,19 +961,24 @@
         // ページ読み込み時の初期化
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🎛️ 統合管理画面初期化開始');
-            console.log('🔍 DOMContentLoaded開始時のcurrentData:', currentData);
-            console.log('🔍 DOMContentLoaded開始時のcurrentData.products:', currentData.products);
-            console.log('🔍 DOMContentLoaded開始時のcurrentData.products.length:', currentData.products ? currentData.products.length : 'undefined');
             
             try {
                 loadData();
                 initializeEventListeners();
                 
-                // 初期化完了（データ読み込み完了後）
-                console.log('🎛️ 統合管理画面初期化完了');
-                console.log('🔍 DOMContentLoaded完了時のcurrentData:', currentData);
-                console.log('🔍 DOMContentLoaded完了時のcurrentData.products:', currentData.products);
-                console.log('🔍 DOMContentLoaded完了時のcurrentData.products.length:', currentData.products ? currentData.products.length : 'undefined');
+                // 少し遅延を入れてから画面更新
+                setTimeout(() => {
+                    console.log('📊 DOMContentLoaded後のデータ状況:', currentData);
+                    
+                    if (!currentData || !currentData.products || currentData.products.length === 0) {
+                        console.log('⚠️ 商品データが不足、自動初期化を実行');
+                        initializeDefaultData();
+                    }
+                    
+                    updateAllTables();
+                    updateScheduledOperationsList();
+                    console.log('🎛️ 統合管理画面初期化完了');
+                }, 300);
                 
             } catch (error) {
                 console.error('❌ 初期化エラー:', error);
@@ -1126,173 +989,35 @@
         // データ読み込み
         function loadData() {
             try {
-                console.log('🔄 loadData 開始');
-                console.log('🔍 loadData開始時のcurrentData:', currentData);
-                
                 // localStorageからデータを読み込み
-                const savedData = localStorage.getItem('adminData');
-                console.log('🔍 localStorageから読み込んだデータ:', savedData ? 'データあり' : 'データなし');
-                
+                const savedData = localStorage.getItem('salon_integrated_admin');
                 if (savedData) {
-                    console.log('📊 既存データを読み込み中...');
-                    const parsedData = JSON.parse(savedData);
-                    console.log('🔍 JSON解析後のデータ:', parsedData);
-                    console.log('🔍 商品データの状態:', parsedData.products ? `配列(${parsedData.products.length}件)` : 'undefined');
+                    currentData = JSON.parse(savedData);
                     
-                    currentData = parsedData;
-                    console.log('🔍 currentDataに設定後の状態:', currentData);
-                    console.log('🔍 currentData.productsの状態:', currentData.products ? `配列(${currentData.products.length}件)` : 'undefined');
-                    
-                    // 既存データが有効かチェック
-                    const hasValidData = currentData.products && 
-                                       Array.isArray(currentData.products) && 
-                                       currentData.products.length > 0;
-                    
-                    if (hasValidData) {
-                        console.log('✅ 有効な既存データを発見しました');
-                        
-                        // scheduledOperations が存在しない場合は初期化
-                        if (!currentData.scheduledOperations) {
-                            currentData.scheduledOperations = [];
-                            console.log('📊 scheduledOperations を初期化しました');
-                        }
-                        
-                        // 既存データの互換性を確保（productIdフィールドの追加）
-                        console.log('🔧 データ互換性チェック開始');
-                        console.log('🔧 チェック前のcurrentData.products:', currentData.products);
-                        ensureDataCompatibility();
-                        console.log('🔧 チェック後のcurrentData.products:', currentData.products);
-                        
-                        // 互換性確保後にデータを保存
-                        console.log('💾 互換性確保後のデータを保存中...');
-                        saveData();
-                        
-                        console.log('📊 保存データを読み込みました:', currentData);
-                        console.log('📊 予約操作数:', currentData.scheduledOperations.length);
-                    } else {
-                        console.log('⚠️ 既存データが無効または空です。初期データを設定します。');
-                        console.log('🔄 初期化を実行中...');
-                        initializeDefaultData();
-                        console.log('🔍 初期データ設定後のcurrentData:', currentData);
-                        console.log('🔍 初期データ設定後のcurrentData.products:', currentData.products);
-                        console.log('✅ 初期化が完了しました');
+                    // scheduledOperations が存在しない場合は初期化
+                    if (!currentData.scheduledOperations) {
+                        currentData.scheduledOperations = [];
+                        console.log('📊 scheduledOperations を初期化しました');
                     }
+                    
+                    console.log('📊 保存データを読み込みました:', currentData);
+                    console.log('📊 予約操作数:', currentData.scheduledOperations.length);
                 } else {
-                    console.log('🆕 初期データを設定中...');
                     // 初期データを設定
                     initializeDefaultData();
-                    console.log('🔍 初期データ設定後のcurrentData:', currentData);
-                    console.log('🔍 初期データ設定後のcurrentData.products:', currentData.products);
                 }
                 
                 // 既存のクーポンシステムからクーポンデータを読み込み
-                console.log('🎫 クーポンデータ読み込み中...');
                 loadExistingCoupons();
                 
-                // 画面更新を確実に実行
-                console.log('🔄 画面更新開始...');
                 updateAllTables();
-                updateScheduledOperationsList();
                 updateMaintenanceStatus();
-                console.log('✅ 画面更新完了');
-                
-                // productRefId移行を実行（既存データの互換性確保）
-                console.log('🔄 productRefId移行開始...');
-                migrateProductRefIds();
-                console.log('✅ productRefId移行完了');
-                
-                // リンクID移行を実行（価格に依存しない形式に変更）
-                console.log('🔄 リンクID移行開始...');
-                migrateLinkIds();
-                console.log('✅ リンクID移行完了');
-                
                 showMessage('データを読み込みました', 'success');
-                console.log('✅ loadData 完了');
-                console.log('🔍 loadData完了時のcurrentData:', currentData);
                 
             } catch (error) {
                 console.error('❌ データ読み込みエラー:', error);
                 showMessage('データの読み込みに失敗しました', 'error');
             }
-        }
-
-        // 既存データの互換性を確保
-        function ensureDataCompatibility() {
-            console.log('🔧 データ互換性チェック開始');
-            console.log('🔧 チェック開始時のcurrentData:', currentData);
-            console.log('🔧 チェック開始時のcurrentData.products:', currentData.products);
-            
-            // 商品データの互換性を確保
-            if (currentData.products && Array.isArray(currentData.products)) {
-                console.log(`🔧 商品データ(${currentData.products.length}件)の互換性チェック開始`);
-                currentData.products.forEach((product, index) => {
-                    console.log(`🔧 商品[${index}]:`, product);
-                    
-                    // productIdフィールドが存在しない場合は自動生成
-                    if (!product.productId) {
-                        console.log(`🔧 商品「${product.name}」にproductIdを自動生成`);
-                        
-                        // 商品名から基本IDを生成
-                        let baseId = '';
-                        if (product.name.includes('神託') || product.name.includes('タロット')) {
-                            baseId = 'shintaku';
-                        } else if (product.name.includes('星詠み') || product.name.includes('星座')) {
-                            baseId = 'star_yomi';
-                        } else if (product.name.includes('個人鑑定')) {
-                            if (product.name.includes('タロット')) {
-                                baseId = 'personal_tarot';
-                            } else if (product.name.includes('誕生日')) {
-                                baseId = 'personal_birthday';
-                            } else if (product.name.includes('セット')) {
-                                baseId = 'personal_set';
-                            } else {
-                                baseId = 'personal';
-                            }
-                        } else {
-                            // 商品名から英数字のみを抽出して基本IDとする
-                            baseId = product.name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-                            if (baseId.length > 20) {
-                                baseId = baseId.substring(0, 20);
-                            }
-                        }
-                        
-                        // 統合IDを生成
-                        product.productId = `${baseId}_${product.salePrice}`;
-                        console.log(`✅ 生成されたproductId: ${product.productId}`);
-                    } else {
-                        console.log(`🔧 商品「${product.name}」は既にproductIdを持っています: ${product.productId}`);
-                    }
-                });
-                console.log(`🔧 商品データ互換性チェック完了: ${currentData.products.length}件`);
-            } else {
-                console.log('⚠️ currentData.productsが存在しないか、配列ではありません:', currentData.products);
-            }
-            
-            // 決済リンクデータの互換性を確保
-            if (currentData.paymentLinks && Array.isArray(currentData.paymentLinks)) {
-                console.log(`🔧 決済リンクデータ(${currentData.paymentLinks.length}件)の互換性チェック開始`);
-                currentData.paymentLinks.forEach((link, index) => {
-                    console.log(`🔧 決済リンク[${index}]:`, link);
-                    
-                    // priceTypeフィールドが存在しない場合はデフォルト値を設定
-                    if (!link.priceType) {
-                        link.priceType = 'sale';
-                        console.log(`🔧 決済リンク「${link.productName}」にpriceTypeを設定: sale`);
-                    }
-                    
-                    // descriptionフィールドが存在しない場合は空文字を設定
-                    if (!link.description) {
-                        link.description = '';
-                    }
-                });
-                console.log(`🔧 決済リンクデータ互換性チェック完了: ${currentData.paymentLinks.length}件`);
-            } else {
-                console.log('⚠️ currentData.paymentLinksが存在しないか、配列ではありません:', currentData.paymentLinks);
-            }
-            
-            console.log('✅ データ互換性チェック完了');
-            console.log('🔧 チェック完了時のcurrentData:', currentData);
-            console.log('🔧 チェック完了時のcurrentData.products:', currentData.products);
         }
 
         // 既存のクーポンシステムからデータ読み込み
@@ -1536,14 +1261,10 @@
 
         // 初期データ設定
         function initializeDefaultData() {
-            console.log('🆕 initializeDefaultData 開始');
-            console.log('🔍 設定前のcurrentData:', currentData);
-            
             currentData = {
                 products: [
                     {
                         id: 'shintaku',
-                        productId: 'shintaku_3000',
                         name: '神託システムタロット占い',
                         regularPrice: 3000,
                         salePrice: 3000,
@@ -1553,7 +1274,6 @@
                     },
                     {
                         id: 'star_yomi',
-                        productId: 'star_yomi_3000',
                         name: '星詠みシステム星座占い',
                         regularPrice: 3000,
                         salePrice: 3000,
@@ -1563,7 +1283,6 @@
                     },
                     {
                         id: 'personal_tarot',
-                        productId: 'personal_tarot_5000',
                         name: '個人鑑定タロット',
                         regularPrice: 5000,
                         salePrice: 5000,
@@ -1573,7 +1292,6 @@
                     },
                     {
                         id: 'personal_birthday',
-                        productId: 'personal_birthday_5000',
                         name: '個人鑑定誕生日',
                         regularPrice: 5000,
                         salePrice: 5000,
@@ -1583,7 +1301,6 @@
                     },
                     {
                         id: 'personal_set',
-                        productId: 'personal_set_8000',
                         name: '個人鑑定セット',
                         regularPrice: 8000,
                         salePrice: 8000,
@@ -1595,8 +1312,7 @@
                 paymentLinks: [
                     {
                         id: 'shintaku_3000',
-                        productId: 'shintaku_3000',
-                        productRefId: 'shintaku', // 安定した商品参照IDを追加
+                        productId: 'shintaku',
                         productName: '神託システムタロット占い',
                         price: 3000,
                         url: 'https://square.link/u/SwNECrMb',
@@ -1605,8 +1321,7 @@
                     },
                     {
                         id: 'star_yomi_3000',
-                        productId: 'star_yomi_3000',
-                        productRefId: 'star_yomi', // 安定した商品参照IDを追加
+                        productId: 'star_yomi',
                         productName: '星詠みシステム星座占い',
                         price: 3000,
                         url: 'https://square.link/u/7XZ2ip4k',
@@ -1615,8 +1330,7 @@
                     },
                     {
                         id: 'personal_tarot_5000',
-                        productId: 'personal_tarot_5000',
-                        productRefId: 'personal_tarot', // 安定した商品参照IDを追加
+                        productId: 'personal_tarot',
                         productName: '個人鑑定タロット',
                         price: 5000,
                         url: 'https://square.link/u/pr9IPpWD',
@@ -1625,8 +1339,7 @@
                     },
                     {
                         id: 'personal_birthday_5000',
-                        productId: 'personal_birthday_5000',
-                        productRefId: 'personal_birthday', // 安定した商品参照IDを追加
+                        productId: 'personal_birthday',
                         productName: '個人鑑定誕生日',
                         price: 5000,
                         url: 'https://square.link/u/og2lry9q',
@@ -1635,8 +1348,7 @@
                     },
                     {
                         id: 'personal_set_8000',
-                        productId: 'personal_set_8000',
-                        productRefId: 'personal_set', // 安定した商品参照IDを追加
+                        productId: 'personal_set',
                         productName: '個人鑑定セット',
                         price: 8000,
                         url: 'https://square.link/u/KFP9scSR',
@@ -1696,26 +1408,7 @@
                         created: new Date().toISOString()
                     }
                 ],
-                scheduledOperations: [
-                    {
-                        id: 'test-1',
-                        startDatetime: new Date(Date.now() + 3600000).toISOString(), // 1時間後
-                        endDatetime: new Date(Date.now() + 7200000).toISOString(), // 2時間後
-                        couponCode: 'TEST500',
-                        couponId: 'test-coupon-1',
-                        type: 'enable-coupon',
-                        selectedProducts: ['test-product-1'],
-                        status: 'pending'
-                    },
-                    {
-                        id: 'test-2',
-                        startDatetime: new Date(Date.now() + 86400000).toISOString(), // 1日後
-                        couponCode: 'TESTFREE',
-                        couponId: 'test-coupon-2',
-                        type: 'disable-coupon',
-                        status: 'pending'
-                    }
-                ],
+                scheduledOperations: [],
                 history: [
                     {
                         id: Date.now().toString(),
@@ -1728,1694 +1421,21 @@
                 maintenanceMode: false
             };
             
-            console.log('🔍 設定後のcurrentData:', currentData);
-            console.log('🔍 設定後のcurrentData.products:', currentData.products);
-            console.log('✅ initializeDefaultData 完了');
-            
-            console.log('💾 初期データをlocalStorageに保存中...');
             saveData();
-            console.log('💾 初期データの保存完了');
-        }
-
-        // 手動データ保存
-        function manualSaveData() {
-            console.log('🔧 手動データ保存開始');
-            console.log('🔧 現在の商品数:', currentData.products ? currentData.products.length : 'undefined');
-            
-            try {
-                saveData();
-                showMessage('データを手動で保存しました', 'success');
-            } catch (error) {
-                console.error('❌ 手動保存エラー:', error);
-                showMessage('手動保存に失敗しました', 'error');
-            }
-        }
-
-        // データ状況確認
-        function checkDataStatus() {
-            console.log('🔍 データ状況確認開始');
-            
-            // 現在のメモリ上のデータ
-            console.log('🔍 メモリ上のデータ:');
-            console.log('- 商品数:', currentData.products ? currentData.products.length : 'undefined');
-            console.log('- 決済リンク数:', currentData.paymentLinks ? currentData.paymentLinks.length : 'undefined');
-            console.log('- 価格ルール数:', currentData.pricingRules ? currentData.pricingRules.length : 'undefined');
-            
-            // localStorageの状況
-            console.log('🔍 localStorageの状況:');
-            const savedData = localStorage.getItem('adminData');
-            if (savedData) {
-                try {
-                    const parsedData = JSON.parse(savedData);
-                    console.log('- 保存済み商品数:', parsedData.products ? parsedData.products.length : 'undefined');
-                    console.log('- 保存済み決済リンク数:', parsedData.paymentLinks ? parsedData.paymentLinks.length : 'undefined');
-                    console.log('- 保存済み価格ルール数:', parsedData.pricingRules ? parsedData.pricingRules.length : 'undefined');
-                    
-                    // データの整合性チェック
-                    const memoryProductCount = currentData.products ? currentData.products.length : 0;
-                    const savedProductCount = parsedData.products ? parsedData.products.length : 0;
-                    
-                    if (memoryProductCount === savedProductCount) {
-                        console.log('✅ データ整合性: OK');
-                        showMessage(`データ整合性: OK (商品数: ${memoryProductCount}件)`, 'success');
-                    } else {
-                        console.error('❌ データ整合性: NG');
-                        console.error('- メモリ上:', memoryProductCount, '件');
-                        console.error('- localStorage:', savedProductCount, '件');
-                        showMessage(`データ整合性: NG (メモリ: ${memoryProductCount}件, localStorage: ${savedProductCount}件)`, 'error');
-                    }
-                } catch (error) {
-                    console.error('❌ 保存データの解析エラー:', error);
-                    showMessage('保存データの解析に失敗しました', 'error');
-                }
-            } else {
-                console.log('- 保存データ: なし');
-                showMessage('保存データがありません', 'warning');
-            }
-        }
-        
-        // 商品・決済リンク同期確認機能
-        function debugProductPaymentLinkSync() {
-            console.log('🔗 商品・決済リンク同期確認開始');
-            
-            if (!currentData.products || !currentData.paymentLinks) {
-                console.error('❌ データが不足しています');
-                showMessage('データが不足しています', 'error');
-                return;
-            }
-            
-            // コンソール出力（既存の処理）
-            console.log('📊 商品管理の状況:');
-            currentData.products.forEach((product, index) => {
-                console.log(`${index + 1}. ${product.name}`);
-                console.log(`   - 統合ID: ${product.productId || '未設定'}`);
-                console.log(`   - 通常価格: ${product.regularPrice}円`);
-                console.log(`   - 販売価格: ${product.salePrice}円`);
-                console.log(`   - 表示状態: ${product.visible ? '表示' : '非表示'}`);
-                console.log(`   - 更新日時: ${product.updated || 'なし'}`);
-            });
-            
-            console.log('🔗 決済リンク管理の状況:');
-            currentData.paymentLinks.forEach((link, index) => {
-                console.log(`${index + 1}. ${link.productName || '商品名なし'}`);
-                console.log(`   - リンクID: ${link.id}`);
-                console.log(`   - 統合ID: ${link.productId || '未設定'}`);
-                console.log(`   - 安定ID: ${link.productRefId || '未設定'}`);
-                console.log(`   - 価格: ${link.price}円`);
-                console.log(`   - 状態: ${link.active ? '有効' : '無効'}`);
-                console.log(`   - 更新日時: ${link.updated || 'なし'}`);
-            });
-            
-            // 同期状況の分析
-            const syncIssues = [];
-            
-            // 1. 商品管理にあるが決済リンクにない商品
-            currentData.products.forEach(product => {
-                if (product.visible) { // 表示状態の商品のみチェック
-                    const hasPaymentLink = currentData.paymentLinks.some(link => 
-                        link.productRefId === product.id || link.productId === product.productId
-                    );
-                    if (!hasPaymentLink) {
-                        syncIssues.push({
-                            type: '決済リンク未作成',
-                            product: product.name,
-                            productId: product.productId,
-                            price: product.salePrice
-                        });
-                    }
-                }
-            });
-            
-            // 2. 決済リンクにあるが商品管理にない商品
-            currentData.paymentLinks.forEach(link => {
-                if (link.productRefId) {
-                    const hasProduct = currentData.products.some(product => 
-                        product.id === link.productRefId
-                    );
-                    if (!hasProduct) {
-                        syncIssues.push({
-                            type: '商品未発見',
-                            linkId: link.id,
-                            productId: link.productId,
-                            productName: link.productName,
-                            productRefId: link.productRefId
-                        });
-                    }
-                } else if (link.productId) {
-                    // 従来の方法でのフォールバック
-                    const hasProduct = currentData.products.some(product => 
-                        product.productId === link.productId
-                    );
-                    if (!hasProduct) {
-                        syncIssues.push({
-                            type: '商品未発見',
-                            linkId: link.id,
-                            productId: link.productId,
-                            productName: link.productName
-                        });
-                    }
-                }
-            });
-            
-            // 3. 価格不一致
-            currentData.paymentLinks.forEach(link => {
-                let product = null;
-                if (link.productRefId) {
-                    product = currentData.products.find(p => p.id === link.productRefId);
-                } else if (link.productId) {
-                    product = currentData.products.find(p => p.productId === link.productId);
-                }
-                
-                if (product && link.price !== product.salePrice) {
-                    syncIssues.push({
-                        type: '価格不一致',
-                        product: product.name,
-                        productId: link.productId,
-                        productRefId: link.productRefId,
-                        linkPrice: link.price,
-                        productPrice: product.salePrice
-                    });
-                }
-            });
-            
-            // 画面表示用のデータを準備
-            updateSyncStatusModal(syncIssues);
-            
-            // 結果表示
-            if (syncIssues.length > 0) {
-                console.warn('🔗 同期問題を検出:', syncIssues);
-                
-                const issueDetails = syncIssues.map(issue => {
-                    switch (issue.type) {
-                        case '決済リンク未作成':
-                            return `・${issue.product} (¥${issue.price}) - 決済リンクが作成されていません`;
-                        case '商品未発見':
-                            return `・${issue.productName || issue.productId} - 対応する商品が見つかりません`;
-                        case '価格不一致':
-                            return `・${issue.productId} - 決済リンク: ¥${issue.linkPrice}, 商品: ¥${issue.productPrice}`;
-                        default:
-                            return `・${issue.type}: ${JSON.stringify(issue)}`;
-                    }
-                }).join('\n');
-                
-                const message = `⚠️ 商品・決済リンクの同期に問題があります:\n\n${issueDetails}\n\n詳細はコンソールを確認してください。`;
-                showMessage(message, 'warning');
-            } else {
-                console.log('✅ 商品・決済リンクの同期状況: OK');
-                showMessage('商品・決済リンクの同期状況: OK', 'success');
-            }
-        }
-        
-        // 同期状況モーダル更新関数
-        function updateSyncStatusModal(syncIssues) {
-            // 概要サマリーの更新
-            const productsCount = currentData.products ? currentData.products.length : 0;
-            const linksCount = currentData.paymentLinks ? currentData.paymentLinks.length : 0;
-            const matchCount = syncIssues.length === 0 ? productsCount : Math.max(0, productsCount - syncIssues.length);
-            
-            // 同期状況の判定
-            let syncStatus = '✅';
-            let syncStatusText = '良好';
-            if (syncIssues.length > 0) {
-                syncStatus = '⚠️';
-                syncStatusText = '問題あり';
-            }
-            
-            // 概要カードの更新
-            document.getElementById('sync-overview-status').textContent = syncStatus;
-            document.getElementById('sync-products-count').textContent = productsCount;
-            document.getElementById('sync-links-count').textContent = linksCount;
-            document.getElementById('sync-match-count').textContent = `${matchCount}/${productsCount}`;
-            
-            // 商品詳細テーブルの作成
-            let productsHtml = `
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr style="background-color: #343a40 !important; color: white !important;">
-                            <th style="min-width: 200px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">📦 商品名</th>
-                            <th style="min-width: 150px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">🆔 統合ID</th>
-                            <th style="min-width: 100px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">💰 通常価格</th>
-                            <th style="min-width: 100px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">💸 販売価格</th>
-                            <th style="min-width: 100px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">👁️ 表示状態</th>
-                            <th style="min-width: 150px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">📅 更新日時</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            currentData.products.forEach((product, index) => {
-                const statusClass = product.visible ? 'text-success' : 'text-muted';
-                const statusIcon = product.visible ? '✅' : '❌';
-                const updatedText = product.updated ? new Date(product.updated).toLocaleString('ja-JP') : 'なし';
-                
-                productsHtml += `
-                    <tr>
-                        <td><strong>${product.name}</strong></td>
-                        <td><code>${product.productId || '未設定'}</code></td>
-                        <td>¥${product.regularPrice.toLocaleString()}</td>
-                        <td>¥${product.salePrice.toLocaleString()}</td>
-                        <td class="${statusClass}">${statusIcon} ${product.visible ? '表示' : '非表示'}</td>
-                        <td><small>${updatedText}</small></td>
-                    </tr>
-                `;
-            });
-            
-            productsHtml += '</tbody></table>';
-            document.getElementById('sync-products-details').innerHTML = productsHtml;
-            
-            // 決済リンク詳細テーブルの作成
-            let linksHtml = `
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr style="background-color: #343a40 !important; color: white !important;">
-                            <th style="min-width: 200px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">📦 商品名</th>
-                            <th style="min-width: 150px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">🔗 リンクID</th>
-                            <th style="min-width: 150px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">🆔 統合ID</th>
-                            <th style="min-width: 150px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">🔒 安定ID</th>
-                            <th style="min-width: 100px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">💰 価格</th>
-                            <th style="min-width: 100px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">📊 状態</th>
-                            <th style="min-width: 150px; background-color: #343a40 !important; color: white !important; padding: 12px 8px !important;">📅 更新日時</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-            
-            currentData.paymentLinks.forEach((link, index) => {
-                const statusClass = link.active ? 'text-success' : 'text-warning';
-                const statusIcon = link.active ? '✅' : '⚠️';
-                const updatedText = link.updated ? new Date(link.updated).toLocaleString('ja-JP') : 'なし';
-                
-                linksHtml += `
-                    <tr>
-                        <td><strong>${link.productName || '商品名なし'}</strong></td>
-                        <td><code>${link.id}</code></td>
-                        <td><code>${link.productId || '未設定'}</code></td>
-                        <td><code>${link.productRefId || '未設定'}</code></td>
-                        <td>¥${link.price.toLocaleString()}</td>
-                        <td class="${statusClass}">${statusIcon} ${link.active ? '有効' : '無効'}</td>
-                        <td><small>${updatedText}</small></td>
-                    </tr>
-                `;
-            });
-            
-            linksHtml += '</tbody></table>';
-            document.getElementById('sync-links-details').innerHTML = linksHtml;
-            
-            // 問題点の表示
-            const issuesDiv = document.getElementById('sync-issues');
-            const issuesList = document.getElementById('sync-issues-list');
-            
-            if (syncIssues.length > 0) {
-                let issuesHtml = '';
-                syncIssues.forEach(issue => {
-                    switch (issue.type) {
-                        case '決済リンク未作成':
-                            issuesHtml += `<li><strong>${issue.product}</strong> (¥${issue.price}) - 決済リンクが作成されていません</li>`;
-                            break;
-                        case '商品未発見':
-                            issuesHtml += `<li><strong>${issue.productName || issue.productId}</strong> - 対応する商品が見つかりません</li>`;
-                            break;
-                        case '価格不一致':
-                            issuesHtml += `<li><strong>${issue.productId}</strong> - 決済リンク: ¥${issue.linkPrice}, 商品: ¥${issue.productPrice}</li>`;
-                            break;
-                        default:
-                            issuesHtml += `<li><strong>${issue.type}</strong>: ${JSON.stringify(issue)}</li>`;
-                    }
-                });
-                
-                issuesList.innerHTML = issuesHtml;
-                issuesDiv.style.display = 'block';
-            } else {
-                issuesDiv.style.display = 'none';
-            }
-            
-            // モーダルを表示
-            const modal = new bootstrap.Modal(document.getElementById('syncStatusModal'));
-            modal.show();
-        }
-        
-        // 同期状況モーダルを閉じる関数
-        function closeSyncStatusModal() {
-            const modal = bootstrap.Modal.getInstance(document.getElementById('syncStatusModal'));
-            if (modal) {
-                modal.hide();
-            }
-        }
-        
-        // 強制同期機能
-        function forceSyncPaymentLinks() {
-            console.log('🔄 強制同期実行開始');
-            
-            if (!currentData.products || !currentData.paymentLinks) {
-                console.error('❌ データが不足しています');
-                showMessage('データが不足しています', 'error');
-                return;
-            }
-            
-            let syncCount = 0;
-            const syncDetails = [];
-            
-            // 1. 表示状態の商品に対して決済リンクが存在しない場合は作成
-            currentData.products.forEach(product => {
-                if (product.visible && product.productId) {
-                    const hasPaymentLink = currentData.paymentLinks.some(link => 
-                        link.productId === product.productId
-                    );
-                    
-                    if (!hasPaymentLink) {
-                        console.log(`🔄 決済リンクを作成: ${product.name}`);
-                        
-                        const newPaymentLink = {
-                            id: generateFixedPriorityLinkId(product.name, product.salePrice),
-                            productId: product.productId,
-                            productRefId: product.id, // 安定した商品参照IDを追加
-                            productName: product.name,
-                            priceType: 'sale',
-                            price: product.salePrice,
-                            description: product.displayText || '',
-                            url: `https://square.link/u/PLACEHOLDER_LINK`,
-                            active: false,
-                            created: new Date().toISOString()
-                        };
-                        
-                        currentData.paymentLinks.push(newPaymentLink);
-                        syncCount++;
-                        syncDetails.push(`✅ ${product.name} - 決済リンクを作成`);
-                    }
-                }
-            });
-            
-            // 2. 既存の決済リンクを商品情報と同期
-            currentData.paymentLinks.forEach(link => {
-                if (link.productId) {
-                    let product = currentData.products.find(p => p.productId === link.productId);
-                    
-                    // productIdで見つからない場合は、商品名で検索
-                    if (!product && link.productName) {
-                        product = currentData.products.find(p => p.name === link.productName);
-                        if (product) {
-                            console.log(`🔄 商品名で検索して商品を発見: ${link.productName} -> ${product.id}`);
-                        }
-                    }
-                    
-                    if (product) {
-                        let updated = false;
-                        
-                        // productRefIdの設定（不足している場合）
-                        if (!link.productRefId || link.productRefId !== product.id) {
-                            link.productRefId = product.id;
-                            updated = true;
-                            console.log(`🔄 productRefIdを設定: ${link.id} -> ${product.id}`);
-                        }
-                        
-                        // 商品名の同期
-                        if (link.productName !== product.name) {
-                            link.productName = product.name;
-                            updated = true;
-                        }
-                        
-                        // 価格の同期
-                        if (link.price !== product.salePrice) {
-                            link.price = product.salePrice;
-                            updated = true;
-                        }
-                        
-                        if (updated) {
-                            link.updated = new Date().toISOString();
-                            syncCount++;
-                            syncDetails.push(`🔄 ${product.name} - 決済リンクを更新`);
-                        }
-                    }
-                }
-            });
-            
-            if (syncCount > 0) {
-                console.log(`🔄 同期完了: ${syncCount}件の更新`);
-                console.log('🔄 同期詳細:', syncDetails);
-                
-                // データを保存
-                saveData();
-                updateAllTables();
-                
-                const message = `🔄 強制同期完了: ${syncCount}件の更新\n\n${syncDetails.join('\n')}`;
-                showMessage(message, 'success');
-                
-                // 同期後の状況を確認
-                setTimeout(() => {
-                    debugProductPaymentLinkSync();
-                }, 1000);
-            } else {
-                console.log('🔄 同期不要: 既に同期済み');
-                showMessage('同期不要: 既に同期済みです', 'info');
-            }
-            
-            // 常にproductRefId移行を実行（データの整合性確保）
-            console.log('🔄 productRefId移行実行中...');
-            migrateProductRefIds();
-            
-            // リンクID移行も実行（価格に依存しない形式に変更）
-            console.log('🔄 リンクID移行実行中...');
-            migrateLinkIds();
-        }
-        
-        // 新しいリンクID生成関数（価格に依存しない）
-        function generateNewLinkId(productName, index = 0, salePrice = null) {
-            // 商品名から基本IDを生成（価格を含まない）
-            let baseId = '';
-            
-            // 神託システム系（神託システムタロット占い）
-            if (productName.includes('神託システム') && productName.includes('タロット')) {
-                baseId = 'shintaku';
-            }
-            // 星詠みシステム系（星詠みシステム星座占い）
-            else if (productName.includes('星詠みシステム') && productName.includes('星座')) {
-                baseId = 'star_yomi';
-            }
-            // 個人鑑定系
-            else if (productName.includes('個人鑑定')) {
-                if (productName.includes('タロット')) {
-                    baseId = 'personal_tarot';
-                } else if (productName.includes('誕生日')) {
-                    baseId = 'personal_birthday';
-                } else if (productName.includes('セット')) {
-                    baseId = 'personal_set';
-                } else {
-                    baseId = 'personal';
-                }
-            }
-            // その他の商品
-            else {
-                baseId = 'product';
-            }
-            
-            // 連番を付けてユニークにする
-            return `link_${baseId}_${String(index + 1).padStart(3, '0')}`;
-        }
-        
-        // 商品の優先順位を考慮したリンクID生成関数
-        function generatePrioritizedLinkId(productName, salePrice, existingLinks = []) {
-            let baseId = '';
-            
-            // 神託システム系（神託システムタロット占い）
-            if (productName.includes('神託システム') && productName.includes('タロット')) {
-                baseId = 'shintaku';
-            }
-            // 星詠みシステム系（星詠みシステム星座占い）
-            else if (productName.includes('星詠みシステム') && productName.includes('星座')) {
-                baseId = 'star_yomi';
-            }
-            // 個人鑑定系
-            else if (productName.includes('個人鑑定')) {
-                if (productName.includes('タロット')) {
-                    baseId = 'personal_tarot';
-                } else if (productName.includes('誕生日')) {
-                    baseId = 'personal_birthday';
-                } else if (productName.includes('セット')) {
-                    baseId = 'personal_set';
-                } else {
-                    baseId = 'personal';
-                }
-            }
-            // その他の商品
-            else {
-                baseId = 'product';
-            }
-            
-            // 同じ基本IDを持つ既存のリンクを取得
-            const sameBaseLinks = existingLinks.filter(link => 
-                link.id.startsWith(`link_${baseId}_`)
-            );
-            
-            // 価格順でソート（高い順）
-            sameBaseLinks.sort((a, b) => b.price - a.price);
-            
-            // 現在の商品の価格が何番目かを判定
-            let priority = 1;
-            for (let link of sameBaseLinks) {
-                if (link.price > salePrice) {
-                    priority++;
-                } else if (link.price === salePrice) {
-                    // 同じ価格の場合は、既存の順番を維持
-                    const existingPriority = parseInt(link.id.split('_').pop());
-                    if (existingPriority < priority) {
-                        priority = existingPriority;
-                    }
-                }
-            }
-            
-            return `link_${baseId}_${String(priority).padStart(3, '0')}`;
-        }
-        
-        // 現在の商品価格を基準にした固定連番生成関数
-        function generateFixedPriorityLinkId(productName, salePrice) {
-            let baseId = '';
-            
-            // 神託システム系（神託システムタロット占い）
-            if (productName.includes('神託システム') && productName.includes('タロット')) {
-                baseId = 'shintaku';
-                // 現在の価格に基づいて固定連番を設定
-                if (salePrice === 2000) {
-                    return `link_${baseId}_001`; // 2000円版は001
-                } else if (salePrice === 1500) {
-                    return `link_${baseId}_002`; // 1500円版は002
-                }
-            }
-            // 星詠みシステム系（星詠みシステム星座占い）
-            else if (productName.includes('星詠みシステム') && productName.includes('星座')) {
-                baseId = 'star_yomi';
-                return `link_${baseId}_001`; // 現在は1つだけ
-            }
-            // 個人鑑定系
-            else if (productName.includes('個人鑑定')) {
-                if (productName.includes('タロット')) {
-                    baseId = 'personal_tarot';
-                    return `link_${baseId}_001`;
-                } else if (productName.includes('誕生日')) {
-                    baseId = 'personal_birthday';
-                    return `link_${baseId}_001`;
-                } else if (productName.includes('セット')) {
-                    baseId = 'personal_set';
-                    return `link_${baseId}_001`;
-                } else {
-                    baseId = 'personal';
-                    return `link_${baseId}_001`;
-                }
-            }
-            // その他の商品
-            else {
-                baseId = 'product';
-                return `link_${baseId}_001`;
-            }
-            
-            // デフォルトは001
-            return `link_${baseId}_001`;
-        }
-        
-        // 既存のリンクIDを新しい形式に移行
-        function migrateLinkIds() {
-            console.log('🔄 リンクID移行開始');
-            
-            if (!currentData.paymentLinks) {
-                console.log('🔄 決済リンクデータがありません');
-                return;
-            }
-            
-            let migrationCount = 0;
-            const productNameCounts = {};
-            
-            currentData.paymentLinks.forEach(link => {
-                // 古い形式のリンクIDをチェック（価格を含むもの、または間違った形式）
-                if (link.id.includes('_3000') || link.id.includes('_5000') || 
-                    link.id.includes('_8000') || link.id.includes('_10000') ||
-                    link.id.includes('_1500') || link.id.includes('_2000') ||
-                    link.id.includes('_7000') || link.id.includes('_1280') ||
-                    // 間違った形式もチェック（個人鑑定なのにshintakuになっているもの）
-                    (link.productName.includes('個人鑑定') && link.id.includes('shintaku')) ||
-                    (link.productName.includes('神託システム') && link.id.includes('personal'))) {
-                    
-                    // 商品名ごとのカウントを管理
-                    if (!productNameCounts[link.productName]) {
-                        productNameCounts[link.productName] = 0;
-                    }
-                    productNameCounts[link.productName]++;
-                    
-                    // 新しいリンクIDを生成（固定連番）
-                    const newId = generateFixedPriorityLinkId(link.productName, link.price);
-                    
-                    console.log(`🔄 リンクID移行: ${link.id} -> ${newId} (${link.productName} - ¥${link.price})`);
-                    link.id = newId;
-                    link.updated = new Date().toISOString();
-                    migrationCount++;
-                }
-            });
-            
-            if (migrationCount > 0) {
-                console.log(`🔄 リンクID移行完了: ${migrationCount}件`);
-                saveData();
-                updateAllTables();
-            } else {
-                console.log('🔄 リンクID移行不要: 既に移行済み');
-            }
-        }
-        
-        // 決済リンク選択システム - 金額ベースの最適な決済リンクを選択
-        function selectOptimalPaymentLink(productName, finalPrice, couponCode = null) {
-            console.log(`🔗 決済リンク選択開始: ${productName}, 最終金額: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
-            
-            if (!currentData.paymentLinks) {
-                console.error('❌ 決済リンクデータが不足しています');
-                return null;
-            }
-            
-            // 商品名に基づいて関連する決済リンクを検索
-            const relatedLinks = currentData.paymentLinks.filter(link => {
-                // 商品名での直接マッチ
-                if (link.productName === productName) {
-                    return true;
-                }
-                
-                // productRefIdでのマッチ（商品管理との連携）
-                const product = currentData.products.find(p => p.id === link.productRefId);
-                if (product && product.name === productName) {
-                    return true;
-                }
-                
-                return false;
-            });
-            
-            if (relatedLinks.length === 0) {
-                console.warn(`⚠️ 商品「${productName}」に関連する決済リンクが見つかりません`);
-                return null;
-            }
-            
-            console.log(`🔍 関連する決済リンク: ${relatedLinks.length}件`);
-            relatedLinks.forEach(link => {
-                console.log(`  - ${link.id}: ¥${link.price} (${link.active ? '有効' : '無効'})`);
-            });
-            
-            // 有効な決済リンクのみを対象とする
-            const activeLinks = relatedLinks.filter(link => link.active);
-            
-            if (activeLinks.length === 0) {
-                console.warn(`⚠️ 商品「${productName}」の有効な決済リンクがありません`);
-                return null;
-            }
-            
-            // 最終金額に最も近い決済リンクを選択
-            let optimalLink = null;
-            let minDifference = Infinity;
-            
-            activeLinks.forEach(link => {
-                const difference = Math.abs(link.price - finalPrice);
-                if (difference < minDifference) {
-                    minDifference = difference;
-                    optimalLink = link;
-                }
-            });
-            
-            if (optimalLink) {
-                console.log(`✅ 最適な決済リンク選択: ${optimalLink.id} (¥${optimalLink.price})`);
-                console.log(`💰 価格差: ¥${Math.abs(optimalLink.price - finalPrice)}`);
-                
-                // 選択結果をログに記録
-                addHistoryEntry('決済リンク選択', 
-                    `商品「${productName}」の決済リンクを選択しました (最終金額: ¥${finalPrice}, 選択: ¥${optimalLink.price}, クーポン: ${couponCode || 'なし'})`
-                );
-                
-                return optimalLink;
-            } else {
-                console.error('❌ 最適な決済リンクの選択に失敗しました');
-                return null;
-            }
-        }
-        
-        // 決済リンク選択システム - 複数の決済リンクから選択肢を提供
-        function getPaymentLinkOptions(productName, finalPrice, couponCode = null) {
-            console.log(`🔗 決済リンク選択肢取得: ${productName}, 最終金額: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
-            
-            if (!currentData.paymentLinks) {
-                return [];
-            }
-            
-            // 商品名に基づいて関連する決済リンクを検索
-            const relatedLinks = currentData.paymentLinks.filter(link => {
-                if (link.productName === productName) {
-                    return true;
-                }
-                
-                const product = currentData.products.find(p => p.id === link.productRefId);
-                if (product && product.name === productName) {
-                    return true;
-                }
-                
-                return false;
-            });
-            
-            // 有効な決済リンクのみを対象とし、価格順でソート
-            const activeLinks = relatedLinks
-                .filter(link => link.active)
-                .sort((a, b) => a.price - b.price);
-            
-            // 選択肢の情報を整形
-            const options = activeLinks.map(link => {
-                const priceDifference = Math.abs(link.price - finalPrice);
-                const isExactMatch = link.price === finalPrice;
-                const isCloseMatch = priceDifference <= 100; // 100円以内の差
-                
-                return {
-                    link: link,
-                    price: link.price,
-                    priceDifference: priceDifference,
-                    isExactMatch: isExactMatch,
-                    isCloseMatch: isCloseMatch,
-                    recommendation: isExactMatch ? '完全一致' : 
-                                  isCloseMatch ? '推奨' : '選択可能'
-                };
-            });
-            
-            console.log(`📋 決済リンク選択肢: ${options.length}件`);
-            options.forEach(option => {
-                console.log(`  - ¥${option.price}: ${option.recommendation} (差額: ¥${option.priceDifference})`);
-            });
-            
-            return options;
-        }
-        
-        // リンクID修正関数 - 価格の優先度に基づいてリンクIDを修正
-        function fixLinkIds() {
-            console.log('🔗 リンクID修正開始');
-            
-            if (!currentData.products || !currentData.paymentLinks) {
-                console.error('❌ データが不足しています');
-                showMessage('データが不足しています', 'error');
-                return;
-            }
-            
-            let fixedCount = 0;
-            const changes = [];
-            
-            // 神託システムタロット占いの商品を取得
-            const shintakuProducts = currentData.products.filter(product => 
-                product.name.includes('神託システム') && product.name.includes('タロット')
-            );
-            
-            if (shintakuProducts.length === 0) {
-                showMessage('神託システムタロット占いの商品が見つかりません', 'error');
-                return;
-            }
-            
-            // 価格の優先度でソート（高い価格を優先）
-            shintakuProducts.sort((a, b) => b.salePrice - a.salePrice);
-            
-            console.log('💰 神託システムタロット占いの価格優先度順:');
-            shintakuProducts.forEach((product, index) => {
-                console.log(`  ${index + 1}. ${product.name} (¥${product.salePrice}) - 作成: ${product.created}`);
-            });
-            
-            // リンクIDの修正
-            shintakuProducts.forEach((product, index) => {
-                const expectedLinkId = `link_shintaku_${String(index + 1).padStart(3, '0')}`;
-                
-                // この商品に対応する決済リンクを検索
-                const paymentLink = currentData.paymentLinks.find(link => 
-                    link.productRefId === product.id || link.productId === product.productId
-                );
-                
-                if (paymentLink) {
-                    if (paymentLink.id !== expectedLinkId) {
-                        console.log(`🔗 リンクID修正: ${paymentLink.id} → ${expectedLinkId} (${product.name} ¥${product.salePrice})`);
-                        
-                        const oldLinkId = paymentLink.id;
-                        paymentLink.id = expectedLinkId;
-                        paymentLink.updated = new Date().toISOString();
-                        
-                        changes.push({
-                            type: 'リンクID',
-                            old: oldLinkId,
-                            new: expectedLinkId,
-                            name: product.name,
-                            price: product.salePrice
-                        });
-                        
-                        fixedCount++;
-                    }
-                } else {
-                    console.warn(`⚠️ 商品「${product.name}」に対応する決済リンクが見つかりません`);
-                }
-            });
-            
-            if (fixedCount > 0) {
-                // データを保存
-                saveData();
-                
-                // 履歴に記録
-                const changeDetails = changes.map(change => 
-                    `${change.type}: ${change.old} → ${change.new} (${change.name} ¥${change.price})`
-                ).join(', ');
-                
-                addHistoryEntry('リンクID修正', 
-                    `${fixedCount}件のリンクIDを修正しました: ${changeDetails}`
-                );
-                
-                // 画面を更新
-                updateAllTables();
-                
-                showMessage(`✅ リンクID修正完了！\n\n${fixedCount}件のリンクIDを修正しました。\n\n修正内容:\n${changes.map(change => `• ${change.name} (¥${change.price}): ${change.old} → ${change.new}`).join('\n')}`, 'success');
-                
-                console.log(`🔗 リンクID修正完了: ${fixedCount}件修正`);
-            } else {
-                showMessage('修正が必要なリンクIDはありません。すべて適切な順序になっています。', 'info');
-                console.log('🔗 リンクID修正: 修正不要');
-            }
-        }
-        
-        // 今回限定のリンクID修正関数 - 2000円版を_001、1500円版を_002に固定
-        function fixLinkIdsThisTimeOnly() {
-            console.log('🔧 今回限定リンクID修正開始');
-            
-            if (!currentData.products || !currentData.paymentLinks) {
-                console.error('❌ データが不足しています');
-                showMessage('データが不足しています', 'error');
-                return;
-            }
-            
-            let fixedCount = 0;
-            const changes = [];
-            
-            // 神託システムタロット占いの商品を取得
-            const shintakuProducts = currentData.products.filter(product => 
-                product.name.includes('神託システム') && product.name.includes('タロット')
-            );
-            
-            if (shintakuProducts.length === 0) {
-                showMessage('神託システムタロット占いの商品が見つかりません', 'error');
-                return;
-            }
-            
-            // 2000円版と1500円版を特定
-            const product2000 = shintakuProducts.find(p => p.salePrice === 2000);
-            const product1500 = shintakuProducts.find(p => p.salePrice === 1500);
-            
-            if (!product2000 || !product1500) {
-                showMessage('2000円版または1500円版の商品が見つかりません', 'error');
-                return;
-            }
-            
-            console.log('🔧 今回限定の修正対象:');
-            console.log(`  2000円版: ${product2000.name} (ID: ${product2000.id})`);
-            console.log(`  1500円版: ${product1500.name} (ID: ${product1500.id})`);
-            
-            // 2000円版を_001、1500円版を_002に固定
-            const targetLinks = [
-                { product: product2000, expectedId: 'link_shintaku_001' },
-                { product: product1500, expectedId: 'link_shintaku_002' }
-            ];
-            
-            targetLinks.forEach(({ product, expectedId }) => {
-                // この商品に対応する決済リンクを検索
-                const paymentLink = currentData.paymentLinks.find(link => 
-                    link.productRefId === product.id || link.productId === product.productId
-                );
-                
-                if (paymentLink) {
-                    if (paymentLink.id !== expectedId) {
-                        console.log(`🔗 リンクID修正: ${paymentLink.id} → ${expectedId} (${product.name} ¥${product.salePrice})`);
-                        
-                        const oldLinkId = paymentLink.id;
-                        paymentLink.id = expectedId;
-                        paymentLink.updated = new Date().toISOString();
-                        
-                        changes.push({
-                            type: 'リンクID',
-                            old: oldLinkId,
-                            new: expectedId,
-                            name: product.name,
-                            price: product.salePrice
-                        });
-                        
-                        fixedCount++;
-                    }
-                } else {
-                    console.warn(`⚠️ 商品「${product.name}」に対応する決済リンクが見つかりません`);
-                }
-            });
-            
-            if (fixedCount > 0) {
-                // データを保存
-                saveData();
-                
-                // 履歴に記録
-                const changeDetails = changes.map(change => 
-                    `${change.type}: ${change.old} → ${change.new} (${change.name} ¥${change.price})`
-                ).join(', ');
-                
-                addHistoryEntry('今回限定リンクID修正', 
-                    `${fixedCount}件のリンクIDを今回限定で修正しました: ${changeDetails}`
-                );
-                
-                // 画面を更新
-                updateAllTables();
-                
-                showMessage(`✅ 今回限定リンクID修正完了！\n\n${fixedCount}件のリンクIDを修正しました。\n\n修正内容:\n${changes.map(change => `• ${change.name} (¥${change.price}): ${change.old} → ${change.new}`).join('\n')}\n\n⚠️ 今後は商品作成順でリンクIDが決定されます。`, 'success');
-                
-                console.log(`🔧 今回限定リンクID修正完了: ${fixedCount}件修正`);
-            } else {
-                showMessage('修正が必要なリンクIDはありません。2000円版が_001、1500円版が_002になっています。', 'info');
-                console.log('🔧 今回限定リンクID修正: 修正不要');
-            }
-        }
-        
-        // クーポンシステムデバッグ関数
-        function debugCouponSystem() {
-            console.log('🔍 クーポンシステムデバッグ開始');
-            
-            // 1. 統合管理画面の価格ルール状況
-            console.log('📊 統合管理画面の価格ルール:');
-            console.log('- 総数:', currentData.pricingRules?.length || 0);
-            currentData.pricingRules?.forEach((rule, index) => {
-                console.log(`  ${index + 1}. ${rule.couponCode} - ${rule.description} (${rule.active ? '有効' : '無効'})`);
-                if (rule.imported) {
-                    console.log(`     → imported: true (究極版クーポン管理から取得)`);
-                }
-            });
-            
-            // 2. localStorageの状況確認
-            console.log('\n💾 localStorageの状況:');
-            const salonCoupons = localStorage.getItem('salon_coupons');
-            const adminData = localStorage.getItem('adminData');
-            const integratedAdminData = localStorage.getItem('integratedAdminData');
-            
-            console.log('- salon_coupons:', salonCoupons ? '存在' : 'なし');
-            console.log('- adminData:', adminData ? '存在' : 'なし');
-            console.log('- integratedAdminData:', integratedAdminData ? '存在' : 'なし');
-            
-            // 3. salon_couponsの詳細確認
-            if (salonCoupons) {
-                try {
-                    const parsed = JSON.parse(salonCoupons);
-                    console.log('\n📦 salon_couponsの内容:');
-                    console.log('- データ型:', typeof parsed);
-                    console.log('- 配列かどうか:', Array.isArray(parsed));
-                    if (Array.isArray(parsed)) {
-                        console.log('- クーポン数:', parsed.length);
-                        parsed.forEach((coupon, index) => {
-                            console.log(`  ${index + 1}. ${coupon.code} - ${coupon.description || '説明なし'}`);
-                        });
-                    } else if (typeof parsed === 'object') {
-                        console.log('- キー数:', Object.keys(parsed).length);
-                        Object.keys(parsed).forEach(key => {
-                            console.log(`  - ${key}: ${parsed[key].code || 'コードなし'}`);
-                        });
-                    }
-                } catch (error) {
-                    console.error('❌ salon_couponsの解析エラー:', error);
-                }
-            }
-            
-            // 4. 重複チェック
-            console.log('\n🔍 重複チェック:');
-            const couponCodes = currentData.pricingRules?.map(r => r.couponCode) || [];
-            const duplicates = couponCodes.filter((code, index) => couponCodes.indexOf(code) !== index);
-            if (duplicates.length > 0) {
-                console.log('⚠️ 重複するクーポンコード:', duplicates);
-            } else {
-                console.log('✅ 重複なし');
-            }
-            
-            // 5. 推奨アクション
-            console.log('\n💡 推奨アクション:');
-            if (currentData.pricingRules?.length > 10) {
-                console.log('⚠️ 価格ルールが多すぎます。重複を削除することをお勧めします。');
-            }
-            
-            showMessage(`🔍 クーポンシステムデバッグ完了\n\n詳細はコンソール(F12)をご確認ください。\n\n価格ルール数: ${currentData.pricingRules?.length || 0}\n重複: ${duplicates.length > 0 ? 'あり' : 'なし'}`, 'info');
-        }
-        
-        // クーポンデータクリーンアップ関数
-        function cleanupCouponData() {
-            console.log('🧹 クーポンデータクリーンアップ開始');
-            
-            if (!currentData.pricingRules || currentData.pricingRules.length === 0) {
-                showMessage('クリーンアップ対象のデータがありません', 'info');
-                return;
-            }
-            
-            const originalCount = currentData.pricingRules.length;
-            let cleanedCount = 0;
-            let removedCount = 0;
-            
-            // 1. 重複するクーポンコードを削除（importedフラグのないものを優先）
-            const uniqueRules = [];
-            const seenCodes = new Set();
-            
-            currentData.pricingRules.forEach(rule => {
-                if (!seenCodes.has(rule.couponCode)) {
-                    seenCodes.add(rule.couponCode);
-                    uniqueRules.push(rule);
-                    cleanedCount++;
-                } else {
-                    // 重複が見つかった場合、importedフラグのないものを優先
-                    const existingRule = uniqueRules.find(r => r.couponCode === rule.couponCode);
-                    if (existingRule && existingRule.imported && !rule.imported) {
-                        // 既存のimportedルールを削除して、新しいルールを追加
-                        const index = uniqueRules.indexOf(existingRule);
-                        uniqueRules[index] = rule;
-                        removedCount++;
-                    } else {
-                        removedCount++;
-                    }
-                }
-            });
-            
-            // 2. 古いimportedルールを削除（1週間以上前のもの）
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-            
-            const filteredRules = uniqueRules.filter(rule => {
-                if (rule.imported && rule.created) {
-                    const createdDate = new Date(rule.created);
-                    if (createdDate < oneWeekAgo) {
-                        removedCount++;
-                        return false;
-                    }
-                }
-                return true;
-            });
-            
-            // 3. データを更新
-            currentData.pricingRules = filteredRules;
-            
-            // 4. 保存
-            saveData();
-            
-            // 5. 履歴に記録
-            addHistoryEntry('クーポンデータクリーンアップ', 
-                `${originalCount}件から${filteredRules.length}件にクリーンアップしました (削除: ${removedCount}件)`
-            );
-            
-            // 6. 画面更新
-            updateAllTables();
-            
-            showMessage(`✅ クーポンデータクリーンアップ完了！\n\n元のデータ: ${originalCount}件\nクリーンアップ後: ${filteredRules.length}件\n削除されたデータ: ${removedCount}件`, 'success');
-            
-            console.log(`🧹 クリーンアップ完了: ${originalCount} → ${filteredRules.length} (削除: ${removedCount})`);
-        }
-        
-        // 完全クリーンアップ関数 - 古いデータを完全削除
-        function forceCleanupCouponData() {
-            console.log('💥 完全クリーンアップ開始');
-            
-            if (!confirm('⚠️ 注意: この操作は古いクーポンデータを完全に削除します。\n\n究極版クーポン管理画面のデータのみが残ります。\n\n続行しますか？')) {
-                return;
-            }
-            
-            const originalCount = currentData.pricingRules?.length || 0;
-            let removedCount = 0;
-            
-            // 1. 古いデータを特定して削除
-            const oldDataPatterns = [
-                'shintaku',           // 古い神託システム
-                'star_yomi',          // 古い星詠みシステム
-                'personal_tarot',     // 古い個人鑑定
-                'product_',           // 古い商品IDパターン
-                'originalPrice'       // 古い価格フィールド
-            ];
-            
-            // 2. 古いデータをフィルタリング
-            const cleanedRules = currentData.pricingRules.filter(rule => {
-                // importedフラグがあるものは保持（究極版クーポン管理から取得）
-                if (rule.imported) {
-                    return true;
-                }
-                
-                // 古いパターンにマッチするものを削除
-                const shouldRemove = oldDataPatterns.some(pattern => {
-                    if (pattern === 'originalPrice') {
-                        return rule.products && rule.products.some(p => p.originalPrice);
-                    }
-                    return rule.productId && rule.productId.includes(pattern) ||
-                           rule.products && rule.products.some(p => p.productId && p.productId.includes(pattern));
-                });
-                
-                if (shouldRemove) {
-                    removedCount++;
-                    console.log(`🗑️ 古いデータを削除: ${rule.couponCode} - ${rule.description}`);
-                    return false;
-                }
-                
-                return true;
-            });
-            
-            // 3. データを更新
-            currentData.pricingRules = cleanedRules;
-            
-            // 4. 保存
-            saveData();
-            
-            // 5. 履歴に記録
-            addHistoryEntry('完全クリーンアップ', 
-                `${originalCount}件から${cleanedRules.length}件にクリーンアップしました (削除: ${removedCount}件)`
-            );
-            
-            // 6. 画面更新
-            updateAllTables();
-            
-            showMessage(`✅ 完全クリーンアップ完了！\n\n元のデータ: ${originalCount}件\nクリーンアップ後: ${cleanedRules.length}件\n削除されたデータ: ${removedCount}件\n\n古いデータが完全に削除されました。`, 'success');
-            
-            console.log(`💥 完全クリーンアップ完了: ${originalCount} → ${cleanedRules.length} (削除: ${removedCount})`);
-        }
-        
-        // クーポンデータ復旧関数
-        function restoreCouponData() {
-            console.log('🔄 クーポンデータ復旧開始');
-            
-            // 1. 究極版クーポン管理画面からデータを再取得
-            loadExistingCoupons();
-            
-            // 2. 重複チェックと適切な統合
-            setTimeout(() => {
-                console.log('🔄 復旧後のデータ統合処理開始');
-                
-                // 重複するクーポンコードを適切に処理
-                const uniqueRules = [];
-                const seenCodes = new Set();
-                
-                currentData.pricingRules.forEach(rule => {
-                    if (!seenCodes.has(rule.couponCode)) {
-                        seenCodes.add(rule.couponCode);
-                        uniqueRules.push(rule);
-                    } else {
-                        // 重複が見つかった場合、importedフラグがあるものを優先
-                        const existingRule = uniqueRules.find(r => r.couponCode === rule.couponCode);
-                        if (existingRule && !existingRule.imported && rule.imported) {
-                            // 既存のルールをimportedルールで置き換え
-                            const index = uniqueRules.indexOf(existingRule);
-                            uniqueRules[index] = rule;
-                            console.log(`🔄 ルールを更新: ${rule.couponCode}`);
-                        }
-                    }
-                });
-                
-                // 3. データを更新
-                currentData.pricingRules = uniqueRules;
-                
-                // 4. 保存
-                saveData();
-                
-                // 5. 履歴に記録
-                addHistoryEntry('クーポンデータ復旧', 
-                    `クーポンデータを復旧しました (最終的な価格ルール数: ${uniqueRules.length}件)`
-                );
-                
-                // 6. 画面更新
-                updateAllTables();
-                
-                showMessage(`✅ クーポンデータ復旧完了！\n\n最終的な価格ルール数: ${uniqueRules.length}件\n\n究極版クーポン管理画面のデータが正しく統合されました。`, 'success');
-                
-                console.log(`🔄 復旧完了: 最終的な価格ルール数: ${uniqueRules.length}`);
-            }, 1000);
-        }
-        
-        // 強制上書き関数 - 究極版クーポン管理画面のデータで完全置き換え
-        function forceOverwriteCouponData() {
-            console.log('⚡ 強制上書き開始');
-            
-            if (!confirm('⚠️ 注意: この操作は現在の価格ルールを完全に削除し、究極版クーポン管理画面のデータで置き換えます。\n\n続行しますか？')) {
-                return;
-            }
-            
-            // 1. 現在の価格ルールを完全削除
-            const originalCount = currentData.pricingRules?.length || 0;
-            currentData.pricingRules = [];
-            
-            // 2. 究極版クーポン管理画面からデータを強制取得
-            console.log('🔄 究極版クーポン管理画面からデータを強制取得中...');
-            
-            // 3. 既存のクーポンデータを直接読み込み
-            const existingCoupons = localStorage.getItem('salon_coupons');
-            if (existingCoupons) {
-                try {
-                    const coupons = JSON.parse(existingCoupons);
-                    console.log('📦 究極版クーポン管理画面のデータ:', coupons);
-                    
-                    let processedCount = 0;
-                    
-                    // 各クーポンを処理
-                    Object.values(coupons).forEach((coupon, index) => {
-                        if (coupon && coupon.code) {
-                            console.log(`🔄 処理中 [${index + 1}]:`, coupon);
-                            
-                            // 新しい価格ルールを作成
-                            const newRule = {
-                                id: 'force_imported_' + coupon.code + '_' + Date.now() + '_' + index,
-                                couponCode: coupon.code,
-                                description: coupon.description || `${coupon.code} (${coupon.discountType === 'percentage' ? coupon.discountValue + '%' : '¥' + coupon.discountValue} OFF)`,
-                                active: coupon.isActive !== false && coupon.active !== false,
-                                products: convertCouponToProducts(coupon),
-                                created: coupon.createdAt || coupon.created || new Date().toISOString(),
-                                imported: true,
-                                forceOverwritten: true
-                            };
-                            
-                            currentData.pricingRules.push(newRule);
-                            processedCount++;
-                            console.log('✅ 価格ルール強制追加:', newRule.couponCode);
-                        }
-                    });
-                    
-                    // 4. 保存
-                    saveData();
-                    
-                    // 5. 履歴に記録
-                    addHistoryEntry('強制上書き', 
-                        `価格ルールを強制上書きしました (元: ${originalCount}件 → 新: ${processedCount}件)`
-                    );
-                    
-                    // 6. 画面更新
-                    updateAllTables();
-                    
-                    showMessage(`✅ 強制上書き完了！\n\n元のデータ: ${originalCount}件\n新しいデータ: ${processedCount}件\n\n究極版クーポン管理画面のデータで完全に置き換えられました。`, 'success');
-                    
-                    console.log(`⚡ 強制上書き完了: ${originalCount} → ${processedCount}`);
-                    
-                } catch (error) {
-                    console.error('❌ 強制上書きエラー:', error);
-                    showMessage('強制上書き中にエラーが発生しました: ' + error.message, 'error');
-                }
-            } else {
-                showMessage('究極版クーポン管理画面のデータが見つかりません', 'error');
-            }
-        }
-        
-        // 安定ID修正関数 - 商品IDを適切な形式に変更
-        function fixProductIds() {
-            console.log('🔧 安定ID修正開始');
-            
-            if (!currentData.products || !currentData.paymentLinks) {
-                console.error('❌ データが不足しています');
-                showMessage('データが不足しています', 'error');
-                return;
-            }
-            
-            let fixedCount = 0;
-            const changes = [];
-            
-            // 商品IDの修正
-            currentData.products.forEach(product => {
-                const originalId = product.id;
-                let newId = null;
-                
-                // 商品名に基づいて適切なIDを生成
-                if (product.name.includes('神託システム') && product.name.includes('タロット')) {
-                    if (product.salePrice === 1500) {
-                        newId = 'shintaku_1500';
-                    } else if (product.salePrice === 2000) {
-                        newId = 'shintaku_2000';
-                    } else {
-                        newId = 'shintaku';
-                    }
-                } else if (product.name.includes('星詠みシステム') && product.name.includes('星座')) {
-                    newId = 'star_yomi';
-                } else if (product.name.includes('個人鑑定')) {
-                    if (product.name.includes('タロット')) {
-                        newId = 'personal_tarot';
-                    } else if (product.name.includes('誕生日')) {
-                        newId = 'personal_birthday';
-                    } else if (product.name.includes('セット')) {
-                        newId = 'personal_set';
-                    } else {
-                        newId = 'personal';
-                    }
-                }
-                
-                // IDが変更される場合
-                if (newId && newId !== originalId) {
-                    console.log(`🔧 商品ID修正: ${originalId} → ${newId}`);
-                    
-                    // 古いIDを保存（後で決済リンクの更新に使用）
-                    const oldId = originalId;
-                    
-                    // 商品IDを更新
-                    product.id = newId;
-                    product.updated = new Date().toISOString();
-                    
-                    // 決済リンクのproductRefIdを更新
-                    currentData.paymentLinks.forEach(link => {
-                        if (link.productRefId === oldId) {
-                            link.productRefId = newId;
-                            link.updated = new Date().toISOString();
-                            console.log(`🔗 決済リンク更新: ${link.id} のproductRefIdを ${oldId} → ${newId} に変更`);
-                        }
-                    });
-                    
-                    // 価格ルールの商品IDを更新
-                    currentData.pricingRules.forEach(rule => {
-                        rule.products.forEach(ruleProduct => {
-                            if (ruleProduct.productId === oldId) {
-                                ruleProduct.productId = newId;
-                                console.log(`🎫 価格ルール更新: ${rule.couponCode} の商品IDを ${oldId} → ${newId} に変更`);
-                            }
-                        });
-                    });
-                    
-                    changes.push({
-                        type: '商品ID',
-                        old: oldId,
-                        new: newId,
-                        name: product.name
-                    });
-                    
-                    fixedCount++;
-                }
-            });
-            
-            if (fixedCount > 0) {
-                // データを保存
-                saveData();
-                
-                // 履歴に記録
-                const changeDetails = changes.map(change => 
-                    `${change.type}: ${change.old} → ${change.new} (${change.name})`
-                ).join(', ');
-                
-                addHistoryEntry('安定ID修正', 
-                    `${fixedCount}件の商品IDを修正しました: ${changeDetails}`
-                );
-                
-                // 画面を更新
-                updateAllTables();
-                
-                showMessage(`✅ 安定ID修正完了！\n\n${fixedCount}件の商品IDを修正しました。\n\n修正内容:\n${changes.map(change => `• ${change.name}: ${change.old} → ${change.new}`).join('\n')}`, 'success');
-                
-                console.log(`🔧 安定ID修正完了: ${fixedCount}件修正`);
-            } else {
-                showMessage('修正が必要な商品IDはありません。すべて適切な形式になっています。', 'info');
-                console.log('🔧 安定ID修正: 修正不要');
-            }
-        }
-        
-        // 決済リンク選択システムのテスト関数
-        function testPaymentLinkSelection() {
-            console.log('🧪 決済リンク選択システムテスト開始');
-            
-            if (!currentData.products || !currentData.paymentLinks) {
-                console.error('❌ テストに必要なデータが不足しています');
-                showMessage('テストに必要なデータが不足しています', 'error');
-                return;
-            }
-            
-            // テストケース1: 神託システムタロット占い（2000円）
-            console.log('\n🧪 テストケース1: 神託システムタロット占い（2000円）');
-            const test1 = selectOptimalPaymentLink('神託システムタロット占い', 2000);
-            if (test1) {
-                console.log(`✅ テスト1成功: ${test1.id} (¥${test1.price})`);
-            } else {
-                console.log('❌ テスト1失敗');
-            }
-            
-            // テストケース2: 神託システムタロット占い（1500円、クーポン適用）
-            console.log('\n🧪 テストケース2: 神託システムタロット占い（1500円、クーポン適用）');
-            const test2 = selectOptimalPaymentLink('神託システムタロット占い', 1500, 'TEST500');
-            if (test2) {
-                console.log(`✅ テスト2成功: ${test2.id} (¥${test2.price})`);
-            } else {
-                console.log('❌ テスト2失敗');
-            }
-            
-            // テストケース3: 選択肢の取得
-            console.log('\n🧪 テストケース3: 選択肢の取得');
-            const options = getPaymentLinkOptions('神託システムタロット占い', 1800);
-            console.log(`📋 選択肢数: ${options.length}`);
-            options.forEach((option, index) => {
-                console.log(`  ${index + 1}. ¥${option.price} - ${option.recommendation} (差額: ¥${option.priceDifference})`);
-            });
-            
-            // テスト結果の表示
-            const testResults = [
-                `テスト1 (2000円): ${test1 ? '成功' : '失敗'}`,
-                `テスト2 (1500円): ${test2 ? '成功' : '失敗'}`,
-                `選択肢取得: ${options.length}件`
-            ];
-            
-            showMessage(`🧪 決済リンク選択テスト完了\n\n${testResults.join('\n')}`, 'info');
-        }
-        
-        // 既存データのproductRefId移行
-        function migrateProductRefIds() {
-            console.log('🔄 productRefId移行開始');
-            
-            if (!currentData.products || !currentData.paymentLinks) {
-                console.error('❌ データが不足しています');
-                return;
-            }
-            
-            let migratedCount = 0;
-            
-            currentData.paymentLinks.forEach(link => {
-                if (!link.productRefId) {
-                    // 商品名で商品を検索
-                    const product = currentData.products.find(p => p.name === link.productName);
-                    if (product) {
-                        link.productRefId = product.id;
-                        migratedCount++;
-                        console.log(`🔄 productRefIdを移行: ${link.id} -> ${product.id}`);
-                    }
-                }
-            });
-            
-            if (migratedCount > 0) {
-                console.log(`🔄 productRefId移行完了: ${migratedCount}件`);
-                saveData();
-            } else {
-                console.log('🔄 productRefId移行不要: 既に移行済み');
-            }
-        }
-        
-        // 詳細デバッグ機能
-        function deepDebugData() {
-            console.log('🐛 詳細デバッグ開始');
-            console.log('🐛 ========================================');
-            
-            // 1. 現在のメモリ状態
-            console.log('🐛 1. メモリ上のデータ状態');
-            console.log('🐛 currentData:', currentData);
-            console.log('🐛 currentData.products:', currentData.products);
-            console.log('🐛 currentData.paymentLinks:', currentData.paymentLinks);
-            
-            // 2. localStorageの状態
-            console.log('🐛 2. localStorageの状態');
-            const savedData = localStorage.getItem('adminData');
-            if (savedData) {
-                try {
-                    const parsedData = JSON.parse(savedData);
-                    console.log('🐛 保存済みデータ:', parsedData);
-                    console.log('🐛 保存済み商品数:', parsedData.products ? parsedData.products.length : 'undefined');
-                    console.log('🐛 保存済み決済リンク数:', parsedData.paymentLinks ? parsedData.paymentLinks.length : 'undefined');
-                    
-                    // メモリとlocalStorageの比較
-                    const memoryProducts = currentData.products || [];
-                    const savedProducts = parsedData.products || [];
-                    const memoryLinks = currentData.paymentLinks || [];
-                    const savedLinks = parsedData.paymentLinks || [];
-                    
-                    console.log('🐛 3. メモリ vs localStorage 比較');
-                    console.log('🐛 商品数比較 - メモリ:', memoryProducts.length, '保存済み:', savedProducts.length);
-                    console.log('🐛 決済リンク数比較 - メモリ:', memoryLinks.length, '保存済み:', savedLinks.length);
-                    
-                    // 商品の詳細比較
-                    if (memoryProducts.length > 0 && savedProducts.length > 0) {
-                        console.log('🐛 4. 商品データの詳細比較');
-                        memoryProducts.forEach((memProduct, index) => {
-                            const savedProduct = savedProducts[index];
-                            if (savedProduct) {
-                                const isSame = JSON.stringify(memProduct) === JSON.stringify(savedProduct);
-                                console.log(`🐛 商品${index + 1}: ${isSame ? '✅一致' : '❌不一致'}`);
-                                if (!isSame) {
-                                    console.log('🐛 メモリ:', memProduct);
-                                    console.log('🐛 保存済み:', savedProduct);
-                                }
-                            }
-                        });
-                    }
-                    
-                    // 決済リンクの詳細比較
-                    if (memoryLinks.length > 0 && savedLinks.length > 0) {
-                        console.log('🐛 5. 決済リンクデータの詳細比較');
-                        memoryLinks.forEach((memLink, index) => {
-                            const savedLink = savedLinks[index];
-                            if (savedLink) {
-                                const isSame = JSON.stringify(memLink) === JSON.stringify(savedLink);
-                                console.log(`🐛 決済リンク${index + 1}: ${isSame ? '✅一致' : '❌不一致'}`);
-                                if (!isSame) {
-                                    console.log('🐛 メモリ:', memLink);
-                                    console.log('🐛 保存済み:', savedLink);
-                                }
-                            }
-                        });
-                    }
-                    
-                } catch (error) {
-                    console.error('🐛 localStorageデータ解析エラー:', error);
-                }
-            } else {
-                console.log('🐛 localStorageにデータがありません');
-            }
-            
-            // 6. 関数の実行状況
-            console.log('🐛 6. 関数の実行状況チェック');
-            console.log('🐛 updateRelatedPaymentLinks関数:', typeof updateRelatedPaymentLinks);
-            console.log('🐛 checkPaymentLinkConsistency関数:', typeof checkPaymentLinkConsistency);
-            console.log('🐛 saveData関数:', typeof saveData);
-            
-            // 7. イベントリスナーの確認
-            console.log('🐛 7. DOM要素の存在確認');
-            const productTable = document.querySelector('#products-table');
-            const paymentLinksTable = document.querySelector('#payment-links-table');
-            console.log('🐛 商品テーブル:', !!productTable);
-            console.log('🐛 決済リンクテーブル:', !!paymentLinksTable);
-            
-            console.log('🐛 ========================================');
-            console.log('🐛 詳細デバッグ完了');
-            
-            // 結果を画面に表示
-            const debugInfo = `
-                <div style="background: #f8f9fa; padding: 15px; border-radius: 5px; margin: 10px 0;">
-                    <h4>🐛 詳細デバッグ結果</h4>
-                    <p><strong>商品数:</strong> メモリ: ${(currentData.products || []).length}件, localStorage: ${savedData ? JSON.parse(savedData).products?.length || 0 : 0}件</p>
-                    <p><strong>決済リンク数:</strong> メモリ: ${(currentData.paymentLinks || []).length}件, localStorage: ${savedData ? JSON.parse(savedData).paymentLinks?.length || 0 : 0}件</p>
-                    <p><strong>詳細はコンソールを確認してください</strong></p>
-                </div>
-            `;
-            
-            // メッセージ表示エリアに追加
-            const messageArea = document.querySelector('.message-area') || document.body;
-            messageArea.insertAdjacentHTML('afterbegin', debugInfo);
-        }
-        
-        // データ監視機能
-        let dataMonitorInterval = null;
-        let lastDataSnapshot = null;
-        
-        function toggleDataMonitor() {
-            if (dataMonitorInterval) {
-                // 監視停止
-                clearInterval(dataMonitorInterval);
-                dataMonitorInterval = null;
-                document.querySelector('button[onclick="toggleDataMonitor()"]').textContent = '📊 データ監視開始';
-                console.log('📊 データ監視を停止しました');
-                showMessage('データ監視を停止しました', 'info');
-            } else {
-                // 監視開始
-                startDataMonitor();
-                document.querySelector('button[onclick="toggleDataMonitor()"]').textContent = '⏹️ データ監視停止';
-                console.log('📊 データ監視を開始しました');
-                showMessage('データ監視を開始しました', 'info');
-            }
-        }
-        
-        function startDataMonitor() {
-            // 初期スナップショットを取得
-            lastDataSnapshot = JSON.stringify(currentData);
-            
-            dataMonitorInterval = setInterval(() => {
-                const currentSnapshot = JSON.stringify(currentData);
-                
-                if (currentSnapshot !== lastDataSnapshot) {
-                    console.log('📊 データ変更を検出しました');
-                    console.log('📊 変更前:', lastDataSnapshot);
-                    console.log('📊 変更後:', currentSnapshot);
-                    
-                    // 変更内容を分析
-                    analyzeDataChanges(lastDataSnapshot, currentSnapshot);
-                    
-                    // スナップショットを更新
-                    lastDataSnapshot = currentSnapshot;
-                }
-            }, 1000); // 1秒ごとにチェック
-        }
-        
-        function analyzeDataChanges(oldSnapshot, newSnapshot) {
-            try {
-                const oldData = JSON.parse(oldSnapshot);
-                const newData = JSON.parse(newSnapshot);
-                
-                // 商品の変更を検出
-                if (oldData.products && newData.products) {
-                    const oldProducts = oldData.products;
-                    const newProducts = newData.products;
-                    
-                    if (oldProducts.length !== newProducts.length) {
-                        console.log(`📊 商品数の変更: ${oldProducts.length} → ${newProducts.length}`);
-                    }
-                    
-                    // 個別商品の変更を検出
-                    oldProducts.forEach((oldProduct, index) => {
-                        const newProduct = newProducts[index];
-                        if (newProduct && JSON.stringify(oldProduct) !== JSON.stringify(newProduct)) {
-                            console.log(`📊 商品${index + 1}の変更:`, {
-                                old: oldProduct,
-                                new: newProduct
-                            });
-                        }
-                    });
-                }
-                
-                // 決済リンクの変更を検出
-                if (oldData.paymentLinks && newData.paymentLinks) {
-                    const oldLinks = oldData.paymentLinks;
-                    const newLinks = newData.paymentLinks;
-                    
-                    if (oldLinks.length !== newLinks.length) {
-                        console.log(`📊 決済リンク数の変更: ${oldLinks.length} → ${newLinks.length}`);
-                    }
-                    
-                    // 個別決済リンクの変更を検出
-                    oldLinks.forEach((oldLink, index) => {
-                        const newLink = newLinks[index];
-                        if (newLink && JSON.stringify(oldLink) !== JSON.stringify(newLink)) {
-                            console.log(`📊 決済リンク${index + 1}の変更:`, {
-                                old: oldLink,
-                                new: newLink
-                            });
-                        }
-                    });
-                }
-                
-            } catch (error) {
-                console.error('📊 データ変更分析エラー:', error);
-            }
         }
 
         // データ保存
         function saveData() {
             try {
-                console.log('🔧 saveData 開始');
-                console.log('🔧 保存するデータ:', currentData);
-                console.log('🔧 保存するデータの商品数:', currentData.products ? currentData.products.length : 'undefined');
-                
                 // 最終更新時刻を記録
                 currentData.lastModified = Date.now();
-                
-                const dataToSave = JSON.stringify(currentData);
-                console.log('🔧 保存するJSONデータ:', dataToSave);
-                console.log('🔧 保存するJSONデータのサイズ:', dataToSave.length, '文字');
-                
-                // localStorageに保存
-                console.log('🔧 localStorage.setItem を実行中...');
-                localStorage.setItem('adminData', dataToSave);
-                console.log('✅ localStorage.setItem 完了');
-                
-                // 保存後の確認
-                console.log('🔧 保存後の確認を実行中...');
-                const savedData = localStorage.getItem('adminData');
-                console.log('🔧 localStorage.getItem 結果:', savedData ? 'データあり' : 'データなし');
-                
-                if (savedData) {
-                    const parsedData = JSON.parse(savedData);
-                    console.log('🔧 保存後の確認:', parsedData);
-                    console.log('🔧 保存後の商品数:', parsedData.products ? parsedData.products.length : 'undefined');
-                    console.log('🔧 保存後の商品配列:', parsedData.products);
-                    
-                    // 保存前後のデータ比較
-                    const originalProductCount = currentData.products ? currentData.products.length : 0;
-                    const savedProductCount = parsedData.products ? parsedData.products.length : 0;
-                    console.log('🔧 データ比較 - 保存前:', originalProductCount, '件, 保存後:', savedProductCount, '件');
-                    
-                    if (originalProductCount !== savedProductCount) {
-                        console.error('❌ 商品数の不一致を検出！');
-                        console.error('❌ 保存前:', originalProductCount, '件');
-                        console.error('❌ 保存後:', savedProductCount, '件');
-                    }
-                } else {
-                    console.error('❌ localStorage.getItem でデータが取得できません');
-                }
+                localStorage.setItem('salon_integrated_admin', JSON.stringify(currentData));
+                console.log('✅ データ保存完了');
                 
                 // メインサイトに変更を通知
                 notifyMainSiteUpdate();
             } catch (error) {
                 console.error('❌ データ保存エラー:', error);
-                console.error('❌ エラー詳細:', error.message);
-                console.error('❌ エラースタック:', error.stack);
                 showMessage('データの保存に失敗しました', 'error');
             }
         }
@@ -3433,7 +1453,7 @@
             
             // localStorage イベントも発火
             window.dispatchEvent(new StorageEvent('storage', {
-                key: 'adminData',
+                key: 'salon_integrated_admin',
                 newValue: JSON.stringify(currentData),
                 url: window.location.href
             }));
@@ -3478,34 +1498,24 @@
         // 全てのテーブルを更新
         function updateAllTables() {
             console.log('🔄 updateAllTables 開始');
-            console.log('🔍 updateAllTables開始時のcurrentData.products:', currentData.products);
             console.log('📊 現在の価格ルール数:', currentData.pricingRules.length);
             
             updateProductsTable();
-            console.log('🔍 updateProductsTable後のcurrentData.products:', currentData.products);
-            
             updatePaymentLinksTable();
-            console.log('🔍 updatePaymentLinksTable後のcurrentData.products:', currentData.products);
-            
             updatePricingRulesTable();
-            console.log('🔍 updatePricingRulesTable後のcurrentData.products:', currentData.products);
             
             console.log('🔄 updateBulkCouponSelect 実行中...');
             updateBulkCouponSelect();
-            console.log('🔍 updateBulkCouponSelect後のcurrentData.products:', currentData.products);
             
             console.log('🔄 updateAvailableCoupons 実行中...');
             updateAvailableCoupons();
-            console.log('🔍 updateAvailableCoupons後のcurrentData.products:', currentData.products);
             
             console.log('✅ updateAllTables 完了');
-            console.log('🔍 updateAllTables完了時のcurrentData.products:', currentData.products);
         }
 
         // 商品テーブル更新
         function updateProductsTable() {
             console.log('📦 商品テーブル更新開始', currentData.products);
-            console.log('🔍 updateProductsTable開始時のcurrentData.products:', currentData.products);
             
             const tbody = document.getElementById('products-tbody');
             if (!tbody) {
@@ -3517,26 +1527,23 @@
             
             if (!currentData.products || currentData.products.length === 0) {
                 const row = document.createElement('tr');
-                row.innerHTML = '<td colspan="7" style="text-align: center; color: #888; padding: 20px;">商品データがありません。「データ初期化」ボタンを試してください。</td>';
+                row.innerHTML = '<td colspan="6" style="text-align: center; color: #888; padding: 20px;">商品データがありません。「データ初期化」ボタンを試してください。</td>';
                 tbody.appendChild(row);
                 console.log('⚠️ 商品データが空です');
-                console.log('🔍 updateProductsTable完了時のcurrentData.products:', currentData.products);
                 return;
             }
             
             console.log(`📦 ${currentData.products.length}個の商品を表示中`);
-            currentData.products.forEach((product, index) => {
-                console.log(`🔍 商品[${index}]を表示中:`, product);
+            currentData.products.forEach(product => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${product.productId || '-'}</td>
                     <td>${product.name}</td>
                     <td>¥${product.regularPrice.toLocaleString()}</td>
                     <td>¥${product.salePrice.toLocaleString()}</td>
                     <td>${product.displayText || '-'}</td>
                     <td>
                         <span class="status-badge ${product.visible ? 'status-active' : 'status-hidden'}">
-                            ${product.visible ? '✅ 表示' : '❌ 非表示'}
+                            ${product.visible ? '表示' : '非表示'}
                         </span>
                     </td>
                     <td>
@@ -3546,8 +1553,6 @@
                 `;
                 tbody.appendChild(row);
             });
-            
-            console.log('🔍 updateProductsTable完了時のcurrentData.products:', currentData.products);
         }
 
         // 決済リンクテーブル更新
@@ -3564,48 +1569,25 @@
                 
                 const description = link.description ? `<br><small style="color: rgba(255,255,255,0.7);">${link.description}</small>` : '';
                 
-                // 商品との価格整合性チェック
-                const product = currentData.products.find(p => p.productId === link.productId);
-                const priceMismatch = product && product.salePrice !== link.price;
-                const mismatchWarning = priceMismatch ? 
-                    `<br><small style="color: #ff6b6b; font-weight: bold;">⚠️ 価格不一致: 商品価格 ${product.salePrice}円</small>` : '';
-                
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>
-                        <span class="badge bg-primary">${link.productId || '-'}</span>
-                    </td>
                     <td>${link.productName}</td>
-                    <td>
-                        <strong class="text-primary">¥${link.price.toLocaleString()}</strong>
-                        ${mismatchWarning}
-                    </td>
+                    <td>¥${link.price.toLocaleString()}</td>
                     <td>
                         <span style="background: rgba(255,215,0,0.2); padding: 2px 8px; border-radius: 12px; font-size: 12px;">
                             ${priceTypeText}
                         </span>
                         ${description}
                     </td>
-                    <td style="word-break: break-all; max-width: 250px; font-size: 12px;">
-                        <a href="${link.url}" target="_blank" class="text-break">
-                            ${link.url.length > 50 ? link.url.substring(0, 50) + '...' : link.url}
-                        </a>
-                    </td>
+                    <td style="word-break: break-all; max-width: 250px; font-size: 12px;">${link.url}</td>
                     <td>
                         <span class="status-badge ${link.active ? 'status-active' : 'status-inactive'}">
-                            ${link.active ? '✅ 有効' : '❌ 無効'}
+                            ${link.active ? '有効' : '無効'}
                         </span>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="editPaymentLink('${link.id}')" title="編集">
-                            ✏️
-                        </button>
-                        <button class="btn btn-sm btn-${link.active ? 'warning' : 'success'}" onclick="togglePaymentLinkStatus('${link.id}')" title="${link.active ? '無効化' : '有効化'}">
-                            ${link.active ? '⏸️' : '▶️'}
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="deletePaymentLink('${link.id}')" title="削除">
-                            🗑️
-                        </button>
+                        <button class="btn btn-secondary" onclick="editPaymentLink('${link.id}')">編集</button>
+                        <button class="btn btn-danger" onclick="deletePaymentLink('${link.id}')">削除</button>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -3957,15 +1939,8 @@
 
         // 商品追加/編集モーダル
         function openProductModal(productId = null) {
-            console.log('🔧 openProductModal 開始 - productId:', productId);
-            console.log('🔧 openProductModal開始時のcurrentData.products:', currentData.products);
-            
             const product = productId ? currentData.products.find(p => p.id === productId) : null;
-            console.log('🔧 検索された商品:', product);
-            
             const isEdit = !!product;
-            console.log('🔧 編集モード判定:', isEdit);
-            console.log('🔧 モーダル内容:', isEdit ? '編集モード' : '新規作成モード');
             
             const content = `
                 <h3>${isEdit ? '商品編集' : '新商品追加'}</h3>
@@ -3993,14 +1968,6 @@
                             <option value="false" ${product?.visible === false ? 'selected' : ''}>非表示</option>
                         </select>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">商品ID（統合ID）</label>
-                        <div style="display: flex; gap: 10px; align-items: center;">
-                            <input type="text" class="form-input" id="product-product-id" value="${product?.productId || ''}" placeholder="例: shintaku_1500" style="flex: 1;">
-                            <button type="button" class="btn btn-secondary" onclick="generateProductId()" style="white-space: nowrap;">自動生成</button>
-                        </div>
-                        <small class="form-hint">商品名_価格の形式で自動生成されます（例: shintaku_1500, star_yomi_3000, personal_tarot_5000）</small>
-                    </div>
                 </div>
                 <div class="action-buttons">
                     <button class="btn btn-primary" onclick="saveProduct('${productId || ''}')">${isEdit ? '更新' : '作成'}</button>
@@ -4011,375 +1978,72 @@
             openModal(content);
         }
 
-        // 統合ID自動生成
-        function generateProductId() {
-            const name = document.getElementById('product-name').value;
-            const salePrice = document.getElementById('product-sale-price').value;
-            
-            if (!name || !salePrice) {
-                showMessage('商品名と販売価格を先に入力してください', 'error');
-                return;
-            }
-            
-            // 商品名から基本IDを生成
-            let baseId = '';
-            if (name.includes('神託') || name.includes('タロット')) {
-                baseId = 'shintaku';
-            } else if (name.includes('星詠み') || name.includes('星座')) {
-                baseId = 'star_yomi';
-            } else if (name.includes('個人鑑定')) {
-                if (name.includes('タロット')) {
-                    baseId = 'personal_tarot';
-                } else if (name.includes('誕生日')) {
-                    baseId = 'personal_birthday';
-                } else if (name.includes('セット')) {
-                    baseId = 'personal_set';
-                } else {
-                    baseId = 'personal';
-                }
-            } else {
-                // 商品名から英数字のみを抽出して基本IDとする
-                baseId = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-                if (baseId.length > 20) {
-                    baseId = baseId.substring(0, 20);
-                }
-            }
-            
-            // 統合IDを生成
-            const productId = `${baseId}_${salePrice}`;
-            
-            // 重複チェック
-            const isDuplicate = checkProductIdDuplicate(productId);
-            
-            if (isDuplicate) {
-                showMessage(`⚠️ 商品ID「${productId}」は既に使用されています。別の価格を設定してください。`, 'warning');
-                return;
-            }
-            
-            document.getElementById('product-product-id').value = productId;
-            showMessage(`✅ 統合IDを自動生成しました: ${productId}`, 'success');
-        }
-        
-        // 商品ID重複チェック
-        function checkProductIdDuplicate(productId) {
-            if (!currentData.products) return false;
-            
-            return currentData.products.some(product => 
-                product.productId === productId
-            );
-        }
-        
-        // 関連する決済リンクを更新
-        function updateRelatedPaymentLinks(oldProductId, newProductId, newProductName, newSalePrice) {
-            console.log('🔗 関連決済リンク更新開始');
-            console.log('🔗 古い商品ID:', oldProductId);
-            console.log('🔗 新しい商品ID:', newProductId);
-            console.log('🔗 新しい商品名:', newProductName);
-            console.log('🔗 新しい販売価格:', newSalePrice);
-            
-            if (!currentData.paymentLinks) {
-                console.log('🔗 決済リンクが存在しません');
-                return;
-            }
-            
-            // 商品の内部ID（安定したID）を取得
-            const product = currentData.products.find(p => p.productId === newProductId);
-            if (!product) {
-                console.log('🔗 商品が見つかりません:', newProductId);
-                return;
-            }
-            
-            const productInternalId = product.id;
-            console.log('🔗 商品の内部ID:', productInternalId);
-            
-            // 安定したproductRefIdで検索（最も確実な方法）
-            const relatedLinks = currentData.paymentLinks.filter(link => {
-                const matchByRefId = link.productRefId === productInternalId;
-                const matchById = link.productId === oldProductId;
-                const matchByName = link.productName === newProductName;
-                
-                console.log('🔗 決済リンク検索条件:', {
-                    linkId: link.id,
-                    linkProductId: link.productId,
-                    linkProductRefId: link.productRefId,
-                    linkProductName: link.productName,
-                    linkPrice: link.price,
-                    productInternalId,
-                    matchByRefId,
-                    matchById,
-                    matchByName
-                });
-                
-                // 安定したproductRefIdが一致する場合（最優先）
-                // または、従来の方法で一致する場合
-                return matchByRefId || matchById || matchByName;
-            });
-            
-            console.log('🔗 更新対象の決済リンク数:', relatedLinks.length);
-            
-            if (relatedLinks.length > 0) {
-                relatedLinks.forEach(link => {
-                    console.log('🔗 決済リンク更新中:', link.id);
-                    
-                    // 決済リンクの情報を更新
-                    link.productId = newProductId;
-                    link.productName = newProductName;
-                    link.price = newSalePrice;
-                    link.updated = new Date().toISOString();
-                    
-                    console.log('🔗 更新後の決済リンク:', link);
-                });
-                
-                console.log('🔗 決済リンク更新完了');
-            } else {
-                console.log('🔗 更新対象の決済リンクが見つかりません');
-                console.log('🔗 現在の決済リンク一覧:', currentData.paymentLinks.map(l => ({
-                    id: l.id,
-                    productId: l.productId,
-                    productName: l.productName,
-                    price: l.price
-                })));
-            }
-        }
-        
-        // フォームの値から商品IDを自動生成
-        function generateProductIdFromForm() {
-            const name = document.getElementById('product-name').value;
-            const salePrice = document.getElementById('product-sale-price').value;
-            
-            if (!name || !salePrice) {
-                return null;
-            }
-            
-            // 商品名から基本IDを生成
-            let baseId = '';
-            if (name.includes('神託') || name.includes('タロット')) {
-                baseId = 'shintaku';
-            } else if (name.includes('星詠み') || name.includes('星座')) {
-                baseId = 'star_yomi';
-            } else if (name.includes('個人鑑定')) {
-                if (name.includes('タロット')) {
-                    baseId = 'personal_tarot';
-                } else if (name.includes('誕生日')) {
-                    baseId = 'personal_birthday';
-                } else if (name.includes('セット')) {
-                    baseId = 'personal_set';
-                } else {
-                    baseId = 'personal';
-                }
-            } else {
-                // 商品名から英数字のみを抽出して基本IDとする
-                baseId = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
-                if (baseId.length > 20) {
-                    baseId = baseId.substring(0, 20);
-                }
-            }
-            
-            const productId = `${baseId}_${salePrice}`;
-            
-            // 重複チェック
-            const isDuplicate = checkProductIdDuplicate(productId);
-            if (isDuplicate) {
-                // 重複している場合はタイムスタンプを追加
-                const timestamp = Date.now();
-                return `${baseId}_${salePrice}_${timestamp}`;
-            }
-            
-            return productId;
-        }
-
         // 商品保存
         function saveProduct(productId) {
-            console.log('🔧 saveProduct 開始 - productId:', productId);
-            console.log('🔧 currentData.products の現在の状態:', currentData.products);
-            console.log('🔧 saveProduct開始時のcurrentData.products.length:', currentData.products ? currentData.products.length : 'undefined');
-            
-            // フォーム要素の存在確認
-            const productIdElement = document.getElementById('product-product-id');
-            const nameElement = document.getElementById('product-name');
-            const regularPriceElement = document.getElementById('product-regular-price');
-            const salePriceElement = document.getElementById('product-sale-price');
-            const displayTextElement = document.getElementById('product-display-text');
-            const visibleElement = document.getElementById('product-visible');
-            
-            console.log('🔧 フォーム要素の存在確認:', {
-                productIdElement: !!productIdElement,
-                nameElement: !!nameElement,
-                regularPriceElement: !!regularPriceElement,
-                salePriceElement: !!salePriceElement,
-                displayTextElement: !!displayTextElement,
-                visibleElement: !!visibleElement
-            });
-            
-            const productIdValue = productIdElement ? productIdElement.value : '';
-            const name = nameElement ? nameElement.value : '';
-            const regularPrice = regularPriceElement ? parseInt(regularPriceElement.value) : 0;
-            const salePrice = salePriceElement ? parseInt(salePriceElement.value) : 0;
-            const displayText = displayTextElement ? displayTextElement.value : '';
-            const visible = visibleElement ? visibleElement.value === 'true' : true;
-            
-            console.log('🔧 フォーム入力値:', {
-                productIdValue, name, regularPrice, salePrice, displayText, visible
-            });
+            const name = document.getElementById('product-name').value;
+            const regularPrice = parseInt(document.getElementById('product-regular-price').value);
+            const salePrice = parseInt(document.getElementById('product-sale-price').value);
+            const displayText = document.getElementById('product-display-text').value;
+            const visible = document.getElementById('product-visible').value === 'true';
             
             if (!name || !regularPrice || !salePrice) {
-                showMessage('商品名、通常価格、販売価格は必須項目です', 'error');
+                showMessage('必須項目を入力してください', 'error');
                 return;
-            }
-            
-            // 商品IDが空の場合は自動生成
-            let finalProductId = productIdValue;
-            if (!finalProductId) {
-                finalProductId = generateProductIdFromForm();
-                if (!finalProductId) {
-                    showMessage('商品IDの自動生成に失敗しました。手動で入力してください。', 'error');
-                    return;
-                }
-                console.log('🔧 商品IDを自動生成しました:', finalProductId);
-            }
-            
-            // 商品ID重複チェック（新規作成時のみ）
-            if (!productId) {
-                const isDuplicate = checkProductIdDuplicate(finalProductId);
-                if (isDuplicate) {
-                    showMessage(`⚠️ 商品ID「${finalProductId}」は既に使用されています。別の商品IDを設定してください。`, 'error');
-                    return;
-                }
             }
             
             let newProduct = null;
             
             if (productId) {
                 // 編集
-                console.log('🔧 編集モード - 商品を検索中...');
-                console.log('🔧 検索対象のproductId:', productId);
-                console.log('🔧 検索対象のcurrentData.products:', currentData.products);
-                
                 const product = currentData.products.find(p => p.id === productId);
-                console.log('🔧 検索結果:', product);
-                
                 if (product) {
-                    console.log('🔧 商品を更新中...');
-                    console.log('🔧 更新前の商品:', JSON.parse(JSON.stringify(product)));
-                    
-                    // 更新前の情報を保存（決済リンク更新用）
-                    const oldProductId = product.productId;
-                    const oldSalePrice = product.salePrice;
-                    
-                    product.productId = finalProductId; // finalProductIdを使用
                     product.name = name;
                     product.regularPrice = regularPrice;
                     product.salePrice = salePrice;
                     product.displayText = displayText;
                     product.visible = visible;
                     product.updated = new Date().toISOString();
-                    
-                    console.log('🔧 更新後の商品:', JSON.parse(JSON.stringify(product)));
-                    console.log('🔧 更新後のcurrentData.products:', currentData.products);
-                    
-                    // 関連する決済リンクを更新
-                    updateRelatedPaymentLinks(oldProductId, finalProductId, name, salePrice);
-                    
-                    // 決済リンクの整合性をチェック
-                    checkPaymentLinkConsistency();
-                } else {
-                    console.error('❌ 編集対象の商品が見つかりません:', productId);
-                    console.error('❌ 利用可能な商品ID:', currentData.products.map(p => p.id));
-                    showMessage('編集対象の商品が見つかりません', 'error');
-                    return;
                 }
             } else {
                 // 新規作成
-                console.log('🔧 新規作成モード');
-                console.log('🔧 新規作成前のcurrentData.products.length:', currentData.products.length);
-                
                 newProduct = {
                     id: 'product_' + Date.now(),
-                    productId: finalProductId,
                     name: name,
                     regularPrice: regularPrice,
                     salePrice: salePrice,
                     displayText: displayText,
-                    visible: true, // 新商品は常に表示状態
+                    visible: visible,
                     created: new Date().toISOString()
                 };
-                
-                console.log('🔧 作成された新商品:', newProduct);
-                console.log('🔧 新商品をcurrentData.productsに追加中...');
-                
                 currentData.products.push(newProduct);
-                
-                console.log('🔧 新商品を追加:', newProduct);
-                console.log('🔧 追加後のcurrentData.products:', currentData.products);
-                console.log('🔧 追加後のcurrentData.products.length:', currentData.products.length);
             }
             
             // 新商品追加時は決済リンクも自動生成
             if (!productId && newProduct) {
-                console.log('🔗 新商品用の決済リンクを自動生成中...');
-                
-                // 既存の決済リンクとの重複を避けるため、ユニークなIDを生成
-                const linkId = generateFixedPriorityLinkId(newProduct.name, newProduct.salePrice);
-                
                 const newPaymentLink = {
-                    id: linkId,
-                    productId: newProduct.productId, // 統合IDを使用
-                    productRefId: newProduct.id, // 安定した商品参照IDを追加
+                    id: `${newProduct.id}_${newProduct.salePrice}`,
+                    productId: newProduct.id,
                     productName: newProduct.name,
-                    priceType: 'sale',
                     price: newProduct.salePrice,
-                    description: newProduct.displayText || '',
                     url: `https://square.link/u/PLACEHOLDER_LINK`,
                     active: false,  // 新商品は決済リンク未設定状態
                     created: new Date().toISOString()
                 };
-                
-                console.log('🔗 生成された決済リンク:', newPaymentLink);
-                
-                // 決済リンク配列が存在しない場合は初期化
-                if (!currentData.paymentLinks) {
-                    currentData.paymentLinks = [];
-                    console.log('🔗 決済リンク配列を初期化しました');
-                }
-                
                 currentData.paymentLinks.push(newPaymentLink);
-                
-                console.log('🔗 決済リンク追加完了。現在の決済リンク数:', currentData.paymentLinks.length);
-                console.log('🔗 追加された決済リンク:', newPaymentLink);
-                
-                // 決済リンクの整合性をチェック
-                checkPaymentLinkConsistency();
             }
             
-            console.log('🔧 保存前の currentData.products:', currentData.products);
-            console.log('🔧 saveData() を呼び出し中...');
-            
             saveData();
-            
-            // 保存後の確認
-            console.log('🔧 saveData() 完了後の確認');
-            console.log('🔧 保存後の currentData.products:', currentData.products);
-            console.log('🔧 保存後の currentData.products.length:', currentData.products.length);
-            
-            console.log('🔧 updateAllTables() を呼び出し中...');
             updateAllTables();
-            
             addHistoryEntry(
                 productId ? '商品更新' : '商品作成',
                 `商品「${name}」を${productId ? '更新' : '作成'}しました${!productId ? '（決済リンクも自動生成）' : ''}`
             );
             closeModal();
             showMessage('商品を保存しました', 'success');
-            
-            console.log('🔧 saveProduct 完了');
         }
 
         // 商品編集
         function editProduct(productId) {
-            console.log('🔧 editProduct 開始 - productId:', productId);
-            console.log('🔧 編集時のcurrentData.products:', currentData.products);
-            console.log('🔧 編集対象の商品:', currentData.products.find(p => p.id === productId));
-            
             openProductModal(productId);
         }
 
@@ -4402,27 +2066,13 @@
             const link = linkId ? currentData.paymentLinks.find(l => l.id === linkId) : null;
             const isEdit = !!link;
             
-            console.log('🔗 決済リンクモーダルを開く - 商品数:', currentData.products.length);
-            console.log('🔗 現在の商品一覧:', currentData.products.map(p => ({
-                id: p.id,
-                name: p.name,
-                productId: p.productId,
-                salePrice: p.salePrice,
-                updated: p.updated
-            })));
-            
             const productOptions = currentData.products.map(p => 
-                `<option value="${p.id}" ${link?.productId === p.productId ? 'selected' : ''}>${p.name} - 統合ID: ${p.productId || '未設定'} (¥${p.salePrice.toLocaleString()})</option>`
+                `<option value="${p.id}" ${link?.productId === p.id ? 'selected' : ''}>${p.name}</option>`
             ).join('');
             
             const content = `
                 <h3>${isEdit ? '決済リンク編集' : '新決済リンク追加'}</h3>
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">商品ID</label>
-                        <input type="text" class="form-input" id="link-product-id" value="${link?.productId || ''}" placeholder="例: shintaku_1500">
-                        <small class="form-hint">商品名_価格の形式（例: shintaku_1500, star_yomi_980）</small>
-                    </div>
                     <div class="form-group">
                         <label class="form-label">商品</label>
                         <select class="form-select" id="link-product" onchange="updateLinkPrice()">
@@ -4430,7 +2080,6 @@
                             ${productOptions}
                         </select>
                     </div>
-                    <div id="link-product-info"></div>
                     <div class="form-group">
                         <label class="form-label">価格タイプ</label>
                         <select class="form-select" id="link-price-type" onchange="updateCustomPrice()">
@@ -4441,7 +2090,7 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">価格</label>
-                        <input type="number" class="form-input" id="link-price" value="${link?.price || ''}" placeholder="3000" onchange="checkPriceChangeWarning()">
+                        <input type="number" class="form-input" id="link-price" value="${link?.price || ''}" placeholder="3000">
                         <small class="form-hint" id="price-hint">商品選択後に自動設定されます</small>
                     </div>
                     <div class="form-group">
@@ -4470,90 +2119,31 @@
             openModal(content);
         }
 
-        // 商品選択時に価格と統合IDを自動設定
+        // 商品選択時に価格を自動設定
         function updateLinkPrice() {
             const productId = document.getElementById('link-product').value;
             const priceType = document.getElementById('link-price-type').value;
             const product = currentData.products.find(p => p.id === productId);
             const priceInput = document.getElementById('link-price');
             const hintElement = document.getElementById('price-hint');
-            const productIdInput = document.getElementById('link-product-id');
             
-            if (product) {
-                console.log('🔗 商品選択:', product.name, '価格タイプ:', priceType);
-                console.log('🔗 選択された商品の詳細:', product);
-                console.log('🔗 商品の最新情報:', {
-                    name: product.name,
-                    productId: product.productId,
-                    regularPrice: product.regularPrice,
-                    salePrice: product.salePrice,
-                    updated: product.updated
-                });
-                
-                // 統合IDを自動設定
-                if (product.productId) {
-                    productIdInput.value = product.productId;
-                    console.log('🔗 統合ID自動設定:', product.productId);
-                } else {
-                    console.warn('⚠️ 商品に統合IDが設定されていません:', product.name);
-                    showMessage(`⚠️ 商品「${product.name}」に統合IDが設定されていません。商品管理で統合IDを設定してください。`, 'warning');
+            if (product && priceType !== 'custom') {
+                if (priceType === 'regular') {
+                    priceInput.value = product.regularPrice;
+                    hintElement.textContent = `通常価格: ${product.regularPrice.toLocaleString()}円`;
+                } else if (priceType === 'sale') {
+                    priceInput.value = product.salePrice;
+                    hintElement.textContent = `販売価格: ${product.salePrice.toLocaleString()}円`;
                 }
-                
-                // 商品IDフィールドを更新（統合IDフィールド）
-                const linkProductIdInput = document.getElementById('link-product-id');
-                if (linkProductIdInput) {
-                    linkProductIdInput.value = product.productId || '';
-                }
-                
-                // 価格を自動設定
-                if (priceType !== 'custom') {
-                    if (priceType === 'regular') {
-                        priceInput.value = product.regularPrice;
-                        hintElement.textContent = `通常価格: ${product.regularPrice.toLocaleString()}円`;
-                        console.log('🔗 通常価格設定:', product.regularPrice);
-                    } else if (priceType === 'sale') {
-                        priceInput.value = product.salePrice;
-                        hintElement.textContent = `販売価格: ${product.salePrice.toLocaleString()}円`;
-                        console.log('🔗 販売価格設定:', product.salePrice);
-                    }
-                    priceInput.readOnly = true;
-                } else {
+                priceInput.readOnly = true;
+            } else {
+                if (priceType === 'custom') {
                     priceInput.readOnly = false;
                     hintElement.textContent = 'カスタム価格を入力してください（例：500円割引 = 元価格 - 500）';
-                    console.log('🔗 カスタム価格モード');
+                } else {
+                    priceInput.value = '';
+                    hintElement.textContent = '商品を選択してください';
                 }
-                
-                // 商品情報の表示を更新
-                updateLinkProductInfo(product);
-            } else {
-                // 商品が選択されていない場合
-                priceInput.value = '';
-                productIdInput.value = '';
-                hintElement.textContent = '商品を選択してください';
-                clearLinkProductInfo();
-            }
-        }
-        
-        // 商品情報の表示を更新
-        function updateLinkProductInfo(product) {
-            const infoElement = document.getElementById('link-product-info');
-            if (infoElement) {
-                infoElement.innerHTML = `
-                    <div class="alert alert-info">
-                        <strong>選択された商品:</strong> ${product.name}<br>
-                        <strong>統合ID:</strong> ${product.productId || '未設定'}<br>
-                        <strong>通常価格:</strong> ${product.regularPrice.toLocaleString()}円<br>
-                        <strong>販売価格:</strong> ${product.salePrice.toLocaleString()}円
-                    </div>
-                `;
-            }
-        }
-        
-        // 商品情報の表示をクリア
-        function clearLinkProductInfo() {
-            const infoElement = document.getElementById('link-product-info');
-            if (infoElement) {
-                infoElement.innerHTML = '';
             }
         }
         
@@ -4561,98 +2151,9 @@
         function updateCustomPrice() {
             updateLinkPrice();
         }
-        
-        // 価格変更時の警告チェック
-        function checkPriceChangeWarning() {
-            const productId = document.getElementById('link-product').value;
-            const currentPrice = parseInt(document.getElementById('link-price').value);
-            const product = currentData.products.find(p => p.id === productId);
-            
-            if (product && product.productId) {
-                // 既存の決済リンクで同じ統合IDのものをチェック
-                const existingLinks = currentData.paymentLinks.filter(link => 
-                    link.productId === product.productId
-                );
-                
-                if (existingLinks.length > 0) {
-                    const mismatchedLinks = existingLinks.filter(link => 
-                        link.price !== currentPrice
-                    );
-                    
-                    if (mismatchedLinks.length > 0) {
-                        const warningMessage = `⚠️ 商品「${product.name}」の価格が変更されました。\n既存の決済リンクとの価格不一致があります。\n\n不一致のある決済リンク:\n${mismatchedLinks.map(link => `・${link.price}円 → ${currentPrice}円`).join('\n')}\n\n決済リンクの更新が必要です。`;
-                        
-                        showMessage(warningMessage, 'warning');
-                        console.warn('🔗 価格不一致警告:', mismatchedLinks);
-                    }
-                }
-            }
-        }
-        
-        // 決済リンクの整合性をチェック
-        function checkPaymentLinkConsistency() {
-            console.log('🔍 決済リンク整合性チェック開始');
-            
-            if (!currentData.paymentLinks || !currentData.products) {
-                console.log('🔍 データが不足しているためチェックをスキップ');
-                return;
-            }
-            
-            const inconsistencies = [];
-            
-            currentData.paymentLinks.forEach(link => {
-                const product = currentData.products.find(p => p.productId === link.productId);
-                
-                if (product) {
-                    // 商品名の不一致チェック
-                    if (link.productName !== product.name) {
-                        inconsistencies.push({
-                            type: '商品名不一致',
-                            linkId: link.id,
-                            linkProductName: link.productName,
-                            productName: product.name,
-                            productId: link.productId
-                        });
-                    }
-                    
-                    // 価格の不一致チェック
-                    if (link.price !== product.salePrice) {
-                        inconsistencies.push({
-                            type: '価格不一致',
-                            linkId: link.id,
-                            linkPrice: link.price,
-                            productPrice: product.salePrice,
-                            productId: link.productId
-                        });
-                    }
-                } else {
-                    // 商品が見つからない場合
-                    inconsistencies.push({
-                        type: '商品未発見',
-                        linkId: link.id,
-                        productId: link.productId,
-                        linkProductName: link.productName
-                    });
-                }
-            });
-            
-            if (inconsistencies.length > 0) {
-                console.warn('🔍 決済リンク整合性チェック結果 - 不一致あり:', inconsistencies);
-                
-                // 警告メッセージを表示
-                const warningMessage = `⚠️ 決済リンクの整合性に問題があります。\n\n問題の詳細:\n${inconsistencies.map(inc => 
-                    `・${inc.type}: ${inc.linkId} (${inc.productId || '不明'})`
-                ).join('\n')}\n\n決済リンク管理画面で確認してください。`;
-                
-                showMessage(warningMessage, 'warning');
-            } else {
-                console.log('✅ 決済リンク整合性チェック完了 - 問題なし');
-            }
-        }
 
         // 決済リンク保存
         function savePaymentLink(linkId) {
-            const customProductId = document.getElementById('link-product-id').value;
             const productId = document.getElementById('link-product').value;
             const priceType = document.getElementById('link-price-type').value;
             const price = parseInt(document.getElementById('link-price').value);
@@ -4660,22 +2161,8 @@
             const url = document.getElementById('link-url').value;
             const active = document.getElementById('link-active').value === 'true';
             
-            // 選択された商品の情報を取得
-            const selectedProduct = currentData.products.find(p => p.id === productId);
-            if (!selectedProduct) {
-                showMessage('選択された商品が見つかりません', 'error');
-                return;
-            }
-            
-            // 商品IDが空の場合は、選択された商品の統合IDを自動設定
-            let finalProductId = customProductId;
-            if (!finalProductId && selectedProduct.productId) {
-                finalProductId = selectedProduct.productId;
-                console.log('🔗 商品IDを自動設定:', finalProductId);
-            }
-            
-            if (!finalProductId || !productId || !price || !url) {
-                showMessage('商品ID、商品、価格、URLは必須項目です', 'error');
+            if (!productId || !price || !url) {
+                showMessage('必須項目を入力してください', 'error');
                 return;
             }
             
@@ -4689,8 +2176,7 @@
                 // 編集
                 const link = currentData.paymentLinks.find(l => l.id === linkId);
                 if (link) {
-                    link.productId = finalProductId;
-                    link.productRefId = product.id; // 安定した商品参照IDを確実に設定
+                    link.productId = productId;
                     link.productName = product.name;
                     link.priceType = priceType;
                     link.price = price;
@@ -4703,8 +2189,7 @@
                 // 新規作成
                 const newLink = {
                     id: `${productId}_${priceType}_${price}_${Date.now()}`,
-                    productId: finalProductId,
-                    productRefId: product.id, // 安定した商品参照IDを追加
+                    productId: productId,
                     productName: product.name,
                     priceType: priceType,
                     price: price,
@@ -4731,25 +2216,6 @@
             openPaymentLinkModal(linkId);
         }
 
-        // 決済リンクの状態切り替え
-        function togglePaymentLinkStatus(linkId) {
-            const link = currentData.paymentLinks.find(l => l.id === linkId);
-            if (link) {
-                const newStatus = !link.active;
-                link.active = newStatus;
-                link.updated = new Date().toISOString();
-                
-                saveData();
-                updatePaymentLinksTable();
-                
-                const action = newStatus ? '有効化' : '無効化';
-                addHistoryEntry('決済リンク状態変更', `¥${link.price}の決済リンクを${action}しました`);
-                showMessage(`決済リンクを${action}しました`, 'success');
-                
-                console.log(`🔗 決済リンク状態変更: ${link.productName} (${action})`);
-            }
-        }
-        
         // 決済リンク削除
         function deletePaymentLink(linkId) {
             if (confirm('本当に削除しますか？')) {
@@ -5693,7 +3159,7 @@
             console.log('📋 scheduled-list 要素:', container);
             
             // localStorage の状況も確認
-            const savedData = localStorage.getItem('adminData');
+            const savedData = localStorage.getItem('salon_integrated_admin');
             if (savedData) {
                 const parsed = JSON.parse(savedData);
                 console.log('💾 localStorage内の予約操作数:', parsed.scheduledOperations ? parsed.scheduledOperations.length : '未定義');
@@ -5752,11 +3218,11 @@ localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.
             
             // localStorage 内容確認
             const couponData = localStorage.getItem('salon_coupons');
-            const integratedData = localStorage.getItem('adminData');
+            const integratedData = localStorage.getItem('salon_integrated_admin');
             
             console.log('📊 localStorage 内容:');
             console.log('- salon_coupons:', couponData ? 'あり' : 'なし');
-            console.log('- adminData:', integratedData ? 'あり' : 'なし');
+            console.log('- salon_integrated_admin:', integratedData ? 'あり' : 'なし');
             
             if (couponData) {
                 try {
@@ -6548,7 +4014,7 @@ localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.
                 
                 try {
                     // localStorageをクリア
-                    localStorage.removeItem('adminData');
+                    localStorage.removeItem('salon_integrated_admin');
                     
                     // currentDataを初期化
                     currentData = null;
@@ -6583,7 +4049,7 @@ localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.
             console.log('📦 商品データ:', currentData?.products);
             console.log('💳 決済リンク:', currentData?.paymentLinks);
             console.log('🎫 価格ルール:', currentData?.pricingRules);
-            console.log('🗄️ localStorage:', localStorage.getItem('adminData'));
+            console.log('🗄️ localStorage:', localStorage.getItem('salon_integrated_admin'));
             
             // 商品テーブル要素の確認
             const tbody = document.getElementById('products-tbody');
@@ -6642,7 +4108,32 @@ localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.
             updateLastSyncTime();
         });
 
-        // テストデータ作成ブロックを削除（データ破壊の原因）
+        // デバッグ用: テストデータを自動作成
+        if (!currentData.scheduledOperations || currentData.scheduledOperations.length === 0) {
+            console.log('📋 テスト用予約操作データを作成中...');
+            currentData.scheduledOperations = [
+                {
+                    id: 'test-1',
+                    startDatetime: new Date(Date.now() + 3600000).toISOString(), // 1時間後
+                    endDatetime: new Date(Date.now() + 7200000).toISOString(), // 2時間後
+                    couponCode: 'TEST500',
+                    couponId: 'test-coupon-1',
+                    type: 'enable-coupon',
+                    selectedProducts: ['test-product-1'],
+                    status: 'pending'
+                },
+                {
+                    id: 'test-2',
+                    startDatetime: new Date(Date.now() + 86400000).toISOString(), // 1日後
+                    couponCode: 'TESTFREE',
+                    couponId: 'test-coupon-2',
+                    type: 'disable-coupon',
+                    status: 'pending'
+                }
+            ];
+            saveData();
+            console.log('✅ テスト用予約操作データ作成完了');
+        }
         
         // デバッグ用: モーダル全画面テスト関数（CSS主導）
         window.testModalDirectly = function() {
@@ -6803,102 +4294,6 @@ localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="closeEditModalDirectly()">キャンセル</button>
                     <button type="button" class="btn btn-primary" onclick="saveScheduledOperationEdit()">💾 保存</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 商品・決済リンク同期確認結果モーダル -->
-    <div class="modal fade" id="syncStatusModal" tabindex="-1" aria-labelledby="syncStatusModalLabel" aria-hidden="true" style="z-index: 10000;">
-        <div class="modal-dialog modal-fullscreen" style="max-width: 100vw !important; width: 100vw !important; height: 100vh !important; margin: 0 !important; padding: 0 !important;">
-            <div class="modal-content" style="height: 100vh !important; max-height: 100vh !important; width: 100vw !important; max-width: 100vw !important; border: none !important; border-radius: 0 !important;">
-                <div class="modal-header bg-primary text-white" style="border-bottom: 2px solid #0d6efd;">
-                    <h5 class="modal-title" id="syncStatusModalLabel">
-                        🔗 商品・決済リンク同期状況
-                    </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 140px); padding: 20px;">
-                    <!-- 概要サマリー -->
-                    <div class="row mb-4">
-                        <div class="col-md-3">
-                            <div class="card text-center border-success">
-                                <div class="card-body">
-                                    <h4 class="card-title text-success" id="sync-overview-status">✅</h4>
-                                    <p class="card-text">同期状況</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card text-center border-info">
-                                <div class="card-body">
-                                    <h4 class="card-title text-info" id="sync-products-count">0</h4>
-                                    <p class="card-text">商品数</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card text-center border-warning">
-                                <div class="card-body">
-                                    <h4 class="card-title text-warning" id="sync-links-count">0</h4>
-                                    <p class="card-text">決済リンク数</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="card text-center border-primary">
-                                <div class="card-title text-primary" id="sync-match-count">0/0</div>
-                                <p class="card-text">一致率</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 詳細レポート（折りたたみ可能） -->
-                    <div class="accordion" id="syncDetailsAccordion">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingProducts">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProducts" aria-expanded="false" aria-controls="collapseProducts">
-                                    📊 商品管理の詳細状況
-                                </button>
-                            </h2>
-                            <div id="collapseProducts" class="accordion-collapse collapse" aria-labelledby="headingProducts" data-bs-parent="#syncDetailsAccordion">
-                                <div class="accordion-body">
-                                    <div id="sync-products-details" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-                                        <!-- 商品詳細がここに挿入されます -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="headingLinks">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseLinks" aria-expanded="false" aria-controls="collapseLinks">
-                                    🔗 決済リンク管理の詳細状況
-                                </button>
-                            </h2>
-                            <div id="collapseLinks" class="accordion-collapse collapse" aria-labelledby="headingLinks" data-bs-parent="#syncDetailsAccordion">
-                                <div class="accordion-body">
-                                    <div id="sync-links-details" class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-                                        <!-- 決済リンク詳細がここに挿入されます -->
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 問題点の表示 -->
-                    <div id="sync-issues" class="mt-3" style="display: none;">
-                        <div class="alert alert-warning">
-                            <h6>⚠️ 発見された問題点</h6>
-                            <ul id="sync-issues-list">
-                                <!-- 問題点がここに挿入されます -->
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer" style="border-top: 2px solid #0d6efd;">
-                    <button type="button" class="btn btn-secondary" onclick="closeSyncStatusModal()">閉じる</button>
-                    <button type="button" class="btn btn-primary" onclick="forceSyncPaymentLinks()">🔄 強制同期実行</button>
                 </div>
             </div>
         </div>

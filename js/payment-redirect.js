@@ -6,7 +6,7 @@
 class PaymentRedirect {
     constructor() {
         this.baseUrl = 'square-payment.html';
-        this.adminDataKey = 'salon_integrated_admin';
+        this.adminDataKey = 'adminData';
         this.defaultConfig = this.getDefaultConfig();
         console.log('🔗 PaymentRedirect システム初期化');
     }

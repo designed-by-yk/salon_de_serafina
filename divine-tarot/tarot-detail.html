@@ -30,6 +30,8 @@
     <!-- 統合管理連携スクリプト -->
     <script src="../js/admin-integration.js?v=20250822k"></script>
     <script src="../js/payment-redirect.js"></script>
+    <!-- 決済リンク選択システム -->
+    <script src="../js/payment-link-selector.js"></script>
     
     <!-- クーポン表示制御CSS -->
     <style>
@@ -361,7 +363,7 @@
         // 統合管理画面から現在の販売価格を取得
         function getCurrentPrice() {
             try {
-                const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
                 if (adminData.products) {
                     const shintakuProduct = adminData.products.find(p => 
                         p.productId === 'shintaku' || p.name === '神託システムタロット占い'
@@ -546,46 +548,42 @@
                 }
             }
             
-            // Square決済リンク（価格別対応）
+            // Square決済リンク（決済リンク選択システム対応）
             function proceedToShintakuSquarePayment(finalPrice, couponCode) {
-                // 統合管理画面から決済リンクを取得
-                const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                console.log(`🔗 神託決済開始: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
                 
-                // 価格別デフォルトリンク
-                const priceUrls = {
-                    1500: 'https://square.link/u/SwNECrMb',
-                    1000: 'https://square.link/u/NEW_1000_SHINTAKU_LINK',
-                    500: 'https://square.link/u/NEW_500_SHINTAKU_LINK',
-                    default: 'https://square.link/u/SwNECrMb'
-                };
-                
-                // 統合管理画面から適切なリンクを検索
-                let url = null;
-                if (adminData.paymentLinks) {
-                    const paymentLink = adminData.paymentLinks.find(link => 
-                        link.productId === 'shintaku' && 
-                        link.active &&
-                        (link.pricePoint === finalPrice || !link.pricePoint)
+                // 決済リンク選択システムを使用
+                if (window.paymentLinkSelector) {
+                    // 商品名と価格を設定
+                    window.paymentLinkSelector.manualUpdatePaymentLink(
+                        '神託システムタロット占い',
+                        originalPrice,
+                        couponCode
                     );
                     
-                    if (paymentLink && paymentLink.url) {
-                        url = paymentLink.url;
+                    // 選択された決済リンクを取得
+                    const selectedLink = window.paymentLinkSelector.selectedLink;
+                    
+                    if (selectedLink) {
+                        console.log(`✅ 決済リンク選択: ${selectedLink.id} (¥${selectedLink.price})`);
+                        
+                        // クーポンパラメータを追加
+                        let url = selectedLink.url;
+                        if (couponCode) {
+                            const separator = url.includes('?') ? '&' : '?';
+                            url += `${separator}coupon=${couponCode}&final=${finalPrice}&service=shintaku`;
+                        }
+                        
+                        console.log(`💰 神託決済: ¥${finalPrice} -> ${url}`);
+                        window.open(url, '_blank');
+                    } else {
+                        console.error('❌ 適切な決済リンクが見つかりません');
+                        alert('決済リンクの取得に失敗しました。ページを再読み込みしてください。');
                     }
+                } else {
+                    console.error('❌ 決済リンク選択システムが読み込まれていません');
+                    alert('決済システムの読み込みに失敗しました。ページを再読み込みしてください。');
                 }
-                
-                // デフォルトリンクを使用
-                if (!url) {
-                    url = priceUrls[finalPrice] || priceUrls.default;
-                }
-                
-                // クーポンパラメータを追加
-                if (couponCode) {
-                    const separator = url.includes('?') ? '&' : '?';
-                    url += `${separator}coupon=${couponCode}&final=${finalPrice}&service=shintaku`;
-                }
-                
-                console.log(`💰 神託決済: ¥${finalPrice} -> ${url}`);
-                window.open(url, '_blank');
             }
             
             // 初期状態の決済ボタン設定

@@ -880,7 +880,7 @@
       
       try {
         // 管理データを確認
-        const adminData = localStorage.getItem('salon_integrated_admin');
+        const adminData = localStorage.getItem('adminData');
         if (!adminData) {
           resultDiv.innerHTML = '❌ 管理データなし<br>統合管理画面で初期化してください';
           setTimeout(() => resultDiv.style.display = 'none', 3000);

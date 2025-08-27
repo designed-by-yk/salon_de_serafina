@@ -15,10 +15,8 @@
     <script src="js/coupon-ui.js"></script>
     <!-- 統合管理連携スクリプト -->
     <script src="js/admin-integration.js?v=20250822k"></script>
-
-
-
-
+    <!-- 決済リンク選択システム -->
+    <script src="js/payment-link-selector.js"></script>
     <script src="js/payment-redirect.js"></script>
     
     <style>
@@ -1226,7 +1224,7 @@
         // 統合管理画面から現在の販売価格を取得
         function getCurrentPrices() {
             try {
-                const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+                const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
                 if (adminData.products) {
                     const prices = { tarot: 5000, star: 5000, bundle: 8000 }; // デフォルト
                     
@@ -1623,7 +1621,7 @@
         // Square決済に進む（価格別リンク対応）
         function proceedToPayment(type, finalPrice, couponCode) {
             // 統合管理画面から決済リンクを取得
-            const adminData = JSON.parse(localStorage.getItem('salon_integrated_admin') || '{}');
+            const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
             
             // デフォルトの決済リンク（価格別）
             const defaultPaymentUrls = {

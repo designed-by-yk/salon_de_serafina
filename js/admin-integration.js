@@ -5,7 +5,7 @@
 
 class AdminIntegration {
     constructor() {
-        this.adminDataKey = 'salon_integrated_admin';
+        this.adminDataKey = 'adminData';
         this.lastSyncKey = 'admin_last_sync';
         this.debug = true; // デバッグモード
         
