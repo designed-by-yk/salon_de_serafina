@@ -1834,7 +1834,7 @@
                 console.log(`${index + 1}. ${link.productName || '商品名なし'}`);
                 console.log(`   - リンクID: ${link.id}`);
                 console.log(`   - 統合ID: ${link.productId || '未設定'}`);
-                console.log(`   - 安定ID: ${link.productRefId || '未設定'}`);
+                console.log(`   - 安定ID: ${link.stableId || '未設定'}`);
                 console.log(`   - 価格: ${link.price}円`);
                 console.log(`   - 状態: ${link.active ? '有効' : '無効'}`);
                 console.log(`   - 更新日時: ${link.updated || 'なし'}`);
@@ -2024,7 +2024,7 @@
                         <td><strong>${link.productName || '商品名なし'}</strong></td>
                         <td><code>${link.id}</code></td>
                         <td><code>${link.productId || '未設定'}</code></td>
-                        <td><code>${link.productRefId || '未設定'}</code></td>
+                        <td><code>${link.stableId || '未設定'}</code></td>
                         <td>¥${link.price.toLocaleString()}</td>
                         <td class="${statusClass}">${statusIcon} ${link.active ? '有効' : '無効'}</td>
                         <td><small>${updatedText}</small></td>
@@ -2365,6 +2365,14 @@
                         link.updated = new Date().toISOString();
                         linkFixCount++;
                     }
+                    
+                    // productRefIdも修正（古い一時的IDの場合）
+                    if (link.productRefId && link.productRefId.startsWith('product_')) {
+                        console.log(`🔄 決済リンクproductRefId修正: ${link.productName} - ${link.productRefId} -> ${correctStableId}`);
+                        link.productRefId = correctStableId;
+                        link.updated = new Date().toISOString();
+                        linkFixCount++;
+                    }
                 });
             }
             
@@ -2409,6 +2417,15 @@
                     link.stableId = stableId;
                     link.updated = new Date().toISOString();
                     console.log(`🔄 安定ID追加/修正: ${link.productName} - ${link.stableId || 'なし'} -> ${stableId}`);
+                    addCount++;
+                }
+                
+                // productRefIdも修正（古い一時的IDの場合）
+                if (link.productRefId && link.productRefId.startsWith('product_')) {
+                    const stableId = generateStableIdFromProductName(link.productName);
+                    link.productRefId = stableId;
+                    link.updated = new Date().toISOString();
+                    console.log(`🔄 productRefId修正: ${link.productName} - ${link.productRefId} -> ${stableId}`);
                     addCount++;
                 }
             });
@@ -4462,7 +4479,7 @@
                 const newPaymentLink = {
                     id: linkId,
                     productId: newProduct.productId, // 統合IDを使用
-                    productRefId: newProduct.id, // 安定した商品参照IDを追加
+                    productRefId: newProduct.stableId, // 安定した商品参照IDを追加
                     stableId: newProduct.stableId, // 安定IDを追加
                     productName: newProduct.name,
                     priceType: 'sale',
