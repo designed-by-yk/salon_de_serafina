@@ -4277,11 +4277,7 @@
             }
             
             // 商品名から安定IDを生成
-            if (productName.includes('神託') || productName.includes('タロット')) {
-                return 'shintaku';
-            } else if (productName.includes('星詠み') || productName.includes('星座')) {
-                return 'star_yomi';
-            } else if (productName.includes('個人鑑定')) {
+            if (productName.includes('個人鑑定')) {
                 if (productName.includes('タロット')) {
                     return 'personal_tarot';
                 } else if (productName.includes('誕生日')) {
@@ -4291,6 +4287,10 @@
                 } else {
                     return 'personal';
                 }
+            } else if (productName.includes('神託') || (productName.includes('タロット') && !productName.includes('個人鑑定'))) {
+                return 'shintaku';
+            } else if (productName.includes('星詠み') || productName.includes('星座')) {
+                return 'star_yomi';
             } else {
                 // その他の商品名から英数字のみを抽出
                 const baseId = productName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
