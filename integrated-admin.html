@@ -3683,61 +3683,92 @@
             const tbody = document.getElementById('payment-links-tbody');
             tbody.innerHTML = '';
             
-            currentData.paymentLinks.forEach(link => {
+            // 商品管理画面のデータを基準に表示
+            currentData.products.forEach(product => {
+                if (!product.visible) return; // 非表示商品はスキップ
+                
+                // 該当する決済リンクを検索
+                const paymentLink = currentData.paymentLinks.find(link => 
+                    link.productId === product.productId || 
+                    link.productRefId === product.stableId ||
+                    link.productName === product.name
+                );
+                
                 const priceTypeText = {
                     'regular': '通常価格',
                     'sale': '販売価格',
                     'custom': 'カスタム価格'
-                }[link.priceType || 'sale'] || '販売価格';
+                }[paymentLink?.priceType || 'sale'] || '販売価格';
                 
-                const description = link.description ? `<br><small style="color: rgba(255,255,255,0.7);">${link.description}</small>` : '';
-                
-                // 商品との価格整合性チェック
-                const product = currentData.products.find(p => p.productId === link.productId);
-                const priceMismatch = product && product.salePrice !== link.price;
-                const mismatchWarning = priceMismatch ? 
-                    `<br><small style="color: #ff6b6b; font-weight: bold;">⚠️ 価格不一致: 商品価格 ${product.salePrice}円</small>` : '';
+                const description = product.displayText ? `<br><small style="color: rgba(255,215,0,0.8);">${product.displayText}</small>` : '';
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>
-                        <span class="badge bg-primary">${link.productId || '-'}</span>
+                        <span class="badge bg-primary">${product.productId || '-'}</span>
                     </td>
-                    <td>${link.productName}</td>
+                    <td>${product.name}</td>
                     <td>
-                        <strong class="text-primary">¥${link.price.toLocaleString()}</strong>
-                        ${mismatchWarning}
+                        <strong class="text-primary">¥${product.salePrice.toLocaleString()}</strong>
+                        ${description}
                     </td>
                     <td>
                         <span style="background: rgba(255,215,0,0.2); padding: 2px 8px; border-radius: 12px; font-size: 12px;">
                             ${priceTypeText}
                         </span>
-                        ${description}
                     </td>
                     <td style="word-break: break-all; max-width: 250px; font-size: 12px;">
-                        <a href="${link.url}" target="_blank" class="text-break">
-                            ${link.url.length > 50 ? link.url.substring(0, 50) + '...' : link.url}
-                        </a>
+                        ${paymentLink ? 
+                            `<a href="${paymentLink.url}" target="_blank" class="text-break">
+                                ${paymentLink.url.length > 50 ? paymentLink.url.substring(0, 50) + '...' : paymentLink.url}
+                            </a>` : 
+                            '<span style="color: #ff6b6b; font-style: italic;">決済リンク未設定</span>'
+                        }
                     </td>
                     <td>
-                        <span class="status-badge ${link.active ? 'status-active' : 'status-inactive'}">
-                            ${link.active ? '✅ 有効' : '❌ 無効'}
+                        <span class="status-badge ${paymentLink?.active ? 'status-active' : 'status-inactive'}">
+                            ${paymentLink?.active ? '✅ 有効' : '❌ 無効'}
                         </span>
                     </td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="editPaymentLink('${link.id}')" title="編集">
-                            ✏️
-                        </button>
-                        <button class="btn btn-sm btn-${link.active ? 'warning' : 'success'}" onclick="togglePaymentLinkStatus('${link.id}')" title="${link.active ? '無効化' : '有効化'}">
-                            ${link.active ? '⏸️' : '▶️'}
-                        </button>
-                        <button class="btn btn-sm btn-danger" onclick="deletePaymentLink('${link.id}')" title="削除">
-                            🗑️
-                        </button>
+                        ${paymentLink ? `
+                            <button class="btn btn-sm btn-primary" onclick="editPaymentLink('${paymentLink.id}')" title="編集">
+                                ✏️
+                            </button>
+                            <button class="btn btn-sm btn-${paymentLink.active ? 'warning' : 'success'}" onclick="togglePaymentLinkStatus('${paymentLink.id}')" title="${paymentLink.active ? '無効化' : '有効化'}">
+                                ${paymentLink.active ? '⏸️' : '▶️'}
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deletePaymentLink('${paymentLink.id}')" title="削除">
+                                🗑️
+                            </button>
+                        ` : `
+                            <button class="btn btn-sm btn-success" onclick="createPaymentLinkForProduct('${product.productId}')" title="決済リンク作成">
+                                ➕
+                            </button>
+                        `}
                     </td>
                 `;
                 tbody.appendChild(row);
             });
+        }
+
+        // 商品用の決済リンク作成
+        function createPaymentLinkForProduct(productId) {
+            const product = currentData.products.find(p => p.productId === productId);
+            if (!product) {
+                alert('商品が見つかりません');
+                return;
+            }
+            
+            // 決済リンク作成モーダルを開く
+            openPaymentLinkModal();
+            
+            // 商品情報を自動入力
+            const productSelect = document.getElementById('payment-link-product');
+            if (productSelect) {
+                productSelect.value = productId;
+                productSelect.dispatchEvent(new Event('change'));
+            }
         }
 
         // 価格ルールアコーディオン更新
