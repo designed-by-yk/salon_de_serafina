@@ -4151,11 +4151,7 @@
             
             // 商品名から基本IDを生成
             let baseId = '';
-            if (name.includes('神託') || name.includes('タロット')) {
-                baseId = 'shintaku';
-            } else if (name.includes('星詠み') || name.includes('星座')) {
-                baseId = 'star_yomi';
-            } else if (name.includes('個人鑑定')) {
+            if (name.includes('個人鑑定')) {
                 if (name.includes('タロット')) {
                     baseId = 'personal_tarot';
                 } else if (name.includes('誕生日')) {
@@ -4165,6 +4161,10 @@
                 } else {
                     baseId = 'personal';
                 }
+            } else if (name.includes('神託') || (name.includes('タロット') && !name.includes('個人鑑定'))) {
+                baseId = 'shintaku';
+            } else if (name.includes('星詠み') || name.includes('星座')) {
+                baseId = 'star_yomi';
             } else {
                 // 商品名から英数字のみを抽出して基本IDとする
                 baseId = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
@@ -4312,11 +4312,7 @@
             
             // 商品名から基本IDを生成
             let baseId = '';
-            if (name.includes('神託') || name.includes('タロット')) {
-                baseId = 'shintaku';
-            } else if (name.includes('星詠み') || name.includes('星座')) {
-                baseId = 'star_yomi';
-            } else if (name.includes('個人鑑定')) {
+            if (name.includes('個人鑑定')) {
                 if (name.includes('タロット')) {
                     baseId = 'personal_tarot';
                 } else if (name.includes('誕生日')) {
@@ -4326,6 +4322,10 @@
                 } else {
                     baseId = 'personal';
                 }
+            } else if (name.includes('神託') || (name.includes('タロット') && !name.includes('個人鑑定'))) {
+                baseId = 'shintaku';
+            } else if (name.includes('星詠み') || name.includes('星座')) {
+                baseId = 'star_yomi';
             } else {
                 // 商品名から英数字のみを抽出して基本IDとする
                 baseId = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
