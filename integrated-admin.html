@@ -4282,7 +4282,15 @@
             } else if (productName.includes('星詠み') || productName.includes('星座')) {
                 return 'star_yomi';
             } else if (productName.includes('個人鑑定')) {
-                return 'personal';
+                if (productName.includes('タロット')) {
+                    return 'personal_tarot';
+                } else if (productName.includes('誕生日')) {
+                    return 'personal_birthday';
+                } else if (productName.includes('セット')) {
+                    return 'personal_set';
+                } else {
+                    return 'personal';
+                }
             } else {
                 // その他の商品名から英数字のみを抽出
                 const baseId = productName.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
