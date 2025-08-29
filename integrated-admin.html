@@ -2767,29 +2767,32 @@
             }
         }
         
-        // 決済リンク選択システム - 金額ベースの最適な決済リンクを選択
+        // 決済リンク選択システム - 安定IDベースの最適な決済リンクを選択
         function selectOptimalPaymentLink(productName, finalPrice, couponCode = null) {
             console.log(`🔗 決済リンク選択開始: ${productName}, 最終金額: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
             
-            if (!currentData.paymentLinks) {
-                console.error('❌ 決済リンクデータが不足しています');
+            if (!currentData.paymentLinks || !currentData.products) {
+                console.error('❌ 決済リンクまたは商品データが不足しています');
                 return null;
             }
             
-            // 商品名に基づいて関連する決済リンクを検索
+            // 1. 商品名から安定IDを取得
+            const product = currentData.products.find(p => p.name === productName);
+            if (!product) {
+                console.error(`❌ 商品「${productName}」が見つかりません`);
+                return null;
+            }
+            
+            console.log(`🔍 商品「${productName}」の安定ID: ${product.stableId}`);
+            
+            // 2. 安定IDで決済リンクを絞り込み
             const relatedLinks = currentData.paymentLinks.filter(link => {
-                // 商品名での直接マッチ
-                if (link.productName === productName) {
-                    return true;
-                }
-                
-                // productRefIdでのマッチ（商品管理との連携）
-                const product = currentData.products.find(p => p.id === link.productRefId);
-                if (product && product.name === productName) {
-                    return true;
-                }
-                
-                return false;
+                return link.stableId === product.stableId;
+            });
+            
+            console.log(`🔍 安定ID「${product.stableId}」の決済リンク: ${relatedLinks.length}件`);
+            relatedLinks.forEach(link => {
+                console.log(`  - ${link.id}: ¥${link.price} (${link.active ? '有効' : '無効'})`);
             });
             
             if (relatedLinks.length === 0) {
@@ -2838,26 +2841,26 @@
             }
         }
         
-        // 決済リンク選択システム - 複数の決済リンクから選択肢を提供
+        // 決済リンク選択システム - 安定IDベースの選択肢を提供
         function getPaymentLinkOptions(productName, finalPrice, couponCode = null) {
             console.log(`🔗 決済リンク選択肢取得: ${productName}, 最終金額: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
             
-            if (!currentData.paymentLinks) {
+            if (!currentData.paymentLinks || !currentData.products) {
                 return [];
             }
             
-            // 商品名に基づいて関連する決済リンクを検索
+            // 1. 商品名から安定IDを取得
+            const product = currentData.products.find(p => p.name === productName);
+            if (!product) {
+                console.error(`❌ 商品「${productName}」が見つかりません`);
+                return [];
+            }
+            
+            console.log(`🔍 商品「${productName}」の安定ID: ${product.stableId}`);
+            
+            // 2. 安定IDで決済リンクを絞り込み
             const relatedLinks = currentData.paymentLinks.filter(link => {
-                if (link.productName === productName) {
-                    return true;
-                }
-                
-                const product = currentData.products.find(p => p.id === link.productRefId);
-                if (product && product.name === productName) {
-                    return true;
-                }
-                
-                return false;
+                return link.stableId === product.stableId;
             });
             
             // 有効な決済リンクのみを対象とし、価格順でソート
