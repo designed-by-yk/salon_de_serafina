@@ -1810,8 +1810,15 @@
         
         // 商品・決済リンク同期確認機能
         function debugProductPaymentLinkSync() {
-            // 価格同期の自動修正を実行
-            autoSyncProductPrices();
+            try {
+                // 価格同期の自動修正を実行
+                console.log('🔄 autoSyncProductPrices関数を呼び出し中...');
+                autoSyncProductPrices();
+                console.log('✅ autoSyncProductPrices関数の実行完了');
+            } catch (error) {
+                console.error('❌ autoSyncProductPrices関数の実行でエラーが発生:', error);
+                showMessage('価格同期でエラーが発生しました: ' + error.message, 'error');
+            }
             
             console.log('🔗 商品・決済リンク同期確認開始');
             
