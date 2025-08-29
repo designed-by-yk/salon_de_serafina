@@ -2007,11 +2007,13 @@
             console.log('🔄 価格自動同期開始（詳細ログ版）');
             let syncCount = 0;
             let linkCount = 0;
+            let missingLinkCount = 0;
             
             // 各商品に対して、対応する決済リンクを検索・同期
             currentData.products.forEach(product => {
                 console.log(`🔍 商品「${product.name}」の同期処理中...`);
                 console.log(`   - 商品価格: ¥${product.salePrice}`);
+                console.log(`   - 表示状態: ${product.visible ? '表示' : '非表示'}`);
                 
                 // この商品に対応する決済リンクを検索
                 const matchingLinks = currentData.paymentLinks.filter(link => {
@@ -2038,6 +2040,12 @@
                 
                 console.log(`🔗 商品「${product.name}」に対応する決済リンク: ${matchingLinks.length}件`);
                 
+                // 決済リンクが存在しない場合の警告
+                if (matchingLinks.length === 0) {
+                    console.log(`⚠️ 商品「${product.name}」に対応する決済リンクが存在しません`);
+                    missingLinkCount++;
+                }
+                
                 // 対応する決済リンクの価格を同期
                 matchingLinks.forEach(link => {
                     linkCount++;
@@ -2054,6 +2062,9 @@
             });
             
             console.log(`📊 処理結果: ${linkCount}件の決済リンクを確認、${syncCount}件の価格を同期`);
+            if (missingLinkCount > 0) {
+                console.log(`⚠️ ${missingLinkCount}件の商品に対応する決済リンクが不足しています`);
+            }
             
             if (syncCount > 0) {
                 console.log(`✅ ${syncCount}件の価格を同期しました`);
