@@ -1810,6 +1810,9 @@
         
         // 商品・決済リンク同期確認機能
         function debugProductPaymentLinkSync() {
+            // 価格同期の自動修正を実行
+            autoSyncProductPrices();
+            
             console.log('🔗 商品・決済リンク同期確認開始');
             
             if (!currentData.products || !currentData.paymentLinks) {
@@ -1891,13 +1894,25 @@
                 }
             });
             
-            // 3. 価格不一致
+            // 3. 価格不一致（より柔軟な検索）
             currentData.paymentLinks.forEach(link => {
                 let product = null;
+                
+                // より柔軟な商品検索
                 if (link.productRefId) {
                     product = currentData.products.find(p => p.id === link.productRefId);
-                } else if (link.productId) {
+                }
+                if (!product && link.productId) {
                     product = currentData.products.find(p => p.productId === link.productId);
+                }
+                if (!product && link.productName) {
+                    product = currentData.products.find(p => p.name === link.productName);
+                }
+                if (!product && link.productName) {
+                    // 部分一致での検索
+                    product = currentData.products.find(p => 
+                        p.name.includes(link.productName) || link.productName.includes(p.name)
+                    );
                 }
                 
                 if (product && link.price !== product.salePrice) {
@@ -1937,6 +1952,51 @@
             } else {
                 console.log('✅ 商品・決済リンクの同期状況: OK');
                 showMessage('商品・決済リンクの同期状況: OK', 'success');
+            }
+        }
+        
+        // 商品と決済リンクの価格を自動同期（完全版）
+        function autoSyncProductPrices() {
+            console.log('🔄 価格自動同期開始（完全版）');
+            let syncCount = 0;
+            let linkCount = 0;
+            
+            // 各商品に対して、対応する決済リンクを検索・同期
+            currentData.products.forEach(product => {
+                console.log(`🔍 商品「${product.name}」の同期処理中...`);
+                
+                // この商品に対応する決済リンクを検索
+                const matchingLinks = currentData.paymentLinks.filter(link => {
+                    // 複数の方法でマッチング
+                    if (link.productRefId === product.id) return true;
+                    if (link.productId === product.productId) return true;
+                    if (link.productName === product.name) return true;
+                    if (link.productName && product.name && 
+                        (link.productName.includes(product.name) || product.name.includes(link.productName))) return true;
+                    return false;
+                });
+                
+                console.log(`🔗 商品「${product.name}」に対応する決済リンク: ${matchingLinks.length}件`);
+                
+                // 対応する決済リンクの価格を同期
+                matchingLinks.forEach(link => {
+                    linkCount++;
+                    if (link.price !== product.salePrice) {
+                        console.log(`🔄 価格同期: ${product.name} - ${link.price}円 → ${product.salePrice}円`);
+                        link.price = product.salePrice;
+                        link.updated = new Date().toISOString();
+                        syncCount++;
+                    }
+                });
+            });
+            
+            console.log(`📊 処理結果: ${linkCount}件の決済リンクを確認、${syncCount}件の価格を同期`);
+            
+            if (syncCount > 0) {
+                console.log(`✅ ${syncCount}件の価格を同期しました`);
+                saveData();
+            } else {
+                console.log('✅ 価格同期は不要です');
             }
         }
         
@@ -3688,12 +3748,23 @@
             // 商品管理画面のデータを基準に表示（表示/非表示に関係なく全て表示）
             currentData.products.forEach(product => {
                 
-                // 該当する決済リンクを検索
-                const paymentLink = currentData.paymentLinks.find(link => 
-                    link.productId === product.productId || 
-                    link.productRefId === product.stableId ||
-                    link.productName === product.name
-                );
+                // 該当する決済リンクを検索（より柔軟なマッチング）
+                const paymentLink = currentData.paymentLinks.find(link => {
+                    // 1. productIdで直接マッチ
+                    if (link.productId === product.productId) return true;
+                    
+                    // 2. productRefIdでマッチ
+                    if (link.productRefId === product.stableId) return true;
+                    
+                    // 3. 商品名でマッチ
+                    if (link.productName === product.name) return true;
+                    
+                    // 4. 商品名の部分一致でマッチ（より柔軟）
+                    if (link.productName && product.name && 
+                        (link.productName.includes(product.name) || product.name.includes(link.productName))) return true;
+                    
+                    return false;
+                });
                 
                 const priceTypeText = {
                     'regular': '通常価格',
