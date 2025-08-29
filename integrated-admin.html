@@ -1962,8 +1962,48 @@
             }
         }
         
-        // 商品と決済リンクの価格を自動同期（完全版）
+        // 重複データの除去と価格同期（完全版）
         function autoSyncProductPrices() {
+            console.log('🔄 重複除去と価格同期開始（完全版）');
+            
+            // 1. 重複データの除去
+            removeDuplicatePaymentLinks();
+            
+            // 2. 価格同期
+            syncProductPrices();
+        }
+        
+        // 重複決済リンクの除去
+        function removeDuplicatePaymentLinks() {
+            console.log('🧹 重複決済リンクの除去開始');
+            const originalCount = currentData.paymentLinks.length;
+            
+            // 重複を除去（同じproductId、productRefId、productNameを持つものを1つだけ残す）
+            const uniqueLinks = [];
+            const seen = new Set();
+            
+            currentData.paymentLinks.forEach(link => {
+                const key = `${link.productId}_${link.productRefId}_${link.productName}`;
+                if (!seen.has(key)) {
+                    seen.add(key);
+                    uniqueLinks.push(link);
+                } else {
+                    console.log(`🗑️ 重複決済リンクを除去: ${link.id} (${link.productName})`);
+                }
+            });
+            
+            currentData.paymentLinks = uniqueLinks;
+            const removedCount = originalCount - uniqueLinks.length;
+            
+            if (removedCount > 0) {
+                console.log(`✅ ${removedCount}件の重複決済リンクを除去しました`);
+            } else {
+                console.log('✅ 重複決済リンクはありません');
+            }
+        }
+        
+        // 商品と決済リンクの価格同期
+        function syncProductPrices() {
             console.log('🔄 価格自動同期開始（完全版）');
             let syncCount = 0;
             let linkCount = 0;
