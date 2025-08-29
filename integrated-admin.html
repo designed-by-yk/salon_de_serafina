@@ -841,7 +841,8 @@
         <button class="btn btn-warning" onclick="debugProductPaymentLinkSync();">🔗 商品・決済リンク同期確認</button>
         <button class="btn btn-danger" onclick="forceSyncPaymentLinks();">🔄 強制同期実行</button>
         <button class="btn btn-outline-danger" onclick="forceFixStableIds();">🔧 安定ID強制修正</button>
-        <button class="btn btn-outline-secondary" onclick="investigateProductPaymentLinkMatching();">🔍 詳細マッチング調査</button>
+                        <button class="btn btn-outline-secondary" onclick="investigateProductPaymentLinkMatching();">🔍 詳細マッチング調査</button>
+                <button class="btn btn-outline-warning" onclick="resetPaymentLinkData();">🔄 決済リンクデータリセット</button>
 
         <button class="btn btn-outline-success" onclick="testPaymentLinkSelection();">🧪 決済リンク選択テスト</button>
 
@@ -4056,6 +4057,32 @@
             });
         }
 
+        // 決済リンクデータリセット機能
+        function resetPaymentLinkData() {
+            if (confirm('⚠️ 決済リンクデータを完全にリセットしますか？\n\nこの操作により、現在登録されている決済リンクが全て削除されます。\nSquareの決済リンクは影響を受けませんが、再登録が必要になります。\n\n続行しますか？')) {
+                console.log('🔄 決済リンクデータリセット開始');
+                
+                // 決済リンクデータをクリア
+                currentData.paymentLinks = [];
+                console.log('✅ 決済リンクデータをクリアしました');
+                
+                // データを保存
+                saveData();
+                console.log('💾 データを保存しました');
+                
+                // テーブルを更新
+                updatePaymentLinksTable();
+                console.log('📊 テーブルを更新しました');
+                
+                // 完了メッセージ
+                showMessage('🔄 決済リンクデータリセット完了\n\n決済リンクデータをクリアしました。\nSquareの正しい決済リンクを再度登録してください。', 'success');
+                
+                console.log('🔄 決済リンクデータリセット完了');
+            } else {
+                console.log('❌ 決済リンクデータリセットをキャンセルしました');
+            }
+        }
+        
         // 商品用の決済リンク作成
         function createPaymentLinkForProduct(productId) {
             const product = currentData.products.find(p => p.productId === productId);
