@@ -2083,13 +2083,12 @@
             let createdCount = 0;
             
             currentData.products.forEach(product => {
-                // この商品に対応する決済リンクを検索
+                // この商品に対応する決済リンクを検索（より厳密に）
                 const matchingLinks = currentData.paymentLinks.filter(link => {
+                    // 完全一致のみを許可（部分一致は除外）
                     if (link.productRefId === product.id) return true;
                     if (link.productId === product.productId) return true;
                     if (link.productName === product.name) return true;
-                    if (link.productName && product.name && 
-                        (link.productName.includes(product.name) || product.name.includes(link.productName))) return true;
                     return false;
                 });
                 
@@ -2097,9 +2096,17 @@
                 if (matchingLinks.length === 0) {
                     console.log(`🔧 商品「${product.name}」の決済リンクを作成中...`);
                     
-                    // 新しい決済リンクIDを生成
+                    // 新しい決済リンクIDを生成（通常価格は_001、カスタム価格は_002,_003...）
                     const baseId = product.stableId || product.id;
-                    const linkId = `link_${baseId}_${String(currentData.paymentLinks.length + 1).padStart(3, '0')}`;
+                    
+                    // 同じ安定IDを持つ既存の決済リンクをカウント
+                    const existingLinksWithSameStableId = currentData.paymentLinks.filter(link => 
+                        link.stableId === product.stableId
+                    );
+                    
+                    // 次の連番を決定
+                    let nextNumber = existingLinksWithSameStableId.length + 1;
+                    const linkId = `link_${baseId}_${String(nextNumber).padStart(3, '0')}`;
                     
                     const newPaymentLink = {
                         id: linkId,
@@ -2109,7 +2116,7 @@
                         stableId: product.stableId,
                         price: product.salePrice,
                         squareLink: '', // 空のSquareリンク
-                        active: false, // 非表示商品は非アクティブ
+                        active: product.visible, // 表示状態に応じてアクティブ
                         created: new Date().toISOString(),
                         updated: new Date().toISOString()
                     };
@@ -2117,6 +2124,8 @@
                     currentData.paymentLinks.push(newPaymentLink);
                     createdCount++;
                     console.log(`✅ 決済リンク「${linkId}」を作成しました`);
+                } else {
+                    console.log(`✅ 商品「${product.name}」の決済リンクは既に存在: ${matchingLinks.map(l => l.id).join(', ')}`);
                 }
             });
             
