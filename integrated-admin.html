@@ -841,6 +841,7 @@
         <button class="btn btn-warning" onclick="debugProductPaymentLinkSync();">🔗 商品・決済リンク同期確認</button>
         <button class="btn btn-danger" onclick="forceSyncPaymentLinks();">🔄 強制同期実行</button>
         <button class="btn btn-outline-danger" onclick="forceFixStableIds();">🔧 安定ID強制修正</button>
+        <button class="btn btn-outline-secondary" onclick="investigateProductPaymentLinkMatching();">🔍 詳細マッチング調査</button>
 
         <button class="btn btn-outline-success" onclick="testPaymentLinkSelection();">🧪 決済リンク選択テスト</button>
 
@@ -2128,6 +2129,62 @@
             }
             
             return createdCount;
+        }
+        
+        // 詳細な商品・決済リンクマッチング調査
+        function investigateProductPaymentLinkMatching() {
+            console.log('🔍 商品・決済リンクマッチング詳細調査開始');
+            console.log('=' .repeat(60));
+            
+            currentData.products.forEach((product, index) => {
+                console.log(`\n🔍 商品${index + 1}: ${product.name}`);
+                console.log(`   - ID: ${product.id}`);
+                console.log(`   - 統合ID: ${product.productId}`);
+                console.log(`   - 安定ID: ${product.stableId}`);
+                console.log(`   - 価格: ¥${product.salePrice}`);
+                console.log(`   - 表示状態: ${product.visible ? '表示' : '非表示'}`);
+                
+                // この商品に対応する決済リンクを検索
+                const matchingLinks = currentData.paymentLinks.filter(link => {
+                    console.log(`   🔍 決済リンク「${link.id}」とのマッチング確認:`);
+                    console.log(`      - link.productRefId: ${link.productRefId} vs product.id: ${product.id}`);
+                    console.log(`      - link.productId: ${link.productId} vs product.productId: ${product.productId}`);
+                    console.log(`      - link.productName: ${link.productName} vs product.name: ${product.name}`);
+                    
+                    if (link.productRefId === product.id) {
+                        console.log(`      ✅ productRefIdでマッチ！`);
+                        return true;
+                    }
+                    if (link.productId === product.productId) {
+                        console.log(`      ✅ productIdでマッチ！`);
+                        return true;
+                    }
+                    if (link.productName === product.name) {
+                        console.log(`      ✅ productNameでマッチ！`);
+                        return true;
+                    }
+                    if (link.productName && product.name && 
+                        (link.productName.includes(product.name) || product.name.includes(link.productName))) {
+                        console.log(`      ✅ 部分一致でマッチ！`);
+                        return true;
+                    }
+                    
+                    console.log(`      ❌ マッチしません`);
+                    return false;
+                });
+                
+                console.log(`   🔗 マッチした決済リンク: ${matchingLinks.length}件`);
+                if (matchingLinks.length === 0) {
+                    console.log(`   ⚠️ この商品に対応する決済リンクが存在しません！`);
+                } else {
+                    matchingLinks.forEach(link => {
+                        console.log(`      - ${link.id}: ¥${link.price} (${link.active ? '有効' : '無効'})`);
+                    });
+                }
+            });
+            
+            console.log('\n' + '=' .repeat(60));
+            console.log('🔍 調査完了');
         }
         
         // 同期状況モーダル更新関数
