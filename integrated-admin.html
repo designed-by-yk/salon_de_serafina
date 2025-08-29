@@ -2089,6 +2089,10 @@
                     if (link.productRefId === product.id) return true;
                     if (link.productId === product.productId) return true;
                     if (link.productName === product.name) return true;
+                    
+                    // 同じ商品名で異なる価格の場合は、価格も一致する必要がある
+                    if (link.productName === product.name && link.price === product.salePrice) return true;
+                    
                     return false;
                 });
                 
@@ -3970,13 +3974,16 @@
                     // 1. productIdで直接マッチ
                     if (link.productId === product.productId) return true;
                     
-                    // 2. productRefIdでマッチ
-                    if (link.productRefId === product.stableId) return true;
+                    // 2. productRefIdでマッチ（商品のIDと比較）
+                    if (link.productRefId === product.id) return true;
                     
                     // 3. 商品名でマッチ
                     if (link.productName === product.name) return true;
                     
-                    // 4. 商品名の部分一致でマッチ（より柔軟）
+                    // 4. 安定IDでマッチ
+                    if (link.stableId === product.stableId) return true;
+                    
+                    // 5. 商品名の部分一致でマッチ（より柔軟）
                     if (link.productName && product.name && 
                         (link.productName.includes(product.name) || product.name.includes(link.productName))) return true;
                     
