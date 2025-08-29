@@ -3600,6 +3600,8 @@
                 refreshPreview();
             } else if (tabName === 'bulk-operations') {
                 updateScheduledOperationsList();
+            } else if (tabName === 'payment-links') {
+                updatePaymentLinksTable();
             }
         }
 
@@ -3683,9 +3685,8 @@
             const tbody = document.getElementById('payment-links-tbody');
             tbody.innerHTML = '';
             
-            // 商品管理画面のデータを基準に表示
+            // 商品管理画面のデータを基準に表示（表示/非表示に関係なく全て表示）
             currentData.products.forEach(product => {
-                if (!product.visible) return; // 非表示商品はスキップ
                 
                 // 該当する決済リンクを検索
                 const paymentLink = currentData.paymentLinks.find(link => 
@@ -3707,7 +3708,12 @@
                     <td>
                         <span class="badge bg-primary">${product.productId || '-'}</span>
                     </td>
-                    <td>${product.name}</td>
+                    <td>
+                        ${product.name}
+                        <br><small style="color: ${product.visible ? '#4caf50' : '#ff9800'};">
+                            ${product.visible ? '✅ サイト表示' : '⏸️ サイト非表示'}
+                        </small>
+                    </td>
                     <td>
                         <strong class="text-primary">¥${product.salePrice.toLocaleString()}</strong>
                         ${description}
