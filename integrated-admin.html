@@ -2002,24 +2002,37 @@
             }
         }
         
-        // 商品と決済リンクの価格同期
+        // 商品と決済リンクの価格同期（詳細ログ版）
         function syncProductPrices() {
-            console.log('🔄 価格自動同期開始（完全版）');
+            console.log('🔄 価格自動同期開始（詳細ログ版）');
             let syncCount = 0;
             let linkCount = 0;
             
             // 各商品に対して、対応する決済リンクを検索・同期
             currentData.products.forEach(product => {
                 console.log(`🔍 商品「${product.name}」の同期処理中...`);
+                console.log(`   - 商品価格: ¥${product.salePrice}`);
                 
                 // この商品に対応する決済リンクを検索
                 const matchingLinks = currentData.paymentLinks.filter(link => {
                     // 複数の方法でマッチング
-                    if (link.productRefId === product.id) return true;
-                    if (link.productId === product.productId) return true;
-                    if (link.productName === product.name) return true;
+                    if (link.productRefId === product.id) {
+                        console.log(`   - productRefIdでマッチ: ${link.id}`);
+                        return true;
+                    }
+                    if (link.productId === product.productId) {
+                        console.log(`   - productIdでマッチ: ${link.id}`);
+                        return true;
+                    }
+                    if (link.productName === product.name) {
+                        console.log(`   - productNameでマッチ: ${link.id}`);
+                        return true;
+                    }
                     if (link.productName && product.name && 
-                        (link.productName.includes(product.name) || product.name.includes(link.productName))) return true;
+                        (link.productName.includes(product.name) || product.name.includes(link.productName))) {
+                        console.log(`   - 部分一致でマッチ: ${link.id}`);
+                        return true;
+                    }
                     return false;
                 });
                 
@@ -2028,11 +2041,14 @@
                 // 対応する決済リンクの価格を同期
                 matchingLinks.forEach(link => {
                     linkCount++;
+                    console.log(`   - 決済リンク ${link.id}: ¥${link.price} → ¥${product.salePrice}`);
                     if (link.price !== product.salePrice) {
-                        console.log(`🔄 価格同期: ${product.name} - ${link.price}円 → ${product.salePrice}円`);
+                        console.log(`🔄 価格同期実行: ${product.name} - ${link.price}円 → ${product.salePrice}円`);
                         link.price = product.salePrice;
                         link.updated = new Date().toISOString();
                         syncCount++;
+                    } else {
+                        console.log(`✅ 価格一致: ${product.name} - ¥${link.price}`);
                     }
                 });
             });
@@ -2041,7 +2057,9 @@
             
             if (syncCount > 0) {
                 console.log(`✅ ${syncCount}件の価格を同期しました`);
+                console.log('💾 データを保存中...');
                 saveData();
+                console.log('💾 データ保存完了');
             } else {
                 console.log('✅ 価格同期は不要です');
             }
