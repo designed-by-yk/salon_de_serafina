@@ -4938,7 +4938,7 @@
             })));
             
             const productOptions = currentData.products.map(p => 
-                `<option value="${p.id}" ${link?.productId === p.productId ? 'selected' : ''}>${p.name} - 統合ID: ${p.productId || '未設定'} (¥${p.salePrice.toLocaleString()})</option>`
+                `<option value="${p.id}" ${link?.productId === p.productId ? 'selected' : ''}>${p.name} - 統合ID: ${p.productId || '未設定'} (¥${p.salePrice.toLocaleString()}) - ${p.visible ? '表示' : '非表示'}</option>`
             ).join('');
             
             const content = `
