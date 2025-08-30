@@ -1220,10 +1220,11 @@
                 console.log('✅ loadData 完了');
                 console.log('🔍 loadData完了時のcurrentData:', currentData);
                 
-                // 不整合な決済リンクを自動クリア
-                console.log('🔄 不整合な決済リンクの自動クリア開始...');
-                autoCleanupInvalidPaymentLinks();
-                console.log('✅ 不整合な決済リンクの自動クリア完了');
+                // 不整合な決済リンクを自動クリア（自動実行を無効化）
+                // console.log('🔄 不整合な決済リンクの自動クリア開始...');
+                // autoCleanupInvalidPaymentLinks();
+                // console.log('✅ 不整合な決済リンクの自動クリア完了');
+                console.log('🔄 自動クリア機能を無効化しました（手動で実行してください）');
                 
             } catch (error) {
                 console.error('❌ データ読み込みエラー:', error);
@@ -2463,10 +2464,11 @@
                 const message = `🔄 強制同期完了: ${syncCount}件の更新\n\n${syncDetails.join('\n')}`;
                 showMessage(message, 'success');
                 
-                // 同期後の状況を確認
-                setTimeout(() => {
-                    debugProductPaymentLinkSync();
-                }, 1000);
+                // 同期後の状況を確認（自動実行を無効化）
+                // setTimeout(() => {
+                //     debugProductPaymentLinkSync();
+                // }, 1000);
+                console.log('🔄 自動同期確認を無効化しました（手動で実行してください）');
             } else {
                 console.log('🔄 同期不要: 既に同期済み');
                 showMessage('同期不要: 既に同期済みです', 'info');
