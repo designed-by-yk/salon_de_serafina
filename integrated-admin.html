@@ -2063,22 +2063,17 @@
                 console.log(`   - 商品価格: ¥${product.salePrice}`);
                 console.log(`   - 表示状態: ${product.visible ? '表示' : '非表示'}`);
                 
-                // この商品に対応する決済リンクを検索（厳密なマッチング）
+                // この商品に対応する決済リンクを検索（1対1の厳密なマッチング）
                 const matchingLinks = currentData.paymentLinks.filter(link => {
                     // 商品IDで完全一致（最優先）
                     if (link.productId === product.productId) {
                         console.log(`   - productIdで厳密マッチ: ${link.id}`);
                         return true;
                     }
-                    // 商品参照IDで完全一致
-                    if (link.productRefId === product.id) {
-                        console.log(`   - productRefIdで厳密マッチ: ${link.id}`);
-                        return true;
-                    }
                     
-                    // 商品名と価格の完全一致のみ許可（同じ商品名で異なる価格の場合は区別）
-                    if (link.productName === product.name && link.price === product.salePrice) {
-                        console.log(`   - 商品名+価格で厳密マッチ: ${link.id}`);
+                    // 商品参照IDで完全一致（productIdが設定されていない場合のみ）
+                    if (!link.productId && link.productRefId === product.id) {
+                        console.log(`   - productRefIdで厳密マッチ: ${link.id}`);
                         return true;
                     }
                     
@@ -2115,24 +2110,13 @@
                             priceType = 'カスタム価格';
                         }
                     } else {
-                        // 価格タイプが設定されていない場合、価格の一致で判断
-                        if (link.price === product.regularPrice) {
-                            expectedPrice = product.regularPrice;
-                            priceType = '通常価格';
-                            link.priceType = 'regular'; // 価格タイプを設定
-                        } else if (link.price === product.salePrice) {
-                            expectedPrice = product.salePrice;
-                            priceType = '販売価格';
-                            link.priceType = 'sale'; // 価格タイプを設定
-                        } else {
-                            // どちらとも一致しない場合は現在の価格を維持
-                            expectedPrice = link.price;
-                            priceType = 'カスタム価格';
-                            link.priceType = 'custom'; // 価格タイプを設定
-                            console.log(`⚠️ 価格不一致: ${product.name} - 決済リンク: ¥${link.price}, 商品: 通常¥${product.regularPrice}/販売¥${product.salePrice}`);
-                        }
+                        // 価格タイプが設定されていない場合、現在の価格を維持
+                        expectedPrice = link.price;
+                        priceType = '未設定';
+                        console.log(`⚠️ 価格タイプ未設定: ${product.name} - 決済リンク: ¥${link.price}, 商品: 通常¥${product.regularPrice}/販売¥${product.salePrice}`);
                     }
                     
+                    // 価格が一致しない場合のみ同期（価格タイプに基づいて）
                     if (link.price !== expectedPrice) {
                         console.log(`🔄 価格同期実行: ${product.name} - ${link.price}円 → ${expectedPrice}円 (${priceType})`);
                         link.price = expectedPrice;
@@ -2165,15 +2149,13 @@
             let createdCount = 0;
             
             currentData.products.forEach(product => {
-                // この商品に対応する決済リンクを検索（厳密なマッチング）
+                // この商品に対応する決済リンクを検索（1対1の厳密なマッチング）
                 const matchingLinks = currentData.paymentLinks.filter(link => {
                     // 商品IDで完全一致（最優先）
                     if (link.productId === product.productId) return true;
-                    // 商品参照IDで完全一致
-                    if (link.productRefId === product.id) return true;
                     
-                    // 商品名と価格の完全一致のみ許可（同じ商品名で異なる価格の場合は区別）
-                    if (link.productName === product.name && link.price === product.salePrice) return true;
+                    // 商品参照IDで完全一致（productIdが設定されていない場合のみ）
+                    if (!link.productId && link.productRefId === product.id) return true;
                     
                     return false;
                 });
@@ -2248,7 +2230,7 @@
                 console.log(`   - 価格: ¥${product.salePrice}`);
                 console.log(`   - 表示状態: ${product.visible ? '表示' : '非表示'}`);
                 
-                // この商品に対応する決済リンクを検索（厳密なマッチング）
+                // この商品に対応する決済リンクを検索（1対1の厳密なマッチング）
                 const matchingLinks = currentData.paymentLinks.filter(link => {
                     console.log(`   🔍 決済リンク「${link.id}」とのマッチング確認:`);
                     console.log(`      - link.productRefId: ${link.productRefId} vs product.id: ${product.id}`);
@@ -2261,14 +2243,10 @@
                         console.log(`      ✅ productIdで厳密マッチ！`);
                         return true;
                     }
-                    // 商品参照IDで完全一致
-                    if (link.productRefId === product.id) {
+                    
+                    // 商品参照IDで完全一致（productIdが設定されていない場合のみ）
+                    if (!link.productId && link.productRefId === product.id) {
                         console.log(`      ✅ productRefIdで厳密マッチ！`);
-                        return true;
-                    }
-                    // 商品名と価格の完全一致のみ許可（同じ商品名で異なる価格の場合は区別）
-                    if (link.productName === product.name && link.price === product.salePrice) {
-                        console.log(`      ✅ 商品名+価格で厳密マッチ！`);
                         return true;
                     }
                     
