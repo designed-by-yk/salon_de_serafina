@@ -3979,29 +3979,49 @@
             const tbody = document.getElementById('payment-links-tbody');
             tbody.innerHTML = '';
             
+            console.log('🔗 決済リンクテーブル更新開始');
+            console.log('🔗 現在の決済リンク数:', currentData.paymentLinks.length);
+            console.log('🔗 現在の商品数:', currentData.products.length);
+            
             // 商品管理画面のデータを基準に表示（表示/非表示に関係なく全て表示）
-            currentData.products.forEach(product => {
+            currentData.products.forEach((product, index) => {
+                console.log(`🔗 商品[${index}]処理中: ${product.name} (${product.productId}) - ¥${product.salePrice}`);
                 
-                // 該当する決済リンクを検索（より柔軟なマッチング）
+                // 該当する決済リンクを検索（厳密なマッチング）
                 const paymentLink = currentData.paymentLinks.find(link => {
-                    // 1. productIdで直接マッチ
-                    if (link.productId === product.productId) return true;
+                    // 1. productIdで完全一致（最優先）
+                    if (link.productId === product.productId) {
+                        console.log(`🔗 完全一致: ${product.name} (${product.productId})`);
+                        return true;
+                    }
                     
-                    // 2. productRefIdでマッチ（商品のIDと比較）
-                    if (link.productRefId === product.id) return true;
+                    // 2. productRefIdで完全一致
+                    if (link.productRefId === product.id) {
+                        console.log(`🔗 productRefId一致: ${product.name} (${product.id})`);
+                        return true;
+                    }
                     
-                    // 3. 商品名でマッチ
-                    if (link.productName === product.name) return true;
+                    // 3. 商品名と価格で完全一致（同じ商品名で異なる価格の場合は区別）
+                    if (link.productName === product.name && link.price === product.salePrice) {
+                        console.log(`🔗 商品名+価格一致: ${product.name} (¥${product.salePrice})`);
+                        return true;
+                    }
                     
-                    // 4. 安定IDでマッチ
-                    if (link.stableId === product.stableId) return true;
-                    
-                    // 5. 商品名の部分一致でマッチ（より柔軟）
-                    if (link.productName && product.name && 
-                        (link.productName.includes(product.name) || product.name.includes(link.productName))) return true;
+                    // 4. 安定IDと価格で完全一致
+                    if (link.stableId === product.stableId && link.price === product.salePrice) {
+                        console.log(`🔗 安定ID+価格一致: ${product.name} (${product.stableId}, ¥${product.salePrice})`);
+                        return true;
+                    }
                     
                     return false;
                 });
+                
+                // マッチング結果をログに出力
+                if (paymentLink) {
+                    console.log(`🔗 商品[${index}]に決済リンクマッチ: ${paymentLink.id} (¥${paymentLink.price})`);
+                } else {
+                    console.log(`🔗 商品[${index}]に決済リンクなし`);
+                }
                 
                 const priceTypeText = {
                     'regular': '通常価格',
