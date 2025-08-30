@@ -844,6 +844,7 @@
                         <button class="btn btn-outline-secondary" onclick="investigateProductPaymentLinkMatching();">🔍 詳細マッチング調査</button>
                 <button class="btn btn-outline-warning" onclick="resetPaymentLinkData();">🔄 決済リンクデータリセット</button>
                 <button class="btn btn-outline-danger" onclick="clearAllPaymentLinks();">🗑️ 全決済リンク削除</button>
+                <button class="btn btn-outline-info" onclick="clearDeletedPaymentLinksInfo();">🧹 削除履歴クリア</button>
 
         <button class="btn btn-outline-success" onclick="testPaymentLinkSelection();">🧪 決済リンク選択テスト</button>
 
@@ -4118,6 +4119,34 @@
             }
         }
         
+        // 削除された決済リンクの履歴をクリア
+        function clearDeletedPaymentLinksInfo() {
+            if (confirm('🗑️ 削除された決済リンクの履歴をクリアしますか？\n\nこの操作により、削除履歴が完全に削除されます。\n\n⚠️ 注意事項:\n- 削除履歴は復元できません\n- 再登録時の参考情報が失われます\n\n本当に続行しますか？')) {
+                console.log('🧹 削除履歴クリア開始');
+                
+                // 削除履歴をクリア
+                if (currentData.deletedPaymentLinks) {
+                    const deletedCount = currentData.deletedPaymentLinks.length;
+                    currentData.deletedPaymentLinks = [];
+                    console.log(`✅ 削除履歴 ${deletedCount}件 をクリアしました`);
+                    
+                    // データを保存
+                    saveData();
+                    console.log('💾 データを保存しました');
+                    
+                    // 完了メッセージ
+                    showMessage(`🧹 削除履歴クリア完了\n\n削除履歴 ${deletedCount}件 をクリアしました。`, 'success');
+                } else {
+                    console.log('✅ 削除履歴は既に空です');
+                    showMessage('削除履歴は既に空です', 'info');
+                }
+                
+                console.log('🧹 削除履歴クリア完了');
+            } else {
+                console.log('❌ 削除履歴クリアをキャンセルしました');
+            }
+        }
+        
         // 不整合な決済リンクを自動クリア（厳密版）
         function autoCleanupInvalidPaymentLinks() {
             console.log('🧹 不整合な決済リンクの自動クリア開始（厳密版）');
@@ -5055,12 +5084,29 @@
                 updated: p.updated
             })));
             
+            // 削除された決済リンクの情報があれば表示
+            let deletedLinksInfo = '';
+            if (currentData.deletedPaymentLinks && currentData.deletedPaymentLinks.length > 0) {
+                deletedLinksInfo = `
+                    <div style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                        <h4 style="color: #ffc107; margin-bottom: 10px;">🗑️ 最近削除された決済リンク</h4>
+                        <div style="font-size: 14px; color: rgba(255,255,255,0.8);">
+                            ${currentData.deletedPaymentLinks.map(deleted => 
+                                `・${deleted.productName} (¥${deleted.price}) - 統合ID: ${deleted.productId}`
+                            ).join('<br>')}
+                        </div>
+                        <small style="color: rgba(255,255,255,0.6);">これらの情報を参考に再登録できます</small>
+                    </div>
+                `;
+            }
+            
             const productOptions = currentData.products.map(p => 
                 `<option value="${p.id}" ${link?.productId === p.productId ? 'selected' : ''}>${p.name} - 統合ID: ${p.productId || '未設定'} (¥${p.salePrice.toLocaleString()}) - ${p.visible ? '表示' : '非表示'}</option>`
             ).join('');
             
             const content = `
                 <h3>${isEdit ? '決済リンク編集' : '新決済リンク追加'}</h3>
+                ${deletedLinksInfo}
                 <div class="form-grid">
                     <div class="form-group">
                         <label class="form-label">商品ID</label>
@@ -5362,14 +5408,31 @@
                 currentData.paymentLinks.push(newLink);
             }
             
+            console.log('🔗 決済リンク保存完了 - 保存前の決済リンク数:', currentData.paymentLinks.length);
+            
             saveData();
+            console.log('💾 データ保存完了');
+            
             updatePaymentLinksTable();
+            console.log('📊 テーブル更新完了');
+            
+            // 保存後の決済リンク数を確認
+            console.log('🔗 保存後の決済リンク数:', currentData.paymentLinks.length);
+            console.log('🔗 現在の全決済リンク:', currentData.paymentLinks.map(l => ({
+                id: l.id,
+                productName: l.productName,
+                price: l.price,
+                productId: l.productId
+            })));
+            
             addHistoryEntry(
                 linkId ? '決済リンク更新' : '決済リンク作成',
                 `${product.name}の決済リンクを${linkId ? '更新' : '作成'}しました`
             );
             closeModal();
             showMessage('決済リンクを保存しました', 'success');
+            
+            console.log('✅ 決済リンク保存処理完了');
         }
 
         // 決済リンク編集
@@ -5401,11 +5464,33 @@
             if (confirm('本当に削除しますか？')) {
                 const link = currentData.paymentLinks.find(l => l.id === linkId);
                 if (link) {
+                    // 削除された決済リンクの情報を一時保存（再登録時に利用）
+                    if (!currentData.deletedPaymentLinks) {
+                        currentData.deletedPaymentLinks = [];
+                    }
+                    
+                    // 削除された決済リンクの情報を保存
+                    const deletedLinkInfo = {
+                        productId: link.productId,
+                        productRefId: link.productRefId,
+                        productName: link.productName,
+                        stableId: link.stableId,
+                        price: link.price,
+                        priceType: link.priceType,
+                        deletedAt: new Date().toISOString()
+                    };
+                    
+                    currentData.deletedPaymentLinks.push(deletedLinkInfo);
+                    console.log('🗑️ 削除された決済リンク情報を保存:', deletedLinkInfo);
+                    
+                    // 決済リンクを削除
                     currentData.paymentLinks = currentData.paymentLinks.filter(l => l.id !== linkId);
                     saveData();
                     updatePaymentLinksTable();
                     addHistoryEntry('決済リンク削除', `¥${link.price}の決済リンクを削除しました`);
                     showMessage('決済リンクを削除しました', 'success');
+                    
+                    console.log('🗑️ 決済リンク削除完了');
                 }
             }
         }
