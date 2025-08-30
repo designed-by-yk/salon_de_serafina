@@ -840,6 +840,7 @@
         <button class="btn btn-info" onclick="checkDataStatus();">🔍 データ状況確認</button>
         <button class="btn btn-warning" onclick="debugProductPaymentLinkSync();">🔗 商品・決済リンク同期確認</button>
         <button class="btn btn-danger" onclick="forceSyncPaymentLinks();">🔄 強制同期実行</button>
+        <button class="btn btn-outline-primary" onclick="initializePaymentLinkPriceTypes();">🔧 価格タイプ初期化</button>
         <button class="btn btn-outline-danger" onclick="forceFixStableIds();">🔧 安定ID強制修正</button>
                         <button class="btn btn-outline-secondary" onclick="investigateProductPaymentLinkMatching();">🔍 詳細マッチング調査</button>
                 <button class="btn btn-outline-warning" onclick="resetPaymentLinkData();">🔄 決済リンクデータリセット</button>
@@ -2012,6 +2013,43 @@
             }
         }
         
+        // 既存の決済リンクの価格タイプを初期化
+        function initializePaymentLinkPriceTypes() {
+            console.log('🔧 既存決済リンクの価格タイプ初期化開始');
+            let updatedCount = 0;
+            
+            currentData.paymentLinks.forEach(link => {
+                if (!link.priceType) {
+                    // 対応する商品を検索
+                    const product = currentData.products.find(p => 
+                        p.productId === link.productId || p.id === link.productRefId
+                    );
+                    
+                    if (product) {
+                        // 価格タイプを決定
+                        if (link.price === product.regularPrice) {
+                            link.priceType = 'regular';
+                        } else if (link.price === product.salePrice) {
+                            link.priceType = 'sale';
+                        } else {
+                            link.priceType = 'custom';
+                        }
+                        
+                        link.updated = new Date().toISOString();
+                        updatedCount++;
+                        console.log(`🔧 決済リンク ${link.id} の価格タイプを ${link.priceType} に設定`);
+                    }
+                }
+            });
+            
+            if (updatedCount > 0) {
+                console.log(`🔧 ${updatedCount}件の決済リンクの価格タイプを初期化しました`);
+                saveData();
+            } else {
+                console.log('✅ 価格タイプの初期化は不要です');
+            }
+        }
+        
         // 商品と決済リンクの価格同期（詳細ログ版）
         function syncProductPrices() {
             console.log('🔄 価格自動同期開始（詳細ログ版）');
@@ -2055,17 +2093,53 @@
                     missingLinkCount++;
                 }
                 
-                // 対応する決済リンクの価格を同期
+                // 対応する決済リンクの価格を同期（価格タイプに基づいて適切に設定）
                 matchingLinks.forEach(link => {
                     linkCount++;
-                    console.log(`   - 決済リンク ${link.id}: ¥${link.price} → ¥${product.salePrice}`);
-                    if (link.price !== product.salePrice) {
-                        console.log(`🔄 価格同期実行: ${product.name} - ${link.price}円 → ${product.salePrice}円`);
-                        link.price = product.salePrice;
+                    
+                    // 決済リンクの価格タイプに基づいて適切な価格を設定
+                    let expectedPrice;
+                    let priceType;
+                    
+                    // 決済リンクの価格タイプが設定されている場合
+                    if (link.priceType) {
+                        if (link.priceType === 'regular') {
+                            expectedPrice = product.regularPrice;
+                            priceType = '通常価格';
+                        } else if (link.priceType === 'sale') {
+                            expectedPrice = product.salePrice;
+                            priceType = '販売価格';
+                        } else {
+                            // カスタム価格の場合は現在の価格を維持
+                            expectedPrice = link.price;
+                            priceType = 'カスタム価格';
+                        }
+                    } else {
+                        // 価格タイプが設定されていない場合、価格の一致で判断
+                        if (link.price === product.regularPrice) {
+                            expectedPrice = product.regularPrice;
+                            priceType = '通常価格';
+                            link.priceType = 'regular'; // 価格タイプを設定
+                        } else if (link.price === product.salePrice) {
+                            expectedPrice = product.salePrice;
+                            priceType = '販売価格';
+                            link.priceType = 'sale'; // 価格タイプを設定
+                        } else {
+                            // どちらとも一致しない場合は現在の価格を維持
+                            expectedPrice = link.price;
+                            priceType = 'カスタム価格';
+                            link.priceType = 'custom'; // 価格タイプを設定
+                            console.log(`⚠️ 価格不一致: ${product.name} - 決済リンク: ¥${link.price}, 商品: 通常¥${product.regularPrice}/販売¥${product.salePrice}`);
+                        }
+                    }
+                    
+                    if (link.price !== expectedPrice) {
+                        console.log(`🔄 価格同期実行: ${product.name} - ${link.price}円 → ${expectedPrice}円 (${priceType})`);
+                        link.price = expectedPrice;
                         link.updated = new Date().toISOString();
                         syncCount++;
                     } else {
-                        console.log(`✅ 価格一致: ${product.name} - ¥${link.price}`);
+                        console.log(`✅ 価格一致: ${product.name} - ¥${link.price} (${priceType})`);
                     }
                 });
             });
@@ -2120,6 +2194,14 @@
                     let nextNumber = existingLinksWithSameStableId.length + 1;
                     const linkId = `link_${baseId}_${String(nextNumber).padStart(3, '0')}`;
                     
+                    // 価格タイプを決定
+                    let priceType;
+                    if (product.salePrice === product.regularPrice) {
+                        priceType = 'regular'; // 通常価格
+                    } else {
+                        priceType = 'sale'; // 販売価格
+                    }
+                    
                     const newPaymentLink = {
                         id: linkId,
                         productId: product.productId,
@@ -2127,6 +2209,7 @@
                         productName: product.name,
                         stableId: product.stableId,
                         price: product.salePrice,
+                        priceType: priceType, // 価格タイプを追加
                         squareLink: '', // 空のSquareリンク
                         active: product.visible, // 表示状態に応じてアクティブ
                         created: new Date().toISOString(),
