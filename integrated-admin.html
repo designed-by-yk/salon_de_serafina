@@ -3983,8 +3983,22 @@
             console.log('🔗 現在の決済リンク数:', currentData.paymentLinks.length);
             console.log('🔗 現在の商品数:', currentData.products.length);
             
-            // 商品管理画面のデータを基準に表示（表示/非表示に関係なく全て表示）
-            currentData.products.forEach((product, index) => {
+            // 商品管理画面のデータを基準に表示（安定IDと金額の組み合わせで重複を除去）
+            const uniqueProducts = [];
+            const seenCombinations = new Set();
+            
+            currentData.products.forEach(product => {
+                const combination = `${product.stableId || product.name}_${product.salePrice}`;
+                if (!seenCombinations.has(combination)) {
+                    seenCombinations.add(combination);
+                    uniqueProducts.push(product);
+                }
+            });
+            
+            console.log('🔗 重複除去後の商品数:', uniqueProducts.length);
+            console.log('🔗 重複除去前の商品数:', currentData.products.length);
+            
+            uniqueProducts.forEach((product, index) => {
                 console.log(`🔗 商品[${index}]処理中: ${product.name} (${product.productId}) - ¥${product.salePrice}`);
                 
                 // 該当する決済リンクを検索（厳密なマッチング）
@@ -5122,7 +5136,22 @@
                 `;
             }
             
-            const productOptions = currentData.products.map(p => 
+            // 商品選択肢を生成（安定IDと金額の組み合わせで重複を除去）
+            const uniqueProducts = [];
+            const seenCombinations = new Set();
+            
+            currentData.products.forEach(p => {
+                const combination = `${p.stableId || p.name}_${p.salePrice}`;
+                if (!seenCombinations.has(combination)) {
+                    seenCombinations.add(combination);
+                    uniqueProducts.push(p);
+                }
+            });
+            
+            console.log('🔗 重複除去後の商品数:', uniqueProducts.length);
+            console.log('🔗 重複除去前の商品数:', currentData.products.length);
+            
+            const productOptions = uniqueProducts.map(p => 
                 `<option value="${p.id}" ${link?.productId === p.productId ? 'selected' : ''}>${p.name} - 統合ID: ${p.productId || '未設定'} (¥${p.salePrice.toLocaleString()}) - ${p.visible ? '表示' : '非表示'}</option>`
             ).join('');
             
@@ -5237,6 +5266,10 @@
                 
                 // 商品情報の表示を更新
                 updateLinkProductInfo(product);
+                
+                // 選択された商品の安定IDと金額の組み合わせをログに出力
+                console.log(`🔗 選択された商品の組み合わせ: ${product.stableId || product.name}_${product.salePrice}`);
+                console.log(`🔗 この組み合わせで決済リンクを作成します`);
             } else {
                 // 商品が選択されていない場合
                 priceInput.value = '';
