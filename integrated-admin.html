@@ -5250,14 +5250,15 @@
                 if (priceType !== 'custom') {
                     if (priceType === 'regular') {
                         priceInput.value = product.regularPrice;
-                        hintElement.textContent = `通常価格: ${product.regularPrice.toLocaleString()}円`;
+                        hintElement.textContent = `通常価格: ${product.regularPrice.toLocaleString()}円（編集可能）`;
                         console.log('🔗 通常価格設定:', product.regularPrice);
+                        priceInput.readOnly = false; // 通常価格は編集可能
                     } else if (priceType === 'sale') {
                         priceInput.value = product.salePrice;
-                        hintElement.textContent = `販売価格: ${product.salePrice.toLocaleString()}円`;
+                        hintElement.textContent = `販売価格: ${product.salePrice.toLocaleString()}円（編集可能）`;
                         console.log('🔗 販売価格設定:', product.salePrice);
+                        priceInput.readOnly = false; // 販売価格は編集可能
                     }
-                    priceInput.readOnly = true;
                 } else {
                     priceInput.readOnly = false;
                     hintElement.textContent = 'カスタム価格を入力してください（例：500円割引 = 元価格 - 500）';
@@ -5304,7 +5305,31 @@
         
         // 価格タイプ変更時の処理
         function updateCustomPrice() {
-            updateLinkPrice();
+            const priceType = document.getElementById('link-price-type').value;
+            const priceInput = document.getElementById('link-price');
+            const hintElement = document.getElementById('price-hint');
+            const productId = document.getElementById('link-product').value;
+            const product = currentData.products.find(p => p.id === productId);
+            
+            if (product) {
+                console.log('🔗 価格タイプ変更:', priceType);
+                
+                if (priceType === 'regular') {
+                    priceInput.value = product.regularPrice;
+                    hintElement.textContent = `通常価格: ${product.regularPrice.toLocaleString()}円（編集可能）`;
+                    priceInput.readOnly = false;
+                    console.log('🔗 通常価格に変更:', product.regularPrice);
+                } else if (priceType === 'sale') {
+                    priceInput.value = product.salePrice;
+                    hintElement.textContent = `販売価格: ${product.salePrice.toLocaleString()}円（編集可能）`;
+                    priceInput.readOnly = false;
+                    console.log('🔗 販売価格に変更:', product.salePrice);
+                } else if (priceType === 'custom') {
+                    priceInput.readOnly = false;
+                    hintElement.textContent = 'カスタム価格を入力してください（例：500円割引 = 元価格 - 500）';
+                    console.log('🔗 カスタム価格モードに変更');
+                }
+            }
         }
         
         // 価格変更時の警告チェック
