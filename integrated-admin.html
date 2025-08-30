@@ -840,7 +840,7 @@
         <button class="btn btn-info" onclick="checkDataStatus();">🔍 データ状況確認</button>
         <button class="btn btn-warning" onclick="debugProductPaymentLinkSync();">🔗 商品・決済リンク同期確認</button>
         <button class="btn btn-danger" onclick="forceSyncPaymentLinks();">🔄 強制同期実行</button>
-        <button class="btn btn-outline-primary" onclick="initializePaymentLinkPriceTypes();">🔧 価格タイプ初期化</button>
+        <button class="btn btn-outline-primary" onclick="initializePaymentLinkPriceTypes();">🔧 決済リンク設定修正</button>
         <button class="btn btn-outline-danger" onclick="forceFixStableIds();">🔧 安定ID強制修正</button>
                         <button class="btn btn-outline-secondary" onclick="investigateProductPaymentLinkMatching();">🔍 詳細マッチング調査</button>
                 <button class="btn btn-outline-warning" onclick="resetPaymentLinkData();">🔄 決済リンクデータリセット</button>
@@ -2013,40 +2013,70 @@
             }
         }
         
-        // 既存の決済リンクの価格タイプを初期化
+        // 既存の決済リンクの価格タイプとproductIdを正しく設定
         function initializePaymentLinkPriceTypes() {
-            console.log('🔧 既存決済リンクの価格タイプ初期化開始');
+            console.log('🔧 既存決済リンクの価格タイプとproductId設定開始');
             let updatedCount = 0;
             
             currentData.paymentLinks.forEach(link => {
-                if (!link.priceType) {
-                    // 対応する商品を検索
-                    const product = currentData.products.find(p => 
-                        p.productId === link.productId || p.id === link.productRefId
-                    );
+                let needsUpdate = false;
+                
+                // 対応する商品を検索（価格でマッチ）
+                const matchingProducts = currentData.products.filter(p => 
+                    p.regularPrice === link.price || p.salePrice === link.price
+                );
+                
+                if (matchingProducts.length > 0) {
+                    // 最も適切な商品を選択（価格タイプに基づいて）
+                    let bestMatch = null;
                     
-                    if (product) {
-                        // 価格タイプを決定
-                        if (link.price === product.regularPrice) {
+                    if (link.priceType === 'regular') {
+                        bestMatch = matchingProducts.find(p => p.regularPrice === link.price);
+                    } else if (link.priceType === 'sale') {
+                        bestMatch = matchingProducts.find(p => p.salePrice === link.price);
+                    } else {
+                        // 価格タイプが設定されていない場合、価格の一致で判断
+                        if (matchingProducts.some(p => p.regularPrice === link.price)) {
+                            bestMatch = matchingProducts.find(p => p.regularPrice === link.price);
                             link.priceType = 'regular';
-                        } else if (link.price === product.salePrice) {
+                        } else if (matchingProducts.some(p => p.salePrice === link.price)) {
+                            bestMatch = matchingProducts.find(p => p.salePrice === link.price);
                             link.priceType = 'sale';
-                        } else {
-                            link.priceType = 'custom';
+                        }
+                    }
+                    
+                    if (bestMatch) {
+                        // productIdを正しく設定
+                        if (link.productId !== bestMatch.productId) {
+                            link.productId = bestMatch.productId;
+                            needsUpdate = true;
+                            console.log(`🔧 決済リンク ${link.id} のproductIdを ${bestMatch.productId} に設定`);
                         }
                         
-                        link.updated = new Date().toISOString();
-                        updatedCount++;
-                        console.log(`🔧 決済リンク ${link.id} の価格タイプを ${link.priceType} に設定`);
+                        // 価格タイプが設定されていない場合
+                        if (!link.priceType) {
+                            if (link.price === bestMatch.regularPrice) {
+                                link.priceType = 'regular';
+                            } else if (link.price === bestMatch.salePrice) {
+                                link.priceType = 'sale';
+                            }
+                            needsUpdate = true;
+                            console.log(`🔧 決済リンク ${link.id} の価格タイプを ${link.priceType} に設定`);
+                        }
                     }
+                }
+                
+                if (needsUpdate) {
+                    link.updated = new Date().toISOString();
+                    updatedCount++;
                 }
             });
             
             if (updatedCount > 0) {
-                console.log(`🔧 ${updatedCount}件の決済リンクの価格タイプを初期化しました`);
+                console.log(`🔧 ${updatedCount}件の決済リンクを更新しました`);
                 saveData();
             } else {
-                console.log('✅ 価格タイプの初期化は不要です');
+                console.log('✅ 決済リンクの更新は不要です');
             }
         }
         
@@ -2116,31 +2146,22 @@
                         console.log(`⚠️ 価格タイプ未設定: ${product.name} - 決済リンク: ¥${link.price}, 商品: 通常¥${product.regularPrice}/販売¥${product.salePrice}`);
                     }
                     
-                    // 価格が一致しない場合のみ同期（価格タイプに基づいて）
+                    // 価格の同期は行わない（決済リンクの価格を維持）
+                    console.log(`✅ 価格確認: ${product.name} - ¥${link.price} (${priceType})`);
+                    
+                    // 価格が一致しない場合は警告のみ
                     if (link.price !== expectedPrice) {
-                        console.log(`🔄 価格同期実行: ${product.name} - ${link.price}円 → ${expectedPrice}円 (${priceType})`);
-                        link.price = expectedPrice;
-                        link.updated = new Date().toISOString();
-                        syncCount++;
-                    } else {
-                        console.log(`✅ 価格一致: ${product.name} - ¥${link.price} (${priceType})`);
+                        console.log(`⚠️ 価格不一致: ${product.name} - 決済リンク: ¥${link.price}, 商品: ${priceType}¥${expectedPrice}`);
                     }
                 });
             });
             
-            console.log(`📊 処理結果: ${linkCount}件の決済リンクを確認、${syncCount}件の価格を同期`);
+            console.log(`📊 処理結果: ${linkCount}件の決済リンクを確認、価格同期は無効化済み`);
             if (missingLinkCount > 0) {
                 console.log(`⚠️ ${missingLinkCount}件の商品に対応する決済リンクが不足しています`);
             }
             
-            if (syncCount > 0) {
-                console.log(`✅ ${syncCount}件の価格を同期しました`);
-                console.log('💾 データを保存中...');
-                saveData();
-                console.log('💾 データ保存完了');
-            } else {
-                console.log('✅ 価格同期は不要です');
-            }
+            console.log('✅ 価格同期は無効化されています（決済リンクの価格を維持）');
         }
         
         // 不足している決済リンクを自動作成
