@@ -843,6 +843,7 @@
         <button class="btn btn-outline-danger" onclick="forceFixStableIds();">🔧 安定ID強制修正</button>
                         <button class="btn btn-outline-secondary" onclick="investigateProductPaymentLinkMatching();">🔍 詳細マッチング調査</button>
                 <button class="btn btn-outline-warning" onclick="resetPaymentLinkData();">🔄 決済リンクデータリセット</button>
+                <button class="btn btn-outline-danger" onclick="clearAllPaymentLinks();">🗑️ 全決済リンク削除</button>
 
         <button class="btn btn-outline-success" onclick="testPaymentLinkSelection();">🧪 決済リンク選択テスト</button>
 
@@ -1217,6 +1218,11 @@
                 showMessage('データを読み込みました', 'success');
                 console.log('✅ loadData 完了');
                 console.log('🔍 loadData完了時のcurrentData:', currentData);
+                
+                // 不整合な決済リンクを自動クリア
+                console.log('🔄 不整合な決済リンクの自動クリア開始...');
+                autoCleanupInvalidPaymentLinks();
+                console.log('✅ 不整合な決済リンクの自動クリア完了');
                 
             } catch (error) {
                 console.error('❌ データ読み込みエラー:', error);
@@ -4081,6 +4087,118 @@
             } else {
                 console.log('❌ 決済リンクデータリセットをキャンセルしました');
             }
+        }
+        
+        // 全決済リンク削除機能
+        function clearAllPaymentLinks() {
+            if (confirm('⚠️ 全ての決済リンクを完全に削除しますか？\n\nこの操作により、現在登録されている決済リンクが全て削除されます。\n\n⚠️ 注意事項:\n- Squareの決済リンクは影響を受けません\n- 全ての決済リンクを再登録する必要があります\n- この操作は取り消せません\n\n本当に続行しますか？')) {
+                console.log('🗑️ 全決済リンク削除開始');
+                
+                // 現在の決済リンク数を記録
+                const currentCount = currentData.paymentLinks.length;
+                
+                // 決済リンクデータを完全にクリア
+                currentData.paymentLinks = [];
+                console.log(`✅ 決済リンク ${currentCount}件 を完全に削除しました`);
+                
+                // データを保存
+                saveData();
+                console.log('💾 データを保存しました');
+                
+                // テーブルを更新
+                updatePaymentLinksTable();
+                console.log('📊 テーブルを更新しました');
+                
+                // 完了メッセージ
+                showMessage(`🗑️ 全決済リンク削除完了\n\n決済リンク ${currentCount}件 を完全に削除しました。\n\n次のステップ:\n1. Squareの正しい決済リンクを確認\n2. 1つずつ決済リンクを登録\n3. 各登録後に機能テストを実行`, 'success');
+                
+                console.log('🗑️ 全決済リンク削除完了');
+            } else {
+                console.log('❌ 全決済リンク削除をキャンセルしました');
+            }
+        }
+        
+        // 不整合な決済リンクを自動クリア（厳密版）
+        function autoCleanupInvalidPaymentLinks() {
+            console.log('🧹 不整合な決済リンクの自動クリア開始（厳密版）');
+            
+            if (!currentData.products || !currentData.paymentLinks) {
+                console.log('✅ データが不足しているため、クリア処理をスキップ');
+                return;
+            }
+            
+            let removedCount = 0;
+            const validLinks = [];
+            
+            console.log(`🔍 商品データ: ${currentData.products.length}件`);
+            console.log(`🔍 決済リンクデータ: ${currentData.paymentLinks.length}件`);
+            
+            // 各決済リンクをチェック
+            currentData.paymentLinks.forEach(link => {
+                console.log(`🔍 決済リンクチェック: ${link.id} - ${link.productName} (¥${link.price})`);
+                
+                let isValid = false;
+                let matchReason = '';
+                
+                // 商品データとの整合性をチェック（より厳密に）
+                const matchingProduct = currentData.products.find(product => {
+                    // 1. productIdで直接マッチ（完全一致）
+                    if (product.productId === link.productId) {
+                        matchReason = 'productId完全一致';
+                        return true;
+                    }
+                    
+                    // 2. productRefIdでマッチ（完全一致）
+                    if (product.id === link.productRefId) {
+                        matchReason = 'productRefId完全一致';
+                        return true;
+                    }
+                    
+                    // 3. 商品名と価格でマッチ（完全一致）
+                    if (product.name === link.productName && product.salePrice === link.price) {
+                        matchReason = '商品名+価格完全一致';
+                        return true;
+                    }
+                    
+                    // 4. 安定IDと価格でマッチ（完全一致）
+                    if (product.stableId === link.stableId && product.salePrice === link.price) {
+                        matchReason = '安定ID+価格完全一致';
+                        return true;
+                    }
+                    
+                    return false;
+                });
+                
+                if (matchingProduct) {
+                    // 整合性が取れている場合は保持
+                    validLinks.push(link);
+                    console.log(`✅ 有効な決済リンク: ${link.id} - ${link.productName} (¥${link.price}) - ${matchReason}`);
+                } else {
+                    // 整合性が取れていない場合は削除
+                    console.log(`🗑️ 不整合な決済リンクを削除: ${link.id} - ${link.productName} (¥${link.price})`);
+                    console.log(`   - 理由: 商品データとの整合性が取れていません`);
+                    removedCount++;
+                }
+            });
+            
+            if (removedCount > 0) {
+                // 不整合な決済リンクを削除
+                currentData.paymentLinks = validLinks;
+                
+                // データを保存
+                saveData();
+                console.log(`🧹 不整合な決済リンク ${removedCount}件 を削除しました`);
+                
+                // テーブルを更新
+                updatePaymentLinksTable();
+                
+                // 完了メッセージ
+                showMessage(`🧹 不整合な決済リンク ${removedCount}件 を自動削除しました`, 'info');
+            } else {
+                console.log('✅ 不整合な決済リンクはありません');
+            }
+            
+            console.log('🧹 自動クリア完了');
         }
         
         // 商品用の決済リンク作成
