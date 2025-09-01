@@ -1373,9 +1373,13 @@
             const { name, serviceType, price } = service;
             let appliedCoupon = null;
             
+            console.log(`💰 ${name}クーポンシステム初期化 - 基準価格: ¥${price} (${serviceType})`);
+            
             // 元の価格を統合管理画面の価格に更新
             document.getElementById(`${name}-original-display`).textContent = `${price.toLocaleString()}円`;
             document.getElementById(`${name}-final-price`).textContent = `${price.toLocaleString()}円`;
+            
+            console.log(`✅ ${name}価格表示を更新: 元価格とファイナル価格を ¥${price.toLocaleString()} に設定`);
             
             // クーポン適用ボタン
             document.getElementById(`${name}-apply-coupon`).addEventListener('click', function() {

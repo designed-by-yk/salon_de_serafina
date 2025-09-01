@@ -624,10 +624,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             // 現在の販売価格を取得
             originalPrice = getCurrentPrice();
-            console.log('星詠みシステム現在価格:', originalPrice);
+            console.log('🎯 星詠みシステム現在価格を設定:', originalPrice);
             
-            // 新しいクーポンシステムを初期化
-            initializeStarCouponSystem();
+            // 確実に価格が更新されてからクーポンシステムを初期化
+            setTimeout(function() {
+                console.log('🔧 クーポンシステム初期化開始 - 基準価格:', originalPrice);
+                initializeStarCouponSystem();
+            }, 100);
             
             // 確実にクーポン適用済み表示を隠す（強制実行）
             setTimeout(function() {
@@ -667,9 +670,13 @@
         function initializeStarCouponSystem() {
             let appliedValidation = null;
             
+            console.log(`💰 星詠みクーポンシステム初期化 - 基準価格: ¥${originalPrice}`);
+            
             // 元の価格を表示更新
             document.getElementById('star-original-display').textContent = `${originalPrice.toLocaleString()}円`;
             document.getElementById('star-final-price').textContent = `${originalPrice.toLocaleString()}円`;
+            
+            console.log(`✅ 星詠み価格表示を更新: 元価格とファイナル価格を ¥${originalPrice.toLocaleString()} に設定`);
             
             // クーポン適用ボタン
             document.getElementById('star-apply-coupon').addEventListener('click', function() {

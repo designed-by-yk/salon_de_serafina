@@ -392,10 +392,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             // 現在の販売価格を取得
             originalPrice = getCurrentPrice();
-            console.log('神託システム現在価格:', originalPrice);
+            console.log('🎯 神託システム現在価格を設定:', originalPrice);
             
-            // 新しいクーポンシステムを初期化
-            initializeShintakuCouponSystem();
+            // 確実に価格が更新されてからクーポンシステムを初期化
+            setTimeout(function() {
+                console.log('🔧 クーポンシステム初期化開始 - 基準価格:', originalPrice);
+                initializeShintakuCouponSystem();
+            }, 100);
             
             // 確実にクーポン適用済み表示を隠す（強制実行）
             setTimeout(function() {
@@ -440,9 +443,13 @@
         function initializeShintakuCouponSystem() {
             let appliedValidation = null;
             
+            console.log(`💰 クーポンシステム初期化 - 基準価格: ¥${originalPrice}`);
+            
             // 元の価格を表示更新
             document.getElementById('shintaku-original-display').textContent = `${originalPrice.toLocaleString()}円`;
             document.getElementById('shintaku-final-price').textContent = `${originalPrice.toLocaleString()}円`;
+            
+            console.log(`✅ 価格表示を更新: 元価格とファイナル価格を ¥${originalPrice.toLocaleString()} に設定`);
             
             // クーポン適用ボタン
             document.getElementById('shintaku-apply-coupon').addEventListener('click', function() {
@@ -562,18 +569,16 @@
             // Square決済リンク（決済リンク選択システム対応）
             function proceedToShintakuSquarePayment(finalPrice, couponCode) {
                 console.log(`🔗 神託決済開始: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
+                console.log(`📊 使用する基準価格: ¥${originalPrice}, 最終価格: ¥${finalPrice}`);
                 
                 // 決済リンク選択システムを使用
                 if (window.paymentLinkSelector) {
-                    // 商品名と価格を設定
-                    window.paymentLinkSelector.manualUpdatePaymentLink(
+                    // 最終価格で適切な決済リンクを選択
+                    const selectedLink = window.paymentLinkSelector.selectOptimalPaymentLink(
                         '神託システムタロット占い',
-                        originalPrice,
+                        finalPrice,
                         couponCode
                     );
-                    
-                    // 選択された決済リンクを取得
-                    const selectedLink = window.paymentLinkSelector.selectedLink;
                     
                     if (selectedLink) {
                         console.log(`✅ 決済リンク選択: ${selectedLink.id} (¥${selectedLink.price})`);
@@ -582,14 +587,19 @@
                         let url = selectedLink.url;
                         if (couponCode) {
                             const separator = url.includes('?') ? '&' : '?';
-                            url += `${separator}coupon=${couponCode}&final=${finalPrice}&service=shintaku`;
+                            url += `${separator}coupon=${couponCode}&final=${finalPrice}&service=shintaku&original=${originalPrice}`;
+                        } else {
+                            // クーポンなしの場合でも、念のため価格情報を追加
+                            const separator = url.includes('?') ? '&' : '?';
+                            url += `${separator}final=${finalPrice}&service=shintaku&original=${originalPrice}`;
                         }
                         
                         console.log(`💰 神託決済: ¥${finalPrice} -> ${url}`);
                         window.open(url, '_blank');
                     } else {
                         console.error('❌ 適切な決済リンクが見つかりません');
-                        alert('決済リンクの取得に失敗しました。ページを再読み込みしてください。');
+                        console.log(`🔍 決済リンク選択の詳細: 商品名='神託システムタロット占い', 最終価格=¥${finalPrice}`);
+                        alert('決済リンクの取得に失敗しました。管理画面で決済リンクの設定を確認してください。');
                     }
                 } else {
                     console.error('❌ 決済リンク選択システムが読み込まれていません');
