@@ -2082,7 +2082,8 @@
             currentData.products.forEach(product => {
                 // 通常価格の決済リンクを作成
                 if (product.regularPrice > 0) {
-                    const regularLinkId = `link_${product.stableId}_001`;
+                    // ユニークなリンクIDを生成（productIdを含める）
+                    const regularLinkId = `link_${product.productId.replace(/_\d+$/, '')}_001`;
                     const regularLink = {
                         id: regularLinkId,
                         productId: product.productId,
@@ -2114,7 +2115,8 @@
                 
                 // 販売価格が通常価格と異なる場合、販売価格の決済リンクを作成
                 if (product.salePrice > 0 && product.salePrice !== product.regularPrice) {
-                    const saleLinkId = `link_${product.stableId}_002`;
+                    // ユニークなリンクIDを生成（productIdを含める）
+                    const saleLinkId = `link_${product.productId.replace(/_\d+$/, '')}_002`;
                     const saleLink = {
                         id: saleLinkId,
                         productId: product.productId,
@@ -4225,21 +4227,21 @@
             uniqueProducts.forEach((product, index) => {
                 console.log(`🔗 商品[${index}]処理中: ${product.name} (${product.productId}) - ¥${product.salePrice}`);
                 
-                // 該当する決済リンクを検索（厳密なマッチング）
+                // 該当する決済リンクを検索（価格優先のマッチング）
                 const paymentLink = currentData.paymentLinks.find(link => {
-                    // 1. productIdで完全一致（最優先）
-                    if (link.productId === product.productId) {
-                        console.log(`🔗 完全一致: ${product.name} (${product.productId})`);
+                    // 1. productIdと価格で完全一致（最優先）
+                    if (link.productId === product.productId && link.price === product.salePrice) {
+                        console.log(`🔗 productId+価格完全一致: ${product.name} (${product.productId}, ¥${product.salePrice})`);
                         return true;
                     }
                     
-                    // 2. productRefIdで完全一致
-                    if (link.productRefId === product.id) {
-                        console.log(`🔗 productRefId一致: ${product.name} (${product.id})`);
+                    // 2. productRefIdと価格で完全一致
+                    if (link.productRefId === product.id && link.price === product.salePrice) {
+                        console.log(`🔗 productRefId+価格一致: ${product.name} (${product.id}, ¥${product.salePrice})`);
                         return true;
                     }
                     
-                    // 3. 商品名と価格で完全一致（同じ商品名で異なる価格の場合は区別）
+                    // 3. 商品名と価格で完全一致
                     if (link.productName === product.name && link.price === product.salePrice) {
                         console.log(`🔗 商品名+価格一致: ${product.name} (¥${product.salePrice})`);
                         return true;
