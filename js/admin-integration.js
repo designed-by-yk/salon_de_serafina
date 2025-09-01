@@ -479,19 +479,32 @@ class AdminIntegration {
      * 全ての同期を実行
      */
     syncAll() {
-        // メンテナンスモードが最優先
-        if (this.checkMaintenanceMode()) {
+        // 重複実行防止
+        if (this.isSyncing) {
+            this.log('⚠️ 同期処理が既に実行中です - スキップ');
             return;
         }
-
-        // 各機能を順次実行
-        this.updateProductVisibility();
-        this.updatePrices();
-        this.updateDisplayTexts();
-        this.updatePaymentLinks();
-        this.updatePaymentButtons();
         
-        this.log('✅ 全同期完了');
+        this.isSyncing = true;
+        
+        try {
+            // メンテナンスモードが最優先
+            if (this.checkMaintenanceMode()) {
+                return;
+            }
+
+            // 各機能を順次実行
+            this.updateProductVisibility();
+            this.updatePrices();
+            this.updateDisplayTexts();
+            this.updatePaymentLinks();
+            this.updatePaymentButtons();
+            
+            this.log('✅ 全同期完了');
+        } finally {
+            // 同期完了フラグをリセット
+            this.isSyncing = false;
+        }
     }
 
     /**
@@ -612,8 +625,14 @@ class AdminIntegration {
 // グローバルに公開
 window.AdminIntegration = AdminIntegration;
 
-// 自動初期化（ページ読み込み時）
+// 自動初期化（ページ読み込み時）- 重複実行防止
 document.addEventListener('DOMContentLoaded', function() {
+    // 既に初期化されている場合はスキップ
+    if (window.adminIntegration) {
+        console.log('⚠️ AdminIntegrationは既に初期化済みです');
+        return;
+    }
+    
     window.adminIntegration = new AdminIntegration();
     window.adminIntegration.initialize();
 });
