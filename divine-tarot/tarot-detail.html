@@ -365,11 +365,22 @@
             try {
                 const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
                 if (adminData.products) {
-                    const shintakuProduct = adminData.products.find(p => 
-                        p.productId === 'shintaku' || p.name === '神託システムタロット占い'
+                    console.log('🔍 管理画面データから神託システム価格を取得中...');
+                    console.log('📊 全商品データ:', adminData.products);
+                    
+                    // 表示中の商品のみを対象として価格を取得
+                    const visibleProducts = adminData.products.filter(p => p.visible);
+                    console.log('👁️ 表示中の商品:', visibleProducts);
+                    
+                    const shintakuProduct = visibleProducts.find(p => 
+                        p.stableId === 'shintaku' || 
+                        p.name === '神託システムタロット占い' ||
+                        p.name.includes('神託システムタロット占い')
                     );
                     if (shintakuProduct && shintakuProduct.salePrice) {
-                        return parseInt(shintakuProduct.salePrice);
+                        const price = parseInt(shintakuProduct.salePrice);
+                        console.log(`✅ 神託システム価格: ¥${price} (${shintakuProduct.name})`);
+                        return price;
                     }
                 }
             } catch (e) {

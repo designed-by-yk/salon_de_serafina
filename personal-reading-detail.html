@@ -1228,30 +1228,47 @@
                 if (adminData.products) {
                     const prices = { tarot: 5000, star: 5000, bundle: 8000 }; // デフォルト
                     
-                    // タロット価格
-                    const tarotProduct = adminData.products.find(p => 
-                        p.productId === 'personal_tarot' || p.name === '個人鑑定タロット'
+                    console.log('🔍 管理画面データから価格を取得中...');
+                    console.log('📊 全商品データ:', adminData.products);
+                    
+                    // 表示中の商品のみを対象として価格を取得
+                    const visibleProducts = adminData.products.filter(p => p.visible);
+                    console.log('👁️ 表示中の商品:', visibleProducts);
+                    
+                    // タロット価格（安定IDまたは商品名で検索）
+                    const tarotProduct = visibleProducts.find(p => 
+                        p.stableId === 'personal_tarot' || 
+                        p.name === '個人鑑定タロット' ||
+                        p.name.includes('個人鑑定タロット')
                     );
                     if (tarotProduct && tarotProduct.salePrice) {
                         prices.tarot = parseInt(tarotProduct.salePrice);
+                        console.log(`✅ タロット価格: ¥${prices.tarot} (${tarotProduct.name})`);
                     }
                     
-                    // 星詠み価格
-                    const starProduct = adminData.products.find(p => 
-                        p.productId === 'personal_birthday' || p.name === '個人鑑定誕生日'
+                    // 星詠み価格（安定IDまたは商品名で検索）
+                    const starProduct = visibleProducts.find(p => 
+                        p.stableId === 'personal_birthday' || 
+                        p.name === '個人鑑定誕生日' ||
+                        p.name.includes('個人鑑定誕生日')
                     );
                     if (starProduct && starProduct.salePrice) {
                         prices.star = parseInt(starProduct.salePrice);
+                        console.log(`✅ 星詠み価格: ¥${prices.star} (${starProduct.name})`);
                     }
                     
-                    // セット価格
-                    const bundleProduct = adminData.products.find(p => 
-                        p.productId === 'personal_set' || p.name === '個人鑑定セット'
+                    // セット価格（安定IDまたは商品名で検索）
+                    const bundleProduct = visibleProducts.find(p => 
+                        p.stableId === 'personal_set' || 
+                        p.name === '個人鑑定セット' ||
+                        p.name.includes('個人鑑定セット')
                     );
                     if (bundleProduct && bundleProduct.salePrice) {
                         prices.bundle = parseInt(bundleProduct.salePrice);
+                        console.log(`✅ セット価格: ¥${prices.bundle} (${bundleProduct.name})`);
                     }
                     
+                    console.log('💰 取得した価格データ:', prices);
                     return prices;
                 }
             } catch (e) {
@@ -1263,8 +1280,12 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Personal Reading page loaded:', new Date().toISOString());
             
-            // 現在の販売価格を取得
-            originalPrices = getCurrentPrices();
+            // 現在の販売価格を取得して原価格を更新
+            const currentPrices = getCurrentPrices();
+            originalPrices = currentPrices;
+            
+            console.log('🎯 originalPricesを更新:', originalPrices);
+            console.log('🔄 クーポン計算の基準価格として設定完了');
             console.log('個人鑑定現在価格:', originalPrices);
             
             // クーポンシステムの初期化
@@ -1319,6 +1340,9 @@
         
         // 個別クーポンシステムの初期化
         function initializeIndividualCouponSystems() {
+            console.log('🔧 個別クーポンシステム初期化開始');
+            console.log('📊 使用する価格データ:', originalPrices);
+            
             const services = [
                 { 
                     name: 'tarot', 
@@ -1336,6 +1360,8 @@
                     price: originalPrices.bundle 
                 }
             ];
+            
+            console.log('🎯 サービス価格設定:', services);
             
             services.forEach(service => {
                 initializeServiceCoupon(service);

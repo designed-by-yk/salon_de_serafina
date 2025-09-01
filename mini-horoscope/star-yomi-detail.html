@@ -597,11 +597,22 @@
             try {
                 const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
                 if (adminData.products) {
-                    const starProduct = adminData.products.find(p => 
-                        p.productId === 'star_yomi' || p.name === '星詠みシステム星座占い'
+                    console.log('🔍 管理画面データから星詠みシステム価格を取得中...');
+                    console.log('📊 全商品データ:', adminData.products);
+                    
+                    // 表示中の商品のみを対象として価格を取得
+                    const visibleProducts = adminData.products.filter(p => p.visible);
+                    console.log('👁️ 表示中の商品:', visibleProducts);
+                    
+                    const starProduct = visibleProducts.find(p => 
+                        p.stableId === 'star_yomi' || 
+                        p.name === '星詠みシステム星座占い' ||
+                        p.name.includes('星詠みシステム星座占い')
                     );
                     if (starProduct && starProduct.salePrice) {
-                        return parseInt(starProduct.salePrice);
+                        const price = parseInt(starProduct.salePrice);
+                        console.log(`✅ 星詠みシステム価格: ¥${price} (${starProduct.name})`);
+                        return price;
                     }
                 }
             } catch (e) {

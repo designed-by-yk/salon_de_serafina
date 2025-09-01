@@ -2971,7 +2971,7 @@
             }
         }
         
-        // 決済リンク選択システム - 安定IDベースの最適な決済リンクを選択
+        // 決済リンク選択システム - 安定IDベースの最適な決済リンクを選択（正確な価格マッチング）
         function selectOptimalPaymentLink(productName, finalPrice, couponCode = null) {
             console.log(`🔗 決済リンク選択開始: ${productName}, 最終金額: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
             
@@ -2989,39 +2989,40 @@
             
             console.log(`🔍 商品「${productName}」の安定ID: ${product.stableId}`);
             
-            // 2. 安定IDで決済リンクを絞り込み
+            // 2. 安定IDで決済リンクを絞り込み（有効なもののみ）
             const relatedLinks = currentData.paymentLinks.filter(link => {
-                return link.stableId === product.stableId;
+                return link.stableId === product.stableId && link.active;
             });
             
-            console.log(`🔍 安定ID「${product.stableId}」の決済リンク: ${relatedLinks.length}件`);
+            console.log(`🔍 安定ID「${product.stableId}」の有効な決済リンク: ${relatedLinks.length}件`);
             relatedLinks.forEach(link => {
-                console.log(`  - ${link.id}: ¥${link.price} (${link.active ? '有効' : '無効'})`);
+                console.log(`  - ${link.id}: ¥${link.price} (${link.priceType || '不明'})`);
             });
             
             if (relatedLinks.length === 0) {
-                console.warn(`⚠️ 商品「${productName}」に関連する決済リンクが見つかりません`);
+                console.warn(`⚠️ 商品「${productName}」に関連する有効な決済リンクが見つかりません`);
                 return null;
             }
             
-            console.log(`🔍 関連する決済リンク: ${relatedLinks.length}件`);
-            relatedLinks.forEach(link => {
-                console.log(`  - ${link.id}: ¥${link.price} (${link.active ? '有効' : '無効'})`);
-            });
-            
-            // 有効な決済リンクのみを対象とする
-            const activeLinks = relatedLinks.filter(link => link.active);
-            
-            if (activeLinks.length === 0) {
-                console.warn(`⚠️ 商品「${productName}」の有効な決済リンクがありません`);
-                return null;
+            // 3. 価格マッチング戦略
+            // 3-1. 完全一致を優先
+            const exactMatch = relatedLinks.find(link => link.price === finalPrice);
+            if (exactMatch) {
+                console.log(`✅ 完全一致リンク選択: ${exactMatch.id} (¥${exactMatch.price})`);
+                
+                // 選択結果をログに記録
+                addHistoryEntry('決済リンク選択', 
+                    `商品「${productName}」の決済リンクを選択 (完全一致: ¥${finalPrice}, リンク: ${exactMatch.id}, クーポン: ${couponCode || 'なし'})`
+                );
+                
+                return exactMatch;
             }
             
-            // 最終金額に最も近い決済リンクを選択
+            // 3-2. 完全一致がない場合は、最も近い価格を選択（ただし警告を出す）
             let optimalLink = null;
             let minDifference = Infinity;
             
-            activeLinks.forEach(link => {
+            relatedLinks.forEach(link => {
                 const difference = Math.abs(link.price - finalPrice);
                 if (difference < minDifference) {
                     minDifference = difference;
@@ -3030,12 +3031,13 @@
             });
             
             if (optimalLink) {
-                console.log(`✅ 最適な決済リンク選択: ${optimalLink.id} (¥${optimalLink.price})`);
+                console.log(`⚠️ 近似マッチリンク選択: ${optimalLink.id} (¥${optimalLink.price})`);
                 console.log(`💰 価格差: ¥${Math.abs(optimalLink.price - finalPrice)}`);
+                console.log(`🔔 注意: 完全一致するリンクがありません。価格設定を確認してください。`);
                 
                 // 選択結果をログに記録
                 addHistoryEntry('決済リンク選択', 
-                    `商品「${productName}」の決済リンクを選択しました (最終金額: ¥${finalPrice}, 選択: ¥${optimalLink.price}, クーポン: ${couponCode || 'なし'})`
+                    `商品「${productName}」の決済リンクを選択 (近似: 最終¥${finalPrice}, 選択¥${optimalLink.price}, 差額¥${Math.abs(optimalLink.price - finalPrice)}, クーポン: ${couponCode || 'なし'})`
                 );
                 
                 return optimalLink;

@@ -157,55 +157,53 @@ class PaymentLinkSelector {
     }
     
     /**
-     * 最適な決済リンクを選択
+     * 最適な決済リンクを選択（安定IDベース + 正確な価格マッチング）
      */
     selectOptimalPaymentLink(productName, finalPrice, couponCode = null) {
         console.log(`🔗 決済リンク選択開始: ${productName}, 最終金額: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
         
-        if (!this.currentData.paymentLinks) {
-            console.error('❌ 決済リンクデータが不足しています');
+        if (!this.currentData.paymentLinks || !this.currentData.products) {
+            console.error('❌ 決済リンクまたは商品データが不足しています');
             return null;
         }
         
-        // 商品名に基づいて関連する決済リンクを検索
+        // 1. 商品名から安定IDを取得
+        const product = this.currentData.products.find(p => p.name === productName);
+        if (!product) {
+            console.error(`❌ 商品「${productName}」が見つかりません`);
+            return null;
+        }
+        
+        console.log(`🔍 商品「${productName}」の安定ID: ${product.stableId}`);
+        
+        // 2. 安定IDで決済リンクを絞り込み
         const relatedLinks = this.currentData.paymentLinks.filter(link => {
-            // 商品名での直接マッチ
-            if (link.productName === productName) {
-                return true;
-            }
-            
-            // productRefIdでのマッチ（商品管理との連携）
-            const product = this.currentData.products.find(p => p.id === link.productRefId);
-            if (product && product.name === productName) {
-                return true;
-            }
-            
-            return false;
+            return link.stableId === product.stableId && link.active;
+        });
+        
+        console.log(`🔍 安定ID「${product.stableId}」の有効な決済リンク: ${relatedLinks.length}件`);
+        relatedLinks.forEach(link => {
+            console.log(`  - ${link.id}: ¥${link.price} (${link.priceType || '不明'})`);
         });
         
         if (relatedLinks.length === 0) {
-            console.warn(`⚠️ 商品「${productName}」に関連する決済リンクが見つかりません`);
+            console.warn(`⚠️ 商品「${productName}」に関連する有効な決済リンクが見つかりません`);
             return null;
         }
         
-        console.log(`🔍 関連する決済リンク: ${relatedLinks.length}件`);
-        relatedLinks.forEach(link => {
-            console.log(`  - ${link.id}: ¥${link.price} (${link.active ? '有効' : '無効'})`);
-        });
-        
-        // 有効な決済リンクのみを対象とする
-        const activeLinks = relatedLinks.filter(link => link.active);
-        
-        if (activeLinks.length === 0) {
-            console.warn(`⚠️ 商品「${productName}」の有効な決済リンクがありません`);
-            return null;
+        // 3. 価格マッチング戦略
+        // 3-1. 完全一致を優先
+        const exactMatch = relatedLinks.find(link => link.price === finalPrice);
+        if (exactMatch) {
+            console.log(`✅ 完全一致リンク選択: ${exactMatch.id} (¥${exactMatch.price})`);
+            return exactMatch;
         }
         
-        // 最終金額に最も近い決済リンクを選択
+        // 3-2. 完全一致がない場合は、最も近い価格を選択（ただし警告を出す）
         let optimalLink = null;
         let minDifference = Infinity;
         
-        activeLinks.forEach(link => {
+        relatedLinks.forEach(link => {
             const difference = Math.abs(link.price - finalPrice);
             if (difference < minDifference) {
                 minDifference = difference;
@@ -214,8 +212,9 @@ class PaymentLinkSelector {
         });
         
         if (optimalLink) {
-            console.log(`✅ 最適な決済リンク選択: ${optimalLink.id} (¥${optimalLink.price})`);
+            console.log(`⚠️ 近似マッチリンク選択: ${optimalLink.id} (¥${optimalLink.price})`);
             console.log(`💰 価格差: ¥${Math.abs(optimalLink.price - finalPrice)}`);
+            console.log(`🔔 注意: 完全一致するリンクがありません。価格設定を確認してください。`);
             return optimalLink;
         } else {
             console.error('❌ 最適な決済リンクの選択に失敗しました');
