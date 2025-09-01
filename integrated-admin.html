@@ -841,6 +841,7 @@
         <button class="btn btn-warning" onclick="debugProductPaymentLinkSync();">🔗 商品・決済リンク同期確認</button>
         <button class="btn btn-danger" onclick="forceSyncPaymentLinks();">🔄 強制同期実行</button>
         <button class="btn btn-outline-primary" onclick="fixPaymentLinkIds();">🔧 決済リンクID完全修正</button>
+        <button class="btn btn-outline-info" onclick="checkAndFixPaymentLinkDuplicates();">🔍 重複チェック・修正</button>
         <button class="btn btn-outline-danger" onclick="forceFixStableIds();">🔧 安定ID強制修正</button>
                         <button class="btn btn-outline-secondary" onclick="investigateProductPaymentLinkMatching();">🔍 詳細マッチング調査</button>
                 <button class="btn btn-outline-warning" onclick="resetPaymentLinkData();">🔄 決済リンクデータリセット</button>
@@ -2013,6 +2014,61 @@
             }
         }
         
+        // 決済リンクの重複を確認し、修正する
+        function checkAndFixPaymentLinkDuplicates() {
+            console.log('🔍 決済リンクの重複チェック開始');
+            
+            // 重複チェック用のマップ
+            const linkMap = new Map();
+            const duplicates = [];
+            const uniqueLinks = [];
+            
+            currentData.paymentLinks.forEach(link => {
+                // 重複判定のキー（productId + price + priceType）
+                const key = `${link.productId}_${link.price}_${link.priceType}`;
+                
+                if (linkMap.has(key)) {
+                    duplicates.push({
+                        original: linkMap.get(key),
+                        duplicate: link,
+                        key: key
+                    });
+                    console.log(`⚠️ 重複発見: ${link.id} と ${linkMap.get(key).id} (キー: ${key})`);
+                } else {
+                    linkMap.set(key, link);
+                    uniqueLinks.push(link);
+                }
+            });
+            
+            if (duplicates.length > 0) {
+                console.log(`🔍 ${duplicates.length}件の重複を発見しました`);
+                
+                // 重複を除去し、ユニークなリンクのみを保持
+                currentData.paymentLinks = uniqueLinks;
+                
+                console.log(`✅ 重複を除去し、${uniqueLinks.length}件のユニークな決済リンクを保持しました`);
+                
+                // データを保存
+                saveData();
+                
+                // テーブルを更新
+                updatePaymentLinksTable();
+                
+                return {
+                    duplicatesFound: duplicates.length,
+                    finalCount: uniqueLinks.length,
+                    duplicates: duplicates
+                };
+            } else {
+                console.log('✅ 重複は発見されませんでした');
+                return {
+                    duplicatesFound: 0,
+                    finalCount: currentData.paymentLinks.length,
+                    duplicates: []
+                };
+            }
+        }
+        
         // 決済リンクのIDを正しく再設定し、重複を解消
         function fixPaymentLinkIds() {
             console.log('🔧 決済リンクIDの完全修正開始');
@@ -2080,7 +2136,7 @@
                         link.price === product.salePrice &&
                         link.priceType === 'sale'
                     );
-                    if (existingSaleLink && existingRegularLink.url) {
+                    if (existingSaleLink && existingSaleLink.url) {
                         saleLink.url = existingSaleLink.url;
                     }
                     
