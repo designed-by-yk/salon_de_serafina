@@ -1985,17 +1985,16 @@
             syncProductPrices();
         }
         
-        // 重複決済リンクの除去
+        // 重複決済リンクの除去（価格/価格タイプも含めて判定）
         function removeDuplicatePaymentLinks() {
             console.log('🧹 重複決済リンクの除去開始');
             const originalCount = currentData.paymentLinks.length;
             
-            // 重複を除去（同じproductId、productRefId、productNameを持つものを1つだけ残す）
             const uniqueLinks = [];
             const seen = new Set();
             
             currentData.paymentLinks.forEach(link => {
-                const key = `${link.productId}_${link.productRefId}_${link.productName}`;
+                const key = `${link.productId || ''}_${link.productRefId || ''}_${link.productName || ''}_${link.stableId || ''}_${link.price || ''}_${link.priceType || ''}`;
                 if (!seen.has(key)) {
                     seen.add(key);
                     uniqueLinks.push(link);
@@ -2854,18 +2853,14 @@
             let fixCount = 0;
             let linkFixCount = 0;
             
-            // 商品の安定IDを修正
+            // 商品の安定IDを修正（常に名前から再計算して差分があれば更新）
             currentData.products.forEach(product => {
-                // 安定IDが存在しない、または正しくない場合に修正
-                if (!product.stableId || product.stableId.startsWith('product_')) {
-                    const correctStableId = generateStableIdFromProductName(product.name);
-                    
-                    if (product.stableId !== correctStableId) {
-                        console.log(`🔄 商品安定ID修正: ${product.name} - ${product.stableId || 'なし'} -> ${correctStableId}`);
-                        product.stableId = correctStableId;
-                        product.updated = new Date().toISOString();
-                        fixCount++;
-                    }
+                const correctStableId = generateStableIdFromProductName(product.name);
+                if (product.stableId !== correctStableId) {
+                    console.log(`🔄 商品安定ID修正: ${product.name} - ${product.stableId || 'なし'} -> ${correctStableId}`);
+                    product.stableId = correctStableId;
+                    product.updated = new Date().toISOString();
+                    fixCount++;
                 }
             });
             
