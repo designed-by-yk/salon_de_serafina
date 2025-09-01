@@ -1852,7 +1852,8 @@
             });
             
             console.log('🔗 決済リンク管理の状況:');
-            currentData.paymentLinks.forEach((link, index) => {
+            const linksForLog = (currentData.paymentLinks || []).filter(l => l.active);
+            linksForLog.forEach((link, index) => {
                 console.log(`${index + 1}. ${link.productName || '商品名なし'}`);
                 console.log(`   - リンクID: ${link.id}`);
                 console.log(`   - 統合ID: ${link.productId || '未設定'}`);
@@ -2079,8 +2080,8 @@
             
             // 商品ごとに正しい決済リンクを作成
             currentData.products.forEach(product => {
-                // 通常価格の決済リンクを作成
-                if (product.regularPrice > 0) {
+                // 通常価格の決済リンクを作成（通常=販売のときのみ）
+                if (product.regularPrice > 0 && product.salePrice === product.regularPrice) {
                     // ユニークなリンクIDを生成（productIdを含める）
                     const regularLinkId = `link_${product.productId.replace(/_\d+$/, '')}_001`;
                     const regularLink = {
