@@ -28,14 +28,27 @@ class PaymentLinkSelector {
      */
     loadData() {
         try {
-            const data = localStorage.getItem('integratedAdminData');
+            // 管理画面と同じキー名を使用
+            const data = localStorage.getItem('adminData');
             if (data) {
                 this.currentData = JSON.parse(data);
                 console.log('✅ 統合管理画面データを読み込みました');
                 console.log('📦 商品数:', this.currentData.products?.length || 0);
                 console.log('🔗 決済リンク数:', this.currentData.paymentLinks?.length || 0);
             } else {
-                console.warn('⚠️ 統合管理画面データが見つかりません');
+                console.warn('⚠️ 統合管理画面データが見つかりません (adminData)');
+                console.log('🔍 localStorage確認中...');
+                
+                // デバッグ用: localStorage内容を確認
+                const keys = Object.keys(localStorage);
+                console.log('📋 利用可能なlocalStorageキー:', keys);
+                
+                // 代替キーを試行
+                const altData = localStorage.getItem('integratedAdminData');
+                if (altData) {
+                    this.currentData = JSON.parse(altData);
+                    console.log('✅ 代替キー(integratedAdminData)でデータを読み込みました');
+                }
             }
         } catch (error) {
             console.error('❌ データ読み込みエラー:', error);
@@ -162,8 +175,21 @@ class PaymentLinkSelector {
     selectOptimalPaymentLink(productName, finalPrice, couponCode = null) {
         console.log(`🔗 決済リンク選択開始: ${productName}, 最終金額: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
         
+        // データ存在チェック
+        if (!this.currentData) {
+            console.error('❌ 統合管理画面データが読み込まれていません');
+            console.log('🔄 データ再読み込みを試行...');
+            this.loadData();
+            
+            if (!this.currentData) {
+                console.error('❌ データ再読み込みに失敗しました');
+                return null;
+            }
+        }
+        
         if (!this.currentData.paymentLinks || !this.currentData.products) {
             console.error('❌ 決済リンクまたは商品データが不足しています');
+            console.log('📊 currentData内容:', this.currentData);
             return null;
         }
         

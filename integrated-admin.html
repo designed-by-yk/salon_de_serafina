@@ -1852,8 +1852,7 @@
             });
             
             console.log('🔗 決済リンク管理の状況:');
-            const linksForLog = (currentData.paymentLinks || []).filter(l => l.active);
-            linksForLog.forEach((link, index) => {
+            currentData.paymentLinks.forEach((link, index) => {
                 console.log(`${index + 1}. ${link.productName || '商品名なし'}`);
                 console.log(`   - リンクID: ${link.id}`);
                 console.log(`   - 統合ID: ${link.productId || '未設定'}`);
@@ -2078,44 +2077,72 @@
             const originalLinks = [...currentData.paymentLinks];
             currentData.paymentLinks = [];
             
-            // 商品ごとに正しい決済リンクを作成（表示商品のみ）
-            const visibleProducts = currentData.products.filter(product => product.visible);
-            
-            visibleProducts.forEach(product => {
-                // 表示商品の販売価格決済リンクを作成
-                if (product.salePrice > 0) {
-                    // 販売価格と通常価格が同じ場合は001、異なる場合は002
-                    const linkNumber = (product.salePrice === product.regularPrice) ? '001' : '002';
-                    const linkId = `link_${product.stableId}_${linkNumber}`;
-                    
-                    const priceType = (product.salePrice === product.regularPrice) ? 'regular' : 'sale';
-                    
-                    const paymentLink = {
-                        id: linkId,
+            // 商品ごとに正しい決済リンクを作成
+            currentData.products.forEach(product => {
+                // 通常価格の決済リンクを作成（通常=販売のときのみ）
+                if (product.regularPrice > 0 && product.salePrice === product.regularPrice) {
+                    // ユニークなリンクIDを生成（productIdを含める）
+                    const regularLinkId = `link_${product.productId.replace(/_\d+$/, '')}_001`;
+                    const regularLink = {
+                        id: regularLinkId,
                         productId: product.productId,
                         productRefId: product.id,
                         productName: product.name,
                         stableId: product.stableId,
-                        price: product.salePrice,
-                        priceType: priceType,
+                        price: product.regularPrice,
+                        priceType: 'regular',
                         description: product.displayText || '',
                         url: '', // 空のURL
-                        active: true, // 表示商品なので有効
+                        active: product.visible,
                         created: new Date().toISOString(),
                         updated: new Date().toISOString()
                     };
                     
                     // 既存のリンクからURLを引き継ぐ
-                    const existingLink = originalLinks.find(link => 
+                    const existingRegularLink = originalLinks.find(link => 
                         link.productId === product.productId && 
-                        link.price === product.salePrice
+                        link.price === product.regularPrice &&
+                        link.priceType === 'regular'
                     );
-                    if (existingLink && existingLink.url) {
-                        paymentLink.url = existingLink.url;
+                    if (existingRegularLink && existingRegularLink.url) {
+                        regularLink.url = existingRegularLink.url;
                     }
                     
-                    currentData.paymentLinks.push(paymentLink);
-                    console.log(`✅ 決済リンク「${linkId}」を作成: ${product.name} ¥${product.salePrice} (${priceType})`);
+                    currentData.paymentLinks.push(regularLink);
+                    console.log(`✅ 通常価格決済リンク「${regularLinkId}」を作成: ${product.name} ¥${product.regularPrice}`);
+                }
+                
+                // 販売価格が通常価格と異なる場合、販売価格の決済リンクを作成
+                if (product.salePrice > 0 && product.salePrice !== product.regularPrice) {
+                    // ユニークなリンクIDを生成（productIdを含める）
+                    const saleLinkId = `link_${product.productId.replace(/_\d+$/, '')}_002`;
+                    const saleLink = {
+                        id: saleLinkId,
+                        productId: product.productId,
+                        productRefId: product.id,
+                        productName: product.name,
+                        stableId: product.stableId,
+                        price: product.salePrice,
+                        priceType: 'sale',
+                        description: product.displayText || '',
+                        url: '', // 空のURL
+                        active: product.visible,
+                        created: new Date().toISOString(),
+                        updated: new Date().toISOString()
+                    };
+                    
+                    // 既存のリンクからURLを引き継ぐ
+                    const existingSaleLink = originalLinks.find(link => 
+                        link.productId === product.productId && 
+                        link.price === product.salePrice &&
+                        link.priceType === 'sale'
+                    );
+                    if (existingSaleLink && existingSaleLink.url) {
+                        saleLink.url = existingSaleLink.url;
+                    }
+                    
+                    currentData.paymentLinks.push(saleLink);
+                    console.log(`✅ 販売価格決済リンク「${saleLinkId}」を作成: ${product.name} ¥${product.salePrice}`);
                 }
             });
             

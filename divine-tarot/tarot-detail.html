@@ -573,6 +573,9 @@
                 
                 // 決済リンク選択システムを使用
                 if (window.paymentLinkSelector) {
+                    // データを確実に読み込み
+                    window.paymentLinkSelector.loadData();
+                    
                     // 最終価格で適切な決済リンクを選択
                     const selectedLink = window.paymentLinkSelector.selectOptimalPaymentLink(
                         '神託システムタロット占い',
