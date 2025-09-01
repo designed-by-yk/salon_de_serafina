@@ -384,3 +384,4 @@ window.debugPaymentLinkSelector = () => {
     console.log('finalPrice:', window.paymentLinkSelector.finalPrice);
     console.log('originalPrice:', window.paymentLinkSelector.originalPrice);
 };
+

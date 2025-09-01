@@ -840,7 +840,7 @@
         <button class="btn btn-info" onclick="checkDataStatus();">🔍 データ状況確認</button>
         <button class="btn btn-warning" onclick="debugProductPaymentLinkSync();">🔗 商品・決済リンク同期確認</button>
         <button class="btn btn-danger" onclick="forceSyncPaymentLinks();">🔄 強制同期実行</button>
-        <button class="btn btn-outline-primary" onclick="initializePaymentLinkPriceTypes();">🔧 決済リンク完全修正</button>
+        <button class="btn btn-outline-primary" onclick="fixPaymentLinkIds();">🔧 決済リンクID完全修正</button>
         <button class="btn btn-outline-danger" onclick="forceFixStableIds();">🔧 安定ID強制修正</button>
                         <button class="btn btn-outline-secondary" onclick="investigateProductPaymentLinkMatching();">🔍 詳細マッチング調査</button>
                 <button class="btn btn-outline-warning" onclick="resetPaymentLinkData();">🔄 決済リンクデータリセット</button>
@@ -2013,22 +2013,106 @@
             }
         }
         
-        // 既存の決済リンクの設定を完全に修正し、不足している決済リンクを作成
-        function initializePaymentLinkPriceTypes() {
-            console.log('🔧 決済リンク設定の完全修正開始');
+        // 決済リンクのIDを正しく再設定し、重複を解消
+        function fixPaymentLinkIds() {
+            console.log('🔧 決済リンクIDの完全修正開始');
             let updatedCount = 0;
-            let createdCount = 0;
             
-            // まず、既存の決済リンクの設定を正しく修正
+            // 既存の決済リンクを一旦クリア
+            const originalLinks = [...currentData.paymentLinks];
+            currentData.paymentLinks = [];
+            
+            // 商品ごとに正しい決済リンクを作成
+            currentData.products.forEach(product => {
+                // 通常価格の決済リンクを作成
+                if (product.regularPrice > 0) {
+                    const regularLinkId = `link_${product.stableId}_001`;
+                    const regularLink = {
+                        id: regularLinkId,
+                        productId: product.productId,
+                        productRefId: product.id,
+                        productName: product.name,
+                        stableId: product.stableId,
+                        price: product.regularPrice,
+                        priceType: 'regular',
+                        description: product.displayText || '',
+                        url: '', // 空のURL
+                        active: product.visible,
+                        created: new Date().toISOString(),
+                        updated: new Date().toISOString()
+                    };
+                    
+                    // 既存のリンクからURLを引き継ぐ
+                    const existingRegularLink = originalLinks.find(link => 
+                        link.productId === product.productId && 
+                        link.price === product.regularPrice &&
+                        link.priceType === 'regular'
+                    );
+                    if (existingRegularLink && existingRegularLink.url) {
+                        regularLink.url = existingRegularLink.url;
+                    }
+                    
+                    currentData.paymentLinks.push(regularLink);
+                    console.log(`✅ 通常価格決済リンク「${regularLinkId}」を作成: ${product.name} ¥${product.regularPrice}`);
+                }
+                
+                // 販売価格が通常価格と異なる場合、販売価格の決済リンクを作成
+                if (product.salePrice > 0 && product.salePrice !== product.regularPrice) {
+                    const saleLinkId = `link_${product.stableId}_002`;
+                    const saleLink = {
+                        id: saleLinkId,
+                        productId: product.productId,
+                        productRefId: product.id,
+                        productName: product.name,
+                        stableId: product.stableId,
+                        price: product.salePrice,
+                        priceType: 'sale',
+                        description: product.displayText || '',
+                        url: '', // 空のURL
+                        active: product.visible,
+                        created: new Date().toISOString(),
+                        updated: new Date().toISOString()
+                    };
+                    
+                    // 既存のリンクからURLを引き継ぐ
+                    const existingSaleLink = originalLinks.find(link => 
+                        link.productId === product.productId && 
+                        link.price === product.salePrice &&
+                        link.priceType === 'sale'
+                    );
+                    if (existingSaleLink && existingRegularLink.url) {
+                        saleLink.url = existingSaleLink.url;
+                    }
+                    
+                    currentData.paymentLinks.push(saleLink);
+                    console.log(`✅ 販売価格決済リンク「${saleLinkId}」を作成: ${product.name} ¥${product.salePrice}`);
+                }
+            });
+            
+            updatedCount = currentData.paymentLinks.length;
+            console.log(`🔧 ${updatedCount}件の決済リンクを正しく再設定しました`);
+            
+            // データを保存
+            saveData();
+            
+            // テーブルを更新
+            updatePaymentLinksTable();
+            
+            return updatedCount;
+        }
+        
+        // 既存の決済リンクの価格タイプとproductIdを正しく設定
+        function initializePaymentLinkPriceTypes() {
+            console.log('🔧 既存決済リンクの価格タイプとproductId設定開始');
+            let updatedCount = 0;
+            
             currentData.paymentLinks.forEach(link => {
                 let needsUpdate = false;
                 
-                // 対応する商品を検索（価格と商品名でマッチ）
-                const matchingProducts = currentData.products.filter(p => {
-                    const priceMatch = p.regularPrice === link.price || p.salePrice === link.price;
-                    const nameMatch = p.name === link.productName;
-                    return priceMatch && nameMatch;
-                });
+                // 対応する商品を検索（価格でマッチ）
+                const matchingProducts = currentData.products.filter(p => 
+                    p.regularPrice === link.price || p.salePrice === link.price
+                );
                 
                 if (matchingProducts.length > 0) {
                     // 最も適切な商品を選択（価格タイプに基づいて）
@@ -2076,58 +2160,11 @@
                 }
             });
             
-            // 次に、不足している決済リンクを作成
-            currentData.products.forEach(product => {
-                // この商品に対応する決済リンクを検索
-                const matchingLinks = currentData.paymentLinks.filter(link => 
-                    link.productId === product.productId
-                );
-                
-                // 決済リンクが存在しない場合、新しく作成
-                if (matchingLinks.length === 0) {
-                    console.log(`🔧 商品「${product.name}」の決済リンクを作成中...`);
-                    
-                    // 新しい決済リンクIDを生成
-                    const baseId = product.stableId || product.id;
-                    const existingLinksWithSameStableId = currentData.paymentLinks.filter(link => 
-                        link.stableId === product.stableId
-                    );
-                    const nextNumber = existingLinksWithSameStableId.length + 1;
-                    const linkId = `link_${baseId}_${String(nextNumber).padStart(3, '0')}`;
-                    
-                    // 価格タイプを決定
-                    let priceType;
-                    if (product.salePrice === product.regularPrice) {
-                        priceType = 'regular';
-                    } else {
-                        priceType = 'sale';
-                    }
-                    
-                    const newPaymentLink = {
-                        id: linkId,
-                        productId: product.productId,
-                        productRefId: product.id,
-                        productName: product.name,
-                        stableId: product.stableId,
-                        price: product.salePrice,
-                        priceType: priceType,
-                        squareLink: '', // 空のSquareリンク
-                        active: product.visible,
-                        created: new Date().toISOString(),
-                        updated: new Date().toISOString()
-                    };
-                    
-                    currentData.paymentLinks.push(newPaymentLink);
-                    createdCount++;
-                    console.log(`✅ 決済リンク「${linkId}」を作成しました`);
-                }
-            });
-            
-            if (updatedCount > 0 || createdCount > 0) {
-                console.log(`🔧 ${updatedCount}件の決済リンクを更新、${createdCount}件の決済リンクを作成しました`);
+            if (updatedCount > 0) {
+                console.log(`🔧 ${updatedCount}件の決済リンクを更新しました`);
                 saveData();
             } else {
-                console.log('✅ 決済リンクの修正・作成は不要です');
+                console.log('✅ 決済リンクの更新は不要です');
             }
         }
         
