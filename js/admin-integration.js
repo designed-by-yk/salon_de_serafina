@@ -154,6 +154,12 @@ class AdminIntegration {
 
         let updatedCount = 0;
         adminData.products.forEach(product => {
+            // 表示中の商品のみ処理（visible: true）
+            if (!product.visible) {
+                this.log(`⏭️ 非表示商品をスキップ: ${product.name || product.productName}`);
+                return;
+            }
+            
             const serviceKey = this.getServiceKeyFromProduct(product);
             this.log(`🔍 商品チェック: ${product.name || product.productName} → サービスキー: ${serviceKey}`);
             
@@ -272,11 +278,10 @@ class AdminIntegration {
                     const regularPrice = product.regularPrice || price;
                     const salePrice = product.salePrice || price;
                     
-                    // 販売価格と通常価格が同じ場合は非表示
+                    // 販売価格と通常価格が同じ場合でも表示する（通常価格として）
                     if (regularPrice === salePrice) {
-                        element.style.display = 'none';
-                        this.log(`🚫 通常価格非表示: ${serviceKey} (販売価格と同額のため)`);
-                        return; // 価格更新をスキップ
+                        element.style.display = ''; // 表示する
+                        this.log(`✅ 通常価格表示: ${serviceKey} (販売価格と同額だが通常価格として表示)`);
                     } else {
                         element.style.display = ''; // 表示に戻す
                     }
