@@ -706,8 +706,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初期化フラグを設定
     window.adminIntegrationInitialized = true;
     
-    window.adminIntegration = new AdminIntegration();
-    window.adminIntegration.initialize();
+    // 他のスクリプトの初期化を待つ
+    setTimeout(() => {
+        window.adminIntegration = new AdminIntegration();
+        window.adminIntegration.initialize();
+    }, 500); // 500ms待機
 });
 
 // ページが既に読み込まれている場合の対応
@@ -717,8 +720,10 @@ if (document.readyState === 'loading') {
     // 既に読み込み完了している場合は即座に初期化
     if (!window.adminIntegration && !window.adminIntegrationInitialized) {
         window.adminIntegrationInitialized = true;
-        window.adminIntegration = new AdminIntegration();
-        window.adminIntegration.initialize();
+        setTimeout(() => {
+            window.adminIntegration = new AdminIntegration();
+            window.adminIntegration.initialize();
+        }, 500);
     }
 }
 
