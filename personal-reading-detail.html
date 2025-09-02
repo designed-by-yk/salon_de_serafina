@@ -1291,10 +1291,7 @@
             // admin-integration.jsの初期化完了を待ってから個人鑑定システムを初期化
             console.log('🔧 個人鑑定ページ初期化開始');
             
-            // 即座に価格表示を強制更新
-            setTimeout(forceUpdatePersonalPrices, 100);
-            
-            // admin-integration.jsの初期化完了も待つ
+            // admin-integration.jsの初期化完了を待つ（価格表示はadmin-integration.jsに完全委任）
             waitForAdminIntegration();
             
             // 確実にクーポン適用済み表示を隠す（強制実行）
@@ -1378,91 +1375,19 @@
                 console.log('✅ admin-integration.jsの初期化完了を確認、個人鑑定システムを初期化');
                 initializeIndividualCouponSystems();
                 
-                // 個人鑑定ページの価格表示を強制的に更新
-                setTimeout(forceUpdatePersonalPrices, 200);
+                // 価格表示はadmin-integration.jsに完全委任（上書きしない）
+                console.log('📋 価格表示はadmin-integration.jsに完全委任（ローカルスクリプトでは上書きしません）');
             } else {
                 console.log('⏳ admin-integration.jsの初期化完了を待機中... (100ms後に再試行)');
                 setTimeout(waitForAdminIntegration, 100);
             }
         }
         
-        // 個人鑑定ページの価格表示を強制的に更新
+        // 個人鑑定ページの価格表示を強制的に更新（無効化）
         function forceUpdatePersonalPrices() {
-            console.log('🔧 個人鑑定ページの価格表示を強制更新中...');
-            
-            // 統合管理画面から表示中の商品を取得
-            try {
-                const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
-                const products = adminData.products || [];
-                const visibleProducts = products.filter(p => p.visible);
-                
-                console.log('📊 表示中の商品:', visibleProducts.map(p => `${p.name}: ${p.regularPrice}円`));
-                
-                // 個人鑑定の価格要素を強制的にスタイル更新
-                const personalPriceSelectors = [
-                    '[data-service="personal_tarot"] .price',
-                    '[data-service="personal_birthday"] .price', 
-                    '[data-service="personal_set"] .price',
-                    '.option-card .price[data-service="personal_tarot"]',
-                    '.option-card .price[data-service="personal_birthday"]',
-                    '.bundle-pricing .price[data-service="personal_set"]',
-                    '#tarot-price',
-                    '#star-price', 
-                    '#bundle-price',
-                    '.price[data-service="personal_tarot"]',
-                    '.price[data-service="personal_birthday"]',
-                    '.price[data-service="personal_set"]'
-                ];
-                
-                let updatedElements = 0;
-                personalPriceSelectors.forEach(selector => {
-                    const elements = document.querySelectorAll(selector);
-                    elements.forEach(element => {
-                        // 表示中の商品の価格表示スタイルを強制適用
-                        element.style.textDecoration = 'none !important';
-                        element.style.color = '#ffd700 !important';
-                        element.style.fontSize = '1.4em !important';
-                        element.style.fontWeight = 'bold !important';
-                        element.style.display = 'block !important';
-                        element.style.visibility = 'visible !important';
-                        element.style.opacity = '1 !important';
-                        element.classList.remove('strikethrough', 'gray-text', 'small-text');
-                        updatedElements++;
-                    });
-                });
-                
-                console.log(`🎨 ${updatedElements}個の価格要素をスタイル更新`);
-                
-                // 決済ボタンの表示も強制
-                const paymentButtonSelectors = [
-                    '#tarot-payment-btn',
-                    '#star-payment-btn',
-                    '#bundle-payment-btn',
-                    '.option-button',
-                    '.bundle-button',
-                    'button[onclick*="handlePersonalPayment"]',
-                    'button[onclick*="payment"]',
-                    'a[href*="square.link"]'
-                ];
-                
-                let updatedButtons = 0;
-                paymentButtonSelectors.forEach(selector => {
-                    const elements = document.querySelectorAll(selector);
-                    elements.forEach(element => {
-                        element.style.display = 'block !important';
-                        element.style.visibility = 'visible !important';
-                        element.style.opacity = '1 !important';
-                        updatedButtons++;
-                    });
-                });
-                
-                console.log(`🔘 ${updatedButtons}個の決済ボタンを表示更新`);
-                
-            } catch (e) {
-                console.log('統合管理画面データ取得エラー:', e);
-            }
-            
-            console.log('✅ 個人鑑定ページの価格表示強制更新完了');
+            console.log('🔧 個人鑑定ページの価格表示強制更新は無効化されました');
+            console.log('📋 価格表示はadmin-integration.jsに完全委任されています');
+            // この関数は無効化されました - admin-integration.jsが価格表示を管理します
         }
         
         // 各サービスのクーポンシステム初期化
@@ -1483,28 +1408,24 @@
                     return;
                 }
                 
-                            // admin-integration.jsから現在の価格を取得（通常価格を優先）
-            const currentPriceElement = document.getElementById(`${name}-original-display`);
+                            // 統合管理画面から正しい価格（通常価格）を取得
             let currentPrice = price; // デフォルト値
             
-            if (currentPriceElement) {
-                const priceText = currentPriceElement.textContent;
-                currentPrice = parseInt(priceText.replace(/[^\d]/g, ''));
-            } else {
-                // 要素が見つからない場合は、統合管理画面から正しい価格を取得
-                try {
-                    const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
-                    const products = adminData.products || [];
-                    const product = products.find(p => p.stableId === serviceType && p.visible);
-                    if (product) {
-                        currentPrice = product.regularPrice || product.salePrice || price;
-                    }
-                } catch (e) {
-                    console.log('統合管理画面データ取得エラー:', e);
+            try {
+                const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+                const products = adminData.products || [];
+                const product = products.find(p => p.stableId === serviceType && p.visible);
+                if (product) {
+                    // 表示中の商品の通常価格を優先使用
+                    currentPrice = product.regularPrice || product.salePrice || price;
+                    console.log(`🎯 クーポン適用: ${name} - 統合管理画面から取得した価格: ¥${currentPrice} (${serviceType})`);
+                } else {
+                    console.log(`⚠️ クーポン適用: ${name} - 商品が見つからないためデフォルト価格を使用: ¥${currentPrice}`);
                 }
+            } catch (e) {
+                console.log('統合管理画面データ取得エラー:', e);
+                console.log(`⚠️ クーポン適用: ${name} - エラーのためデフォルト価格を使用: ¥${currentPrice}`);
             }
-            
-            console.log(`🎯 クーポン適用: ${name} - 現在の価格: ¥${currentPrice} (${serviceType})`);
                 
                 // クーポンシステムでクーポンを検証
                 if (window.couponSystem) {

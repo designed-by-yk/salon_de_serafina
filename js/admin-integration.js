@@ -269,14 +269,22 @@ class AdminIntegration {
                 priceSelectors.push(`[data-service="${serviceKey}"]#tarot-price`);
                 priceSelectors.push(`#tarot-price`);
                 priceSelectors.push(`.option-card .price[data-service="${serviceKey}"]`);
+                // 追加のセレクタ
+                priceSelectors.push(`.price[data-service="${serviceKey}"]`);
+                priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
             } else if (serviceKey === 'personal_birthday') {
                 priceSelectors.push(`[data-service="${serviceKey}"]#star-price`);
                 priceSelectors.push(`#star-price`);
                 priceSelectors.push(`.option-card .price[data-service="${serviceKey}"]`);
+                // 追加のセレクタ
+                priceSelectors.push(`.price[data-service="${serviceKey}"]`);
+                priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
             } else if (serviceKey === 'personal_set') {
                 priceSelectors.push(`[data-service="${serviceKey}"]#bundle-price`);
                 priceSelectors.push(`#bundle-price`);
                 priceSelectors.push(`.bundle-pricing .price[data-service="${serviceKey}"]`);
+                // 追加のセレクタ
+                priceSelectors.push(`.price[data-service="${serviceKey}"]`);
             }
         } else if (serviceKey === 'star_yomi') {
             // 星詠みページ用の特別なセレクタ
@@ -306,25 +314,29 @@ class AdminIntegration {
                         // 表示中の商品の場合
                         if (regularPrice === salePrice) {
                             // 通常価格 = 販売価格の場合：黄色の大きい文字で表示（取り消し線なし）
-                            element.style.display = '';
-                            element.style.textDecoration = 'none';
-                            element.style.color = '#ffd700';
-                            element.style.fontSize = '1.4em';
-                            element.style.fontWeight = 'bold';
+                            element.style.display = 'block !important';
+                            element.style.textDecoration = 'none !important';
+                            element.style.color = '#ffd700 !important';
+                            element.style.fontSize = '1.4em !important';
+                            element.style.fontWeight = 'bold !important';
+                            element.style.visibility = 'visible !important';
+                            element.style.opacity = '1 !important';
                             element.classList.remove('strikethrough', 'gray-text', 'small-text');
                             this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格=販売価格、黄色表示)`);
                         } else {
                             // 通常価格 ≠ 販売価格の場合：白い文字で取り消し線表示
-                            element.style.display = '';
-                            element.style.textDecoration = 'line-through';
-                            element.style.color = '#ccc';
-                            element.style.fontSize = '0.9em';
-                            element.style.fontWeight = 'normal';
+                            element.style.display = 'block !important';
+                            element.style.textDecoration = 'line-through !important';
+                            element.style.color = '#ccc !important';
+                            element.style.fontSize = '0.9em !important';
+                            element.style.fontWeight = 'normal !important';
+                            element.style.visibility = 'visible !important';
+                            element.style.opacity = '1 !important';
                             this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格≠販売価格、取り消し線表示)`);
                         }
                     } else {
                         // 非表示商品の場合：非表示
-                        element.style.display = 'none';
+                        element.style.display = 'none !important';
                         this.log(`🚫 非表示商品の通常価格: ${serviceKey} (非表示)`);
                     }
                     
@@ -379,16 +391,18 @@ class AdminIntegration {
                     // デフォルトの価格表示（商品管理の表示設定に基づく）
                     if (product.visible) {
                         // 表示中の商品の場合：黄色の大きい文字で表示
-                        element.style.display = '';
-                        element.style.textDecoration = 'none';
-                        element.style.color = '#ffd700';
-                        element.style.fontSize = '1.4em';
-                        element.style.fontWeight = 'bold';
+                        element.style.display = 'block !important';
+                        element.style.textDecoration = 'none !important';
+                        element.style.color = '#ffd700 !important';
+                        element.style.fontSize = '1.4em !important';
+                        element.style.fontWeight = 'bold !important';
+                        element.style.visibility = 'visible !important';
+                        element.style.opacity = '1 !important';
                         element.classList.remove('strikethrough', 'gray-text', 'small-text');
                         this.log(`✅ 表示中商品のデフォルト価格: ${serviceKey} (黄色表示)`);
                     } else {
                         // 非表示商品の場合：非表示
-                        element.style.display = 'none';
+                        element.style.display = 'none !important';
                         this.log(`🚫 非表示商品のデフォルト価格: ${serviceKey} (非表示)`);
                     }
                     
@@ -517,10 +531,10 @@ class AdminIntegration {
                 if (isPaymentButton) {
                     // onclickイベントを更新（決済ボタンのみ）
                     element.onclick = () => window.open(link.url, '_blank');
-                    // 決済ボタンの表示を強制
-                    element.style.display = '';
-                    element.style.visibility = 'visible';
-                    element.style.opacity = '1';
+                                    // 決済ボタンの表示を強制
+                element.style.display = 'block !important';
+                element.style.visibility = 'visible !important';
+                element.style.opacity = '1 !important';
                     this.log(`🔗 ${serviceKey} の決済ボタンを更新: ${link.url}`);
                     buttonFound = true;
                 }
