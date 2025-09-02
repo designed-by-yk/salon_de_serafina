@@ -1381,31 +1381,64 @@
         function forceUpdatePersonalPrices() {
             console.log('🔧 個人鑑定ページの価格表示を強制更新中...');
             
-            // 個人鑑定の価格要素を強制的にスタイル更新
-            const personalPriceSelectors = [
-                '[data-service="personal_tarot"] .price',
-                '[data-service="personal_birthday"] .price', 
-                '[data-service="personal_set"] .price',
-                '.option-card .price[data-service="personal_tarot"]',
-                '.option-card .price[data-service="personal_birthday"]',
-                '.bundle-pricing .price[data-service="personal_set"]',
-                '#tarot-price',
-                '#star-price', 
-                '#bundle-price'
-            ];
-            
-            personalPriceSelectors.forEach(selector => {
-                const elements = document.querySelectorAll(selector);
-                elements.forEach(element => {
-                    // 個人鑑定の価格表示スタイルを強制適用
-                    element.style.textDecoration = 'none';
-                    element.style.color = '#ffd700';
-                    element.style.fontSize = '1.4em';
-                    element.style.fontWeight = 'bold';
-                    element.style.display = '';
-                    element.classList.remove('strikethrough', 'gray-text', 'small-text');
+            // 統合管理画面から表示中の商品を取得
+            try {
+                const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+                const products = adminData.products || [];
+                const visibleProducts = products.filter(p => p.visible);
+                
+                console.log('📊 表示中の商品:', visibleProducts.map(p => `${p.name}: ${p.regularPrice}円`));
+                
+                // 個人鑑定の価格要素を強制的にスタイル更新
+                const personalPriceSelectors = [
+                    '[data-service="personal_tarot"] .price',
+                    '[data-service="personal_birthday"] .price', 
+                    '[data-service="personal_set"] .price',
+                    '.option-card .price[data-service="personal_tarot"]',
+                    '.option-card .price[data-service="personal_birthday"]',
+                    '.bundle-pricing .price[data-service="personal_set"]',
+                    '#tarot-price',
+                    '#star-price', 
+                    '#bundle-price'
+                ];
+                
+                personalPriceSelectors.forEach(selector => {
+                    const elements = document.querySelectorAll(selector);
+                    elements.forEach(element => {
+                        // 表示中の商品の価格表示スタイルを強制適用
+                        element.style.textDecoration = 'none';
+                        element.style.color = '#ffd700';
+                        element.style.fontSize = '1.4em';
+                        element.style.fontWeight = 'bold';
+                        element.style.display = '';
+                        element.style.visibility = 'visible';
+                        element.style.opacity = '1';
+                        element.classList.remove('strikethrough', 'gray-text', 'small-text');
+                    });
                 });
-            });
+                
+                // 決済ボタンの表示も強制
+                const paymentButtonSelectors = [
+                    '#tarot-payment-btn',
+                    '#star-payment-btn',
+                    '#bundle-payment-btn',
+                    '.option-button',
+                    '.bundle-button',
+                    'button[onclick*="handlePersonalPayment"]'
+                ];
+                
+                paymentButtonSelectors.forEach(selector => {
+                    const elements = document.querySelectorAll(selector);
+                    elements.forEach(element => {
+                        element.style.display = '';
+                        element.style.visibility = 'visible';
+                        element.style.opacity = '1';
+                    });
+                });
+                
+            } catch (e) {
+                console.log('統合管理画面データ取得エラー:', e);
+            }
             
             console.log('✅ 個人鑑定ページの価格表示強制更新完了');
         }

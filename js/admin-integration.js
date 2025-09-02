@@ -301,33 +301,31 @@ class AdminIntegration {
                     const regularPrice = product.regularPrice || price;
                     const salePrice = product.salePrice || price;
                     
-                    // 販売価格と通常価格が同じ場合でも表示する（通常価格として）
-                    if (regularPrice === salePrice) {
-                        element.style.display = ''; // 表示する
-                        element.style.textDecoration = 'none'; // 取り消し線を削除
-                        element.style.color = '#ffd700'; // 黄色に設定
-                        element.style.fontSize = '1.2em'; // 大きめのフォント
-                        element.style.fontWeight = 'bold'; // 太字
-                        this.log(`✅ 通常価格表示: ${serviceKey} (販売価格と同額だが通常価格として表示)`);
+                    // 商品管理の表示設定に基づく一貫した価格表示ロジック
+                    if (product.visible) {
+                        // 表示中の商品の場合
+                        if (regularPrice === salePrice) {
+                            // 通常価格 = 販売価格の場合：黄色の大きい文字で表示（取り消し線なし）
+                            element.style.display = '';
+                            element.style.textDecoration = 'none';
+                            element.style.color = '#ffd700';
+                            element.style.fontSize = '1.4em';
+                            element.style.fontWeight = 'bold';
+                            element.classList.remove('strikethrough', 'gray-text', 'small-text');
+                            this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格=販売価格、黄色表示)`);
+                        } else {
+                            // 通常価格 ≠ 販売価格の場合：白い文字で取り消し線表示
+                            element.style.display = '';
+                            element.style.textDecoration = 'line-through';
+                            element.style.color = '#ccc';
+                            element.style.fontSize = '0.9em';
+                            element.style.fontWeight = 'normal';
+                            this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格≠販売価格、取り消し線表示)`);
+                        }
                     } else {
-                        element.style.display = ''; // 表示に戻す
-                        element.style.textDecoration = 'line-through'; // 取り消し線を追加
-                        element.style.color = '#ccc'; // グレーに設定
-                        element.style.fontSize = '0.9em'; // 小さめのフォント
-                        element.style.fontWeight = 'normal'; // 通常の太さ
-                    }
-                    
-                    // 個人鑑定ページの特別な処理
-                    if (serviceKey.startsWith('personal_')) {
-                        // 個人鑑定の場合は常に黄色の大きい文字で表示
-                        element.style.textDecoration = 'none'; // 取り消し線を削除
-                        element.style.color = '#ffd700'; // 黄色に設定
-                        element.style.fontSize = '1.4em'; // より大きめのフォント
-                        element.style.fontWeight = 'bold'; // 太字
-                        element.style.display = ''; // 表示を確実にする
-                        // 既存のCSSクラスを無効化
-                        element.classList.remove('strikethrough', 'gray-text', 'small-text');
-                        this.log(`✅ 個人鑑定価格表示: ${serviceKey} (特別スタイル適用)`);
+                        // 非表示商品の場合：非表示
+                        element.style.display = 'none';
+                        this.log(`🚫 非表示商品の通常価格: ${serviceKey} (非表示)`);
                     }
                     
                     if (serviceKey === 'personal_set') {
@@ -347,7 +345,26 @@ class AdminIntegration {
                     }
                 } else if (priceType === 'sale') {
                     // セール価格は salePrice を使用
-                    formattedPrice = `${price.toLocaleString()}円`;
+                    const regularPrice = product.regularPrice || price;
+                    const salePrice = product.salePrice || price;
+                    
+                    // 商品管理の表示設定に基づく一貫したセール価格表示ロジック
+                    if (product.visible) {
+                        // 表示中の商品の場合：黄色の大きい文字で表示
+                        element.style.display = '';
+                        element.style.textDecoration = 'none';
+                        element.style.color = '#ffd700';
+                        element.style.fontSize = '1.4em';
+                        element.style.fontWeight = 'bold';
+                        element.classList.remove('strikethrough', 'gray-text', 'small-text');
+                        this.log(`✅ 表示中商品のセール価格: ${serviceKey} (黄色表示)`);
+                    } else {
+                        // 非表示商品の場合：非表示
+                        element.style.display = 'none';
+                        this.log(`🚫 非表示商品のセール価格: ${serviceKey} (非表示)`);
+                    }
+                    
+                    formattedPrice = `${salePrice.toLocaleString()}円`;
                 } else if (priceType === 'savings') {
                     // 割引額表示の場合
                     const regularPrice = product.regularPrice || price;
@@ -359,7 +376,22 @@ class AdminIntegration {
                         formattedPrice = 'オープン記念価格';
                     }
                 } else {
-                    // 通常の価格表示（個人鑑定ページ形式に統一）
+                    // デフォルトの価格表示（商品管理の表示設定に基づく）
+                    if (product.visible) {
+                        // 表示中の商品の場合：黄色の大きい文字で表示
+                        element.style.display = '';
+                        element.style.textDecoration = 'none';
+                        element.style.color = '#ffd700';
+                        element.style.fontSize = '1.4em';
+                        element.style.fontWeight = 'bold';
+                        element.classList.remove('strikethrough', 'gray-text', 'small-text');
+                        this.log(`✅ 表示中商品のデフォルト価格: ${serviceKey} (黄色表示)`);
+                    } else {
+                        // 非表示商品の場合：非表示
+                        element.style.display = 'none';
+                        this.log(`🚫 非表示商品のデフォルト価格: ${serviceKey} (非表示)`);
+                    }
+                    
                     formattedPrice = `${price.toLocaleString()}円`;
                 }
                 
@@ -455,7 +487,11 @@ class AdminIntegration {
             `button[class*="btn"]`, // ボタンクラスを含む要素
             `.option-button`, // 個人鑑定のオプションボタン
             `.bundle-button`, // 個人鑑定のバンドルボタン
-            `button[onclick*="handlePersonalPayment"]` // 個人鑑定の決済ボタン
+            `button[onclick*="handlePersonalPayment"]`, // 個人鑑定の決済ボタン
+            `button[onclick*="payment"]`, // 決済関連のボタン
+            `button[onclick*="checkout"]`, // チェックアウトボタン
+            `a[href*="square.link"]`, // Square決済リンク
+            `a[href*="payment"]` // 決済関連のリンク
         ];
 
         let buttonFound = false;
@@ -481,6 +517,10 @@ class AdminIntegration {
                 if (isPaymentButton) {
                     // onclickイベントを更新（決済ボタンのみ）
                     element.onclick = () => window.open(link.url, '_blank');
+                    // 決済ボタンの表示を強制
+                    element.style.display = '';
+                    element.style.visibility = 'visible';
+                    element.style.opacity = '1';
                     this.log(`🔗 ${serviceKey} の決済ボタンを更新: ${link.url}`);
                     buttonFound = true;
                 }
