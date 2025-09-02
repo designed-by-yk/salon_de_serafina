@@ -252,24 +252,14 @@ class AdminIntegration {
             `.special-price[data-service="${serviceKey}"]`,
             `.price-large[data-service="${serviceKey}"]`,
             
-            // ページ固有のセレクタ
+            // ページ固有のセレクタ（共通セレクタを削除して競合を回避）
             `#shintaku-original-display`,
             `#shintaku-final-price`,
             `#star-yomi-price`,
-            `#star-yomi-final-price`,
-            `#tarot-price`,
-            `#star-price`,
-            `#bundle-price`,
-            // クーポンシステムの価格表示要素
-            `#tarot-original-display`,
-            `#tarot-final-price`,
-            `#star-original-display`,
-            `#star-final-price`,
-            `#bundle-original-display`,
-            `#bundle-final-price`
+            `#star-yomi-final-price`
         ];
         
-        // ページ固有のセレクタを追加
+        // ページ固有のセレクタを追加（各サービス専用で競合を回避）
         if (serviceKey.startsWith('personal_')) {
             // 個人鑑定ページの場合のみ、特定のIDを含める
             if (serviceKey === 'personal_tarot') {
@@ -279,6 +269,9 @@ class AdminIntegration {
                 // 追加のセレクタ
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
+                // クーポンシステム専用セレクタ
+                priceSelectors.push(`#tarot-original-display`);
+                priceSelectors.push(`#tarot-final-price`);
             } else if (serviceKey === 'personal_birthday') {
                 priceSelectors.push(`[data-service="${serviceKey}"]#star-price`);
                 priceSelectors.push(`#star-price`);
@@ -286,12 +279,18 @@ class AdminIntegration {
                 // 追加のセレクタ
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
+                // クーポンシステム専用セレクタ
+                priceSelectors.push(`#star-original-display`);
+                priceSelectors.push(`#star-final-price`);
             } else if (serviceKey === 'personal_set') {
                 priceSelectors.push(`[data-service="${serviceKey}"]#bundle-price`);
                 priceSelectors.push(`#bundle-price`);
                 priceSelectors.push(`.bundle-pricing .price[data-service="${serviceKey}"]`);
                 // 追加のセレクタ
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
+                // クーポンシステム専用セレクタ
+                priceSelectors.push(`#bundle-original-display`);
+                priceSelectors.push(`#bundle-final-price`);
             }
         } else if (serviceKey === 'star_yomi') {
             // 星詠みページ用の特別なセレクタ
@@ -512,7 +511,15 @@ class AdminIntegration {
             `button[onclick*="payment"]`, // 決済関連のボタン
             `button[onclick*="checkout"]`, // チェックアウトボタン
             `a[href*="square.link"]`, // Square決済リンク
-            `a[href*="payment"]` // 決済関連のリンク
+            `a[href*="payment"]`, // 決済関連のリンク
+            // 個人鑑定ページ専用の追加セレクタ
+            `.option-card button`, // オプションカード内のボタン
+            `.bundle-pricing button`, // バンドル価格内のボタン
+            `.service-option button`, // サービスオプション内のボタン
+            `button[data-service="${serviceKey}"]`, // サービス固有のボタン
+            `button[onclick*="7000"]`, // 7000円の決済ボタン
+            `button[onclick*="10000"]`, // 10000円の決済ボタン
+            `button[onclick*="square.link"]` // Square決済リンクを含むボタン
         ];
 
         let buttonFound = false;
@@ -533,15 +540,35 @@ class AdminIntegration {
                                       element.textContent?.includes('鑑定') ||
                                       element.textContent?.includes('タロット') ||
                                       element.textContent?.includes('星詠み') ||
-                                      element.textContent?.includes('セット');
+                                      element.textContent?.includes('セット') ||
+                                      element.textContent?.includes('購入') ||
+                                      element.textContent?.includes('注文') ||
+                                      element.textContent?.includes('支払い') ||
+                                      element.onclick?.toString().includes('square.link') ||
+                                      element.onclick?.toString().includes('payment') ||
+                                      element.onclick?.toString().includes('7000') ||
+                                      element.onclick?.toString().includes('10000');
                 
                 if (isPaymentButton) {
                     // onclickイベントを更新（決済ボタンのみ）
                     element.onclick = () => window.open(link.url, '_blank');
-                                    // 決済ボタンの表示を強制
-                element.style.display = 'block !important';
-                element.style.visibility = 'visible !important';
-                element.style.opacity = '1 !important';
+                    
+                    // 決済ボタンの表示を強制
+                    element.style.display = 'block !important';
+                    element.style.visibility = 'visible !important';
+                    element.style.opacity = '1 !important';
+                    element.style.pointerEvents = 'auto !important';
+                    element.style.cursor = 'pointer !important';
+                    
+                    // 親要素の表示も強制
+                    let parent = element.parentElement;
+                    while (parent && parent !== document.body) {
+                        parent.style.display = 'block !important';
+                        parent.style.visibility = 'visible !important';
+                        parent.style.opacity = '1 !important';
+                        parent = parent.parentElement;
+                    }
+                    
                     this.log(`🔗 ${serviceKey} の決済ボタンを更新: ${link.url}`);
                     buttonFound = true;
                 }

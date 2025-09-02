@@ -1241,9 +1241,15 @@
                         p.name === '個人鑑定タロット' ||
                         p.name.includes('個人鑑定タロット')
                     );
-                    if (tarotProduct && tarotProduct.salePrice) {
-                        prices.tarot = parseInt(tarotProduct.salePrice);
-                        console.log(`✅ タロット価格: ¥${prices.tarot} (${tarotProduct.name})`);
+                    if (tarotProduct) {
+                        // 表示中の価格を取得（通常価格と販売価格が同じ場合は通常価格、異なる場合は販売価格）
+                        if (tarotProduct.regularPrice === tarotProduct.salePrice) {
+                            prices.tarot = parseInt(tarotProduct.regularPrice);
+                            console.log(`✅ タロット価格: ¥${prices.tarot} (通常価格=販売価格, ${tarotProduct.name})`);
+                        } else {
+                            prices.tarot = parseInt(tarotProduct.salePrice || tarotProduct.regularPrice);
+                            console.log(`✅ タロット価格: ¥${prices.tarot} (販売価格優先, ${tarotProduct.name})`);
+                        }
                     }
                     
                     // 星詠み価格（安定IDまたは商品名で検索）
@@ -1252,9 +1258,15 @@
                         p.name === '個人鑑定誕生日' ||
                         p.name.includes('個人鑑定誕生日')
                     );
-                    if (starProduct && starProduct.salePrice) {
-                        prices.star = parseInt(starProduct.salePrice);
-                        console.log(`✅ 星詠み価格: ¥${prices.star} (${starProduct.name})`);
+                    if (starProduct) {
+                        // 表示中の価格を取得（通常価格と販売価格が同じ場合は通常価格、異なる場合は販売価格）
+                        if (starProduct.regularPrice === starProduct.salePrice) {
+                            prices.star = parseInt(starProduct.regularPrice);
+                            console.log(`✅ 星詠み価格: ¥${prices.star} (通常価格=販売価格, ${starProduct.name})`);
+                        } else {
+                            prices.star = parseInt(starProduct.salePrice || starProduct.regularPrice);
+                            console.log(`✅ 星詠み価格: ¥${prices.star} (販売価格優先, ${starProduct.name})`);
+                        }
                     }
                     
                     // セット価格（安定IDまたは商品名で検索）
@@ -1263,9 +1275,15 @@
                         p.name === '個人鑑定セット' ||
                         p.name.includes('個人鑑定セット')
                     );
-                    if (bundleProduct && bundleProduct.salePrice) {
-                        prices.bundle = parseInt(bundleProduct.salePrice);
-                        console.log(`✅ セット価格: ¥${prices.bundle} (${bundleProduct.name})`);
+                    if (bundleProduct) {
+                        // 表示中の価格を取得（通常価格と販売価格が同じ場合は通常価格、異なる場合は販売価格）
+                        if (bundleProduct.regularPrice === bundleProduct.salePrice) {
+                            prices.bundle = parseInt(bundleProduct.regularPrice);
+                            console.log(`✅ セット価格: ¥${prices.bundle} (通常価格=販売価格, ${bundleProduct.name})`);
+                        } else {
+                            prices.bundle = parseInt(bundleProduct.salePrice || bundleProduct.regularPrice);
+                            console.log(`✅ セット価格: ¥${prices.bundle} (販売価格優先, ${bundleProduct.name})`);
+                        }
                     }
                     
                     console.log('💰 取得した価格データ:', prices);
@@ -1274,7 +1292,7 @@
             } catch (e) {
                 console.log('統合管理画面データ取得エラー:', e);
             }
-            return { tarot: 5000, star: 5000, bundle: 8000 }; // デフォルト価格
+            return { tarot: 7000, star: 7000, bundle: 10000 }; // デフォルト価格（現在の設定に合わせて更新）
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -1416,9 +1434,15 @@
                 const products = adminData.products || [];
                 const product = products.find(p => p.stableId === serviceType && p.visible);
                 if (product) {
-                    // 表示中の商品の通常価格を優先使用
-                    currentPrice = product.regularPrice || product.salePrice || price;
-                    console.log(`🎯 クーポン適用: ${name} - 統合管理画面から取得した価格: ¥${currentPrice} (${serviceType})`);
+                    // 表示中の商品の現在有効な価格を取得
+                    // 通常価格と販売価格が同じ場合は通常価格、異なる場合は販売価格を優先
+                    if (product.regularPrice === product.salePrice) {
+                        currentPrice = product.regularPrice;
+                        console.log(`🎯 クーポン適用: ${name} - 通常価格=販売価格: ¥${currentPrice} (${serviceType})`);
+                    } else {
+                        currentPrice = product.salePrice || product.regularPrice;
+                        console.log(`🎯 クーポン適用: ${name} - 販売価格優先: ¥${currentPrice} (${serviceType})`);
+                    }
                 } else {
                     console.log(`⚠️ クーポン適用: ${name} - 商品が見つからないためデフォルト価格を使用: ¥${currentPrice}`);
                 }
