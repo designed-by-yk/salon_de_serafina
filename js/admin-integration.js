@@ -263,30 +263,27 @@ class AdminIntegration {
         if (serviceKey.startsWith('personal_')) {
             // 個人鑑定ページの場合のみ、特定のIDを含める
             if (serviceKey === 'personal_tarot') {
+                // タロット専用セレクタのみ（共通セレクタを削除）
                 priceSelectors.push(`[data-service="${serviceKey}"]#tarot-price`);
-                priceSelectors.push(`#tarot-price`);
                 priceSelectors.push(`.option-card .price[data-service="${serviceKey}"]`);
-                // 追加のセレクタ
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
                 // クーポンシステム専用セレクタ
                 priceSelectors.push(`#tarot-original-display`);
                 priceSelectors.push(`#tarot-final-price`);
             } else if (serviceKey === 'personal_birthday') {
+                // 誕生日専用セレクタのみ（共通セレクタを削除）
                 priceSelectors.push(`[data-service="${serviceKey}"]#star-price`);
-                priceSelectors.push(`#star-price`);
                 priceSelectors.push(`.option-card .price[data-service="${serviceKey}"]`);
-                // 追加のセレクタ
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
                 // クーポンシステム専用セレクタ
                 priceSelectors.push(`#star-original-display`);
                 priceSelectors.push(`#star-final-price`);
             } else if (serviceKey === 'personal_set') {
+                // セット専用セレクタのみ（共通セレクタを削除）
                 priceSelectors.push(`[data-service="${serviceKey}"]#bundle-price`);
-                priceSelectors.push(`#bundle-price`);
                 priceSelectors.push(`.bundle-pricing .price[data-service="${serviceKey}"]`);
-                // 追加のセレクタ
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
                 // クーポンシステム専用セレクタ
                 priceSelectors.push(`#bundle-original-display`);
@@ -416,6 +413,16 @@ class AdminIntegration {
                 }
                 
                 element.textContent = formattedPrice;
+                
+                // 価格要素の表示を強制
+                element.style.display = 'block !important';
+                element.style.visibility = 'visible !important';
+                element.style.opacity = '1 !important';
+                element.style.position = 'relative !important';
+                
+                // 強制的にDOMに再描画させる
+                element.offsetHeight;
+                
                 this.log(`💴 価格更新[${priceType || 'default'}]: ${oldPrice} → ${formattedPrice} (${selector})`);
                 elementsFound++;
             });
@@ -559,15 +566,23 @@ class AdminIntegration {
                     element.style.opacity = '1 !important';
                     element.style.pointerEvents = 'auto !important';
                     element.style.cursor = 'pointer !important';
+                    element.style.position = 'relative !important';
+                    element.style.zIndex = '999 !important';
                     
                     // 親要素の表示も強制
                     let parent = element.parentElement;
-                    while (parent && parent !== document.body) {
+                    let depth = 0;
+                    while (parent && parent !== document.body && depth < 5) {
                         parent.style.display = 'block !important';
                         parent.style.visibility = 'visible !important';
                         parent.style.opacity = '1 !important';
+                        parent.style.position = 'relative !important';
                         parent = parent.parentElement;
+                        depth++;
                     }
+                    
+                    // 強制的にDOMに再描画させる
+                    element.offsetHeight;
                     
                     this.log(`🔗 ${serviceKey} の決済ボタンを更新: ${link.url}`);
                     buttonFound = true;
