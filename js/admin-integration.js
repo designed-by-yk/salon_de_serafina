@@ -263,8 +263,7 @@ class AdminIntegration {
         if (serviceKey.startsWith('personal_')) {
             // 個人鑑定ページの場合のみ、特定のIDを含める
             if (serviceKey === 'personal_tarot') {
-                // タロット専用セレクタのみ（共通セレクタを削除）
-                priceSelectors.push(`[data-service="${serviceKey}"]#tarot-price`);
+                // タロット専用セレクタのみ（共通セレクタを完全削除）
                 priceSelectors.push(`.option-card .price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
@@ -272,8 +271,7 @@ class AdminIntegration {
                 priceSelectors.push(`#tarot-original-display`);
                 priceSelectors.push(`#tarot-final-price`);
             } else if (serviceKey === 'personal_birthday') {
-                // 誕生日専用セレクタのみ（共通セレクタを削除）
-                priceSelectors.push(`[data-service="${serviceKey}"]#star-price`);
+                // 誕生日専用セレクタのみ（共通セレクタを完全削除）
                 priceSelectors.push(`.option-card .price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
@@ -281,8 +279,7 @@ class AdminIntegration {
                 priceSelectors.push(`#star-original-display`);
                 priceSelectors.push(`#star-final-price`);
             } else if (serviceKey === 'personal_set') {
-                // セット専用セレクタのみ（共通セレクタを削除）
-                priceSelectors.push(`[data-service="${serviceKey}"]#bundle-price`);
+                // セット専用セレクタのみ（共通セレクタを完全削除）
                 priceSelectors.push(`.bundle-pricing .price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
                 // クーポンシステム専用セレクタ
