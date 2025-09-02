@@ -322,14 +322,17 @@ class AdminIntegration {
                         // 個人鑑定の場合は常に黄色の大きい文字で表示
                         element.style.textDecoration = 'none'; // 取り消し線を削除
                         element.style.color = '#ffd700'; // 黄色に設定
-                        element.style.fontSize = '1.2em'; // 大きめのフォント
+                        element.style.fontSize = '1.4em'; // より大きめのフォント
                         element.style.fontWeight = 'bold'; // 太字
+                        element.style.display = ''; // 表示を確実にする
+                        // 既存のCSSクラスを無効化
+                        element.classList.remove('strikethrough', 'gray-text', 'small-text');
                         this.log(`✅ 個人鑑定価格表示: ${serviceKey} (特別スタイル適用)`);
                     }
                     
                     if (serviceKey === 'personal_set') {
-                        // セット価格の場合は「セット価格」として表示
-                        formattedPrice = `セット価格 ${regularPrice.toLocaleString()}円`;
+                        // セット価格の場合は価格のみ表示（「セット価格」の重複を避ける）
+                        formattedPrice = `${regularPrice.toLocaleString()}円`;
                     } else if (serviceKey === 'shintaku') {
                         // 通常価格と販売価格が同じ場合は「通常価格」表示を削除
                         formattedPrice = `${regularPrice.toLocaleString()}円`;

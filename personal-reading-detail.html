@@ -1368,10 +1368,46 @@
             if (window.adminIntegrationInitialized) {
                 console.log('✅ admin-integration.jsの初期化完了を確認、個人鑑定システムを初期化');
                 initializeIndividualCouponSystems();
+                
+                // 個人鑑定ページの価格表示を強制的に更新
+                setTimeout(forceUpdatePersonalPrices, 200);
             } else {
                 console.log('⏳ admin-integration.jsの初期化完了を待機中...');
                 setTimeout(waitForAdminIntegration, 100);
             }
+        }
+        
+        // 個人鑑定ページの価格表示を強制的に更新
+        function forceUpdatePersonalPrices() {
+            console.log('🔧 個人鑑定ページの価格表示を強制更新中...');
+            
+            // 個人鑑定の価格要素を強制的にスタイル更新
+            const personalPriceSelectors = [
+                '[data-service="personal_tarot"] .price',
+                '[data-service="personal_birthday"] .price', 
+                '[data-service="personal_set"] .price',
+                '.option-card .price[data-service="personal_tarot"]',
+                '.option-card .price[data-service="personal_birthday"]',
+                '.bundle-pricing .price[data-service="personal_set"]',
+                '#tarot-price',
+                '#star-price', 
+                '#bundle-price'
+            ];
+            
+            personalPriceSelectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    // 個人鑑定の価格表示スタイルを強制適用
+                    element.style.textDecoration = 'none';
+                    element.style.color = '#ffd700';
+                    element.style.fontSize = '1.4em';
+                    element.style.fontWeight = 'bold';
+                    element.style.display = '';
+                    element.classList.remove('strikethrough', 'gray-text', 'small-text');
+                });
+            });
+            
+            console.log('✅ 個人鑑定ページの価格表示強制更新完了');
         }
         
         // 各サービスのクーポンシステム初期化
@@ -1392,11 +1428,28 @@
                     return;
                 }
                 
-                // admin-integration.jsから現在の価格を取得
-                const currentPriceElement = document.getElementById(`${name}-original-display`);
-                const currentPrice = currentPriceElement ? parseInt(currentPriceElement.textContent.replace(/[^\d]/g, '')) : price;
-                
-                console.log(`🎯 クーポン適用: ${name} - 現在の価格: ¥${currentPrice} (${serviceType})`);
+                            // admin-integration.jsから現在の価格を取得（通常価格を優先）
+            const currentPriceElement = document.getElementById(`${name}-original-display`);
+            let currentPrice = price; // デフォルト値
+            
+            if (currentPriceElement) {
+                const priceText = currentPriceElement.textContent;
+                currentPrice = parseInt(priceText.replace(/[^\d]/g, ''));
+            } else {
+                // 要素が見つからない場合は、統合管理画面から正しい価格を取得
+                try {
+                    const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
+                    const products = adminData.products || [];
+                    const product = products.find(p => p.stableId === serviceType && p.visible);
+                    if (product) {
+                        currentPrice = product.regularPrice || product.salePrice || price;
+                    }
+                } catch (e) {
+                    console.log('統合管理画面データ取得エラー:', e);
+                }
+            }
+            
+            console.log(`🎯 クーポン適用: ${name} - 現在の価格: ¥${currentPrice} (${serviceType})`);
                 
                 // クーポンシステムでクーポンを検証
                 if (window.couponSystem) {
