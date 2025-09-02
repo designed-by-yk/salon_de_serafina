@@ -1288,13 +1288,8 @@
             console.log('🔄 クーポン計算の基準価格として設定完了');
             console.log('個人鑑定現在価格:', originalPrices);
             
-            // クーポンシステムの初期化
-            if (window.couponSystem) {
-                initializePersonalCoupons();
-            } else {
-                // クーポンシステムの読み込みを待つ
-                setTimeout(initializePersonalCoupons, 500);
-            }
+            // admin-integration.jsの初期化完了を待ってから個人鑑定システムを初期化
+            waitForAdminIntegration();
             
             // 確実にクーポン適用済み表示を隠す（強制実行）
             setTimeout(function() {
@@ -1386,25 +1381,8 @@
             
             console.log(`💰 ${name}クーポンシステム初期化 - 基準価格: ¥${price} (${serviceType})`);
             
-            // 元の価格を統合管理画面の価格に更新（admin-integration.jsの変更を尊重）
-            const originalElement = document.getElementById(`${name}-original-display`);
-            const finalElement = document.getElementById(`${name}-final-price`);
-            
-            if (originalElement && finalElement) {
-                // admin-integration.jsが既に価格を設定している場合は、その値を尊重
-                const currentOriginalPrice = originalElement.textContent;
-                const currentFinalPrice = finalElement.textContent;
-                
-                // 既に価格が設定されている場合は、そのまま使用
-                if (currentOriginalPrice && currentFinalPrice) {
-                    console.log(`✅ ${name}価格表示: admin-integration.jsの設定を尊重 (元価格: ${currentOriginalPrice}, ファイナル: ${currentFinalPrice})`);
-                } else {
-                    // 価格が設定されていない場合のみ更新
-                    originalElement.textContent = `${price.toLocaleString()}円`;
-                    finalElement.textContent = `${price.toLocaleString()}円`;
-                    console.log(`✅ ${name}価格表示を更新: 元価格とファイナル価格を ¥${price.toLocaleString()} に設定`);
-                }
-            }
+            // admin-integration.jsが価格を管理するため、ローカルスクリプトでは価格を更新しない
+            console.log(`✅ ${name}価格表示: admin-integration.jsに委任（ローカルスクリプトでは価格更新をスキップ）`);
             
             // クーポン適用ボタン
             document.getElementById(`${name}-apply-coupon`).addEventListener('click', function() {
@@ -1414,13 +1392,19 @@
                     return;
                 }
                 
+                // admin-integration.jsから現在の価格を取得
+                const currentPriceElement = document.getElementById(`${name}-original-display`);
+                const currentPrice = currentPriceElement ? parseInt(currentPriceElement.textContent.replace(/[^\d]/g, '')) : price;
+                
+                console.log(`🎯 クーポン適用: ${name} - 現在の価格: ¥${currentPrice} (${serviceType})`);
+                
                 // クーポンシステムでクーポンを検証
                 if (window.couponSystem) {
-                    const validation = window.couponSystem.validateCoupon(couponCode, [serviceType], price);
+                    const validation = window.couponSystem.validateCoupon(couponCode, [serviceType], currentPrice);
                     if (validation.valid) {
                         appliedCoupon = validation;
-                        updateServicePrice(name, price, validation);
-                        updatePaymentButton(name, price, validation);
+                        updateServicePrice(name, currentPrice, validation);
+                        updatePaymentButton(name, currentPrice, validation);
                     } else {
                         alert('無効なクーポンコード: ' + validation.error);
                     }
