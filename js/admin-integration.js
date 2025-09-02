@@ -267,14 +267,22 @@ class AdminIntegration {
             // 個人鑑定ページの場合のみ、特定のIDを含める
             if (serviceKey === 'personal_tarot') {
                 priceSelectors.push(`[data-service="${serviceKey}"]#tarot-price`);
+                priceSelectors.push(`#tarot-price`);
+                priceSelectors.push(`.option-card .price[data-service="${serviceKey}"]`);
             } else if (serviceKey === 'personal_birthday') {
                 priceSelectors.push(`[data-service="${serviceKey}"]#star-price`);
+                priceSelectors.push(`#star-price`);
+                priceSelectors.push(`.option-card .price[data-service="${serviceKey}"]`);
             } else if (serviceKey === 'personal_set') {
                 priceSelectors.push(`[data-service="${serviceKey}"]#bundle-price`);
+                priceSelectors.push(`#bundle-price`);
+                priceSelectors.push(`.bundle-pricing .price[data-service="${serviceKey}"]`);
             }
         } else if (serviceKey === 'star_yomi') {
             // 星詠みページ用の特別なセレクタ
             priceSelectors.push(`.price-badge[data-service="${serviceKey}"]`);
+            priceSelectors.push(`.special-price .price[data-service="${serviceKey}"]`);
+            priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
         }
 
         let elementsFound = 0;
@@ -312,11 +320,13 @@ class AdminIntegration {
                     if (serviceKey === 'personal_set') {
                         formattedPrice = `単品合計 ${regularPrice.toLocaleString()}円`;
                     } else if (serviceKey === 'shintaku') {
-                        formattedPrice = `通常価格 ${regularPrice.toLocaleString()}円`;
+                        // 通常価格と販売価格が同じ場合は「通常価格」表示を削除
+                        formattedPrice = `${regularPrice.toLocaleString()}円`;
                     } else if (serviceKey === 'star_yomi') {
-                        formattedPrice = `通常価格: ${regularPrice.toLocaleString()}円`;
+                        // 通常価格と販売価格が同じ場合は「通常価格」表示を削除
+                        formattedPrice = `${regularPrice.toLocaleString()}円`;
                     } else {
-                        formattedPrice = `通常 ${regularPrice.toLocaleString()}円`;
+                        formattedPrice = `${regularPrice.toLocaleString()}円`;
                     }
                 } else if (priceType === 'sale') {
                     // セール価格は salePrice を使用
