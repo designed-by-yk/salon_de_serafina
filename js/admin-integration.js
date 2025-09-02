@@ -259,7 +259,14 @@ class AdminIntegration {
             `#star-yomi-final-price`,
             `#tarot-price`,
             `#star-price`,
-            `#bundle-price`
+            `#bundle-price`,
+            // クーポンシステムの価格表示要素
+            `#tarot-original-display`,
+            `#tarot-final-price`,
+            `#star-original-display`,
+            `#star-final-price`,
+            `#bundle-original-display`,
+            `#bundle-final-price`
         ];
         
         // ページ固有のセレクタを追加
