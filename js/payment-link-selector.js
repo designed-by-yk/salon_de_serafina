@@ -193,18 +193,41 @@ class PaymentLinkSelector {
             return null;
         }
         
-        // 1. 商品名から安定IDを取得
-        const product = this.currentData.products.find(p => p.name === productName);
+        // 1. 商品名から安定IDを取得（複数の方法で検索）
+        let product = this.currentData.products.find(p => p.name === productName);
+        
+        // 商品名が完全一致しない場合、部分一致で検索
+        if (!product) {
+            product = this.currentData.products.find(p => 
+                p.name.includes(productName) || productName.includes(p.name)
+            );
+        }
+        
+        // まだ見つからない場合、表示中の商品（visible: true）のみで検索
+        if (!product) {
+            const visibleProducts = this.currentData.products.filter(p => p.visible === true);
+            product = visibleProducts.find(p => 
+                p.name.includes(productName) || productName.includes(p.name)
+            );
+        }
+        
         if (!product) {
             console.error(`❌ 商品「${productName}」が見つかりません`);
+            console.log('📋 利用可能な商品:', this.currentData.products.map(p => `${p.name} (visible: ${p.visible})`));
             return null;
         }
         
         console.log(`🔍 商品「${productName}」の安定ID: ${product.stableId}`);
         
-        // 2. 安定IDで決済リンクを絞り込み
+        // 2. 安定IDで決済リンクを絞り込み（有効なリンクのみ）
         const relatedLinks = this.currentData.paymentLinks.filter(link => {
-            return link.stableId === product.stableId && link.active;
+            const isActive = link.active === true;
+            const hasStableId = link.stableId === product.stableId;
+            const hasValidUrl = link.url && link.url !== 'https://square.link/u/PLACEHOLDER_LINK';
+            
+            console.log(`🔍 リンク ${link.id}: active=${isActive}, stableId=${hasStableId}, validUrl=${hasValidUrl}`);
+            
+            return isActive && hasStableId && hasValidUrl;
         });
         
         console.log(`🔍 安定ID「${product.stableId}」の有効な決済リンク: ${relatedLinks.length}件`);

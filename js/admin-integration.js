@@ -244,7 +244,22 @@ class AdminIntegration {
             
             // サービス固有のセレクタ（ページ判定後なので安全）
             `.${serviceKey}-price`,
-            `#${serviceKey}-price`
+            `#${serviceKey}-price`,
+            
+            // より包括的なセレクタ
+            `.price[data-service="${serviceKey}"]`,
+            `.original-price[data-service="${serviceKey}"]`,
+            `.special-price[data-service="${serviceKey}"]`,
+            `.price-large[data-service="${serviceKey}"]`,
+            
+            // ページ固有のセレクタ
+            `#shintaku-original-display`,
+            `#shintaku-final-price`,
+            `#star-yomi-price`,
+            `#star-yomi-final-price`,
+            `#tarot-price`,
+            `#star-price`,
+            `#bundle-price`
         ];
         
         // ページ固有のセレクタを追加
@@ -281,9 +296,17 @@ class AdminIntegration {
                     // 販売価格と通常価格が同じ場合でも表示する（通常価格として）
                     if (regularPrice === salePrice) {
                         element.style.display = ''; // 表示する
+                        element.style.textDecoration = 'none'; // 取り消し線を削除
+                        element.style.color = '#ffd700'; // 黄色に設定
+                        element.style.fontSize = '1.2em'; // 大きめのフォント
+                        element.style.fontWeight = 'bold'; // 太字
                         this.log(`✅ 通常価格表示: ${serviceKey} (販売価格と同額だが通常価格として表示)`);
                     } else {
                         element.style.display = ''; // 表示に戻す
+                        element.style.textDecoration = 'line-through'; // 取り消し線を追加
+                        element.style.color = '#ccc'; // グレーに設定
+                        element.style.fontSize = '0.9em'; // 小さめのフォント
+                        element.style.fontWeight = 'normal'; // 通常の太さ
                     }
                     
                     if (serviceKey === 'personal_set') {
@@ -346,12 +369,44 @@ class AdminIntegration {
 
         this.log('🔗 決済リンクを更新中...');
 
-        adminData.paymentLinks.forEach(link => {
-            if (link.active && link.url) {
-                const serviceKey = this.getServiceKeyFromLink(link);
-                if (serviceKey) {
-                    this.updateLinkElements(serviceKey, link);
-                }
+        // 表示中の商品のみを対象に決済リンクを更新
+        const visibleProducts = adminData.products.filter(p => p.visible === true);
+        this.log(`👁️ 表示中の商品: ${visibleProducts.length}件`);
+
+        visibleProducts.forEach(product => {
+            const serviceKey = this.getServiceKeyFromProduct(product);
+            if (!serviceKey) return;
+
+            // 現在のページに関連するサービスのみ処理
+            if (!this.isServiceRelevantToCurrentPage(serviceKey)) {
+                this.log(`⏭️ ${serviceKey} の決済リンク更新をスキップ（現在のページに関連しない）`);
+                return;
+            }
+
+            // 商品の価格に一致する決済リンクを検索
+            const productPrice = product.salePrice || product.regularPrice;
+            const matchingLinks = adminData.paymentLinks.filter(link => {
+                return link.active === true && 
+                       link.stableId === product.stableId && 
+                       link.price === productPrice &&
+                       link.url && 
+                       link.url !== 'https://square.link/u/PLACEHOLDER_LINK';
+            });
+
+            this.log(`🔍 ${serviceKey} (¥${productPrice}) の一致する決済リンク: ${matchingLinks.length}件`);
+
+            if (matchingLinks.length > 0) {
+                // 最初の一致するリンクを使用
+                const link = matchingLinks[0];
+                this.updateLinkElements(serviceKey, link);
+                this.log(`✅ ${serviceKey} の決済リンクを更新: ${link.id} (¥${link.price})`);
+            } else {
+                this.log(`⚠️ ${serviceKey} (¥${productPrice}) に一致する決済リンクが見つかりません`);
+                // デバッグ用: 利用可能なリンクを表示
+                const availableLinks = adminData.paymentLinks.filter(link => 
+                    link.stableId === product.stableId && link.active === true
+                );
+                this.log(`📋 利用可能なリンク:`, availableLinks.map(l => `${l.id}: ¥${l.price}`));
             }
         });
     }
@@ -368,24 +423,39 @@ class AdminIntegration {
             `#star-payment-btn`, // 個人鑑定星詠み
             `#bundle-payment-btn`, // 個人鑑定セット
             `.payment-button`, // 決済ボタン用クラス
-            `[data-payment-button="${serviceKey}"]` // 決済ボタン用データ属性
+            `[data-payment-button="${serviceKey}"]`, // 決済ボタン用データ属性
+            `.btn-primary`, // プライマリボタン
+            `button[class*="btn"]` // ボタンクラスを含む要素
         ];
 
+        let buttonFound = false;
         linkSelectors.forEach(selector => {
             const elements = document.querySelectorAll(selector);
+            this.log(`🔍 決済ボタン検索: "${selector}" で ${elements.length} 個の要素を発見`);
+            
             elements.forEach(element => {
                 // 決済ボタンかどうかを確認（ナビゲーションボタンを除外）
                 const isPaymentButton = element.id?.includes('payment') || 
                                       element.classList.contains('payment-button') ||
-                                      element.getAttribute('data-payment-button');
+                                      element.classList.contains('btn-primary') ||
+                                      element.getAttribute('data-payment-button') ||
+                                      element.textContent?.includes('申し込む') ||
+                                      element.textContent?.includes('決済') ||
+                                      element.textContent?.includes('鑑定');
                 
-                if (isPaymentButton && element.onclick) {
+                if (isPaymentButton) {
                     // onclickイベントを更新（決済ボタンのみ）
                     element.onclick = () => window.open(link.url, '_blank');
                     this.log(`🔗 ${serviceKey} の決済ボタンを更新: ${link.url}`);
+                    buttonFound = true;
                 }
             });
         });
+        
+        if (!buttonFound) {
+            this.log(`⚠️ ${serviceKey} の決済ボタンが見つかりませんでした`);
+            this.log(`🔍 ページ内の全ボタン要素:`, document.querySelectorAll('button, .btn, [class*="btn"]'));
+        }
     }
 
     /**
@@ -633,8 +703,23 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
+    // 初期化フラグを設定
+    window.adminIntegrationInitialized = true;
+    
     window.adminIntegration = new AdminIntegration();
     window.adminIntegration.initialize();
 });
+
+// ページが既に読み込まれている場合の対応
+if (document.readyState === 'loading') {
+    // DOMContentLoadedイベントを待つ
+} else {
+    // 既に読み込み完了している場合は即座に初期化
+    if (!window.adminIntegration && !window.adminIntegrationInitialized) {
+        window.adminIntegrationInitialized = true;
+        window.adminIntegration = new AdminIntegration();
+        window.adminIntegration.initialize();
+    }
+}
 
 console.log('🔗 AdminIntegration スクリプト読み込み完了');
