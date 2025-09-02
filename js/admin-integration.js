@@ -723,6 +723,9 @@ class AdminIntegration {
         // リアルタイム同期開始
         this.startRealTimeSync();
         
+        // 初期化完了フラグを設定
+        window.adminIntegrationInitialized = true;
+        
         this.log('✅ AdminIntegration初期化完了');
     }
 

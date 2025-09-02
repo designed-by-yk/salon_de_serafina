@@ -1289,6 +1289,12 @@
             console.log('個人鑑定現在価格:', originalPrices);
             
             // admin-integration.jsの初期化完了を待ってから個人鑑定システムを初期化
+            console.log('🔧 個人鑑定ページ初期化開始');
+            
+            // 即座に価格表示を強制更新
+            setTimeout(forceUpdatePersonalPrices, 100);
+            
+            // admin-integration.jsの初期化完了も待つ
             waitForAdminIntegration();
             
             // 確実にクーポン適用済み表示を隠す（強制実行）
@@ -1365,6 +1371,9 @@
         
         // admin-integration.jsの初期化完了を待ってから実行
         function waitForAdminIntegration() {
+            console.log('🔍 admin-integration.jsの初期化状態をチェック中...');
+            console.log('🔍 window.adminIntegrationInitialized:', window.adminIntegrationInitialized);
+            
             if (window.adminIntegrationInitialized) {
                 console.log('✅ admin-integration.jsの初期化完了を確認、個人鑑定システムを初期化');
                 initializeIndividualCouponSystems();
@@ -1372,7 +1381,7 @@
                 // 個人鑑定ページの価格表示を強制的に更新
                 setTimeout(forceUpdatePersonalPrices, 200);
             } else {
-                console.log('⏳ admin-integration.jsの初期化完了を待機中...');
+                console.log('⏳ admin-integration.jsの初期化完了を待機中... (100ms後に再試行)');
                 setTimeout(waitForAdminIntegration, 100);
             }
         }
@@ -1399,23 +1408,30 @@
                     '.bundle-pricing .price[data-service="personal_set"]',
                     '#tarot-price',
                     '#star-price', 
-                    '#bundle-price'
+                    '#bundle-price',
+                    '.price[data-service="personal_tarot"]',
+                    '.price[data-service="personal_birthday"]',
+                    '.price[data-service="personal_set"]'
                 ];
                 
+                let updatedElements = 0;
                 personalPriceSelectors.forEach(selector => {
                     const elements = document.querySelectorAll(selector);
                     elements.forEach(element => {
                         // 表示中の商品の価格表示スタイルを強制適用
-                        element.style.textDecoration = 'none';
-                        element.style.color = '#ffd700';
-                        element.style.fontSize = '1.4em';
-                        element.style.fontWeight = 'bold';
-                        element.style.display = '';
-                        element.style.visibility = 'visible';
-                        element.style.opacity = '1';
+                        element.style.textDecoration = 'none !important';
+                        element.style.color = '#ffd700 !important';
+                        element.style.fontSize = '1.4em !important';
+                        element.style.fontWeight = 'bold !important';
+                        element.style.display = 'block !important';
+                        element.style.visibility = 'visible !important';
+                        element.style.opacity = '1 !important';
                         element.classList.remove('strikethrough', 'gray-text', 'small-text');
+                        updatedElements++;
                     });
                 });
+                
+                console.log(`🎨 ${updatedElements}個の価格要素をスタイル更新`);
                 
                 // 決済ボタンの表示も強制
                 const paymentButtonSelectors = [
@@ -1424,17 +1440,23 @@
                     '#bundle-payment-btn',
                     '.option-button',
                     '.bundle-button',
-                    'button[onclick*="handlePersonalPayment"]'
+                    'button[onclick*="handlePersonalPayment"]',
+                    'button[onclick*="payment"]',
+                    'a[href*="square.link"]'
                 ];
                 
+                let updatedButtons = 0;
                 paymentButtonSelectors.forEach(selector => {
                     const elements = document.querySelectorAll(selector);
                     elements.forEach(element => {
-                        element.style.display = '';
-                        element.style.visibility = 'visible';
-                        element.style.opacity = '1';
+                        element.style.display = 'block !important';
+                        element.style.visibility = 'visible !important';
+                        element.style.opacity = '1 !important';
+                        updatedButtons++;
                     });
                 });
+                
+                console.log(`🔘 ${updatedButtons}個の決済ボタンを表示更新`);
                 
             } catch (e) {
                 console.log('統合管理画面データ取得エラー:', e);
