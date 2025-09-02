@@ -317,13 +317,27 @@ class AdminIntegration {
                         element.style.fontWeight = 'normal'; // 通常の太さ
                     }
                     
+                    // 個人鑑定ページの特別な処理
+                    if (serviceKey.startsWith('personal_')) {
+                        // 個人鑑定の場合は常に黄色の大きい文字で表示
+                        element.style.textDecoration = 'none'; // 取り消し線を削除
+                        element.style.color = '#ffd700'; // 黄色に設定
+                        element.style.fontSize = '1.2em'; // 大きめのフォント
+                        element.style.fontWeight = 'bold'; // 太字
+                        this.log(`✅ 個人鑑定価格表示: ${serviceKey} (特別スタイル適用)`);
+                    }
+                    
                     if (serviceKey === 'personal_set') {
-                        formattedPrice = `単品合計 ${regularPrice.toLocaleString()}円`;
+                        // セット価格の場合は「セット価格」として表示
+                        formattedPrice = `セット価格 ${regularPrice.toLocaleString()}円`;
                     } else if (serviceKey === 'shintaku') {
                         // 通常価格と販売価格が同じ場合は「通常価格」表示を削除
                         formattedPrice = `${regularPrice.toLocaleString()}円`;
                     } else if (serviceKey === 'star_yomi') {
                         // 通常価格と販売価格が同じ場合は「通常価格」表示を削除
+                        formattedPrice = `${regularPrice.toLocaleString()}円`;
+                    } else if (serviceKey.startsWith('personal_')) {
+                        // 個人鑑定の場合は「通常価格」表示を削除
                         formattedPrice = `${regularPrice.toLocaleString()}円`;
                     } else {
                         formattedPrice = `${regularPrice.toLocaleString()}円`;
@@ -435,7 +449,10 @@ class AdminIntegration {
             `.payment-button`, // 決済ボタン用クラス
             `[data-payment-button="${serviceKey}"]`, // 決済ボタン用データ属性
             `.btn-primary`, // プライマリボタン
-            `button[class*="btn"]` // ボタンクラスを含む要素
+            `button[class*="btn"]`, // ボタンクラスを含む要素
+            `.option-button`, // 個人鑑定のオプションボタン
+            `.bundle-button`, // 個人鑑定のバンドルボタン
+            `button[onclick*="handlePersonalPayment"]` // 個人鑑定の決済ボタン
         ];
 
         let buttonFound = false;
@@ -448,10 +465,15 @@ class AdminIntegration {
                 const isPaymentButton = element.id?.includes('payment') || 
                                       element.classList.contains('payment-button') ||
                                       element.classList.contains('btn-primary') ||
+                                      element.classList.contains('option-button') ||
+                                      element.classList.contains('bundle-button') ||
                                       element.getAttribute('data-payment-button') ||
                                       element.textContent?.includes('申し込む') ||
                                       element.textContent?.includes('決済') ||
-                                      element.textContent?.includes('鑑定');
+                                      element.textContent?.includes('鑑定') ||
+                                      element.textContent?.includes('タロット') ||
+                                      element.textContent?.includes('星詠み') ||
+                                      element.textContent?.includes('セット');
                 
                 if (isPaymentButton) {
                     // onclickイベントを更新（決済ボタンのみ）
