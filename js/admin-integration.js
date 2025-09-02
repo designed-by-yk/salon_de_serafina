@@ -267,24 +267,15 @@ class AdminIntegration {
                 priceSelectors.push(`.option-card .price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
-                // クーポンシステム専用セレクタ
-                priceSelectors.push(`#tarot-original-display`);
-                priceSelectors.push(`#tarot-final-price`);
             } else if (serviceKey === 'personal_birthday') {
                 // 誕生日専用セレクタのみ（共通セレクタを完全削除）
                 priceSelectors.push(`.option-card .price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.original-price[data-service="${serviceKey}"]`);
-                // クーポンシステム専用セレクタ
-                priceSelectors.push(`#star-original-display`);
-                priceSelectors.push(`#star-final-price`);
             } else if (serviceKey === 'personal_set') {
                 // セット専用セレクタのみ（共通セレクタを完全削除）
                 priceSelectors.push(`.bundle-pricing .price[data-service="${serviceKey}"]`);
                 priceSelectors.push(`.price[data-service="${serviceKey}"]`);
-                // クーポンシステム専用セレクタ
-                priceSelectors.push(`#bundle-original-display`);
-                priceSelectors.push(`#bundle-final-price`);
             }
         } else if (serviceKey === 'star_yomi') {
             // 星詠みページ用の特別なセレクタ
