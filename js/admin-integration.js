@@ -739,10 +739,15 @@ class AdminIntegration {
                 const oldText = element.textContent;
                 let newText = product.displayText;
                 
-                if (textType === 'header') {
-                    newText = '🌟 ' + product.displayText;
-                } else if (textType === 'discount') {
-                    newText = product.displayText;
+                // 表示文言が「無し」の場合は空文字にする
+                if (product.displayText === '無し' || product.displayText === 'なし' || product.displayText === '') {
+                    newText = '';
+                } else {
+                    if (textType === 'header') {
+                        newText = '🌟 ' + product.displayText;
+                    } else if (textType === 'discount') {
+                        newText = product.displayText;
+                    }
                 }
                     
                 element.textContent = newText;
