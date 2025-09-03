@@ -301,19 +301,19 @@ class AdminIntegration {
                         // 表示中の商品の場合
                         if (regularPrice === salePrice) {
                             // 通常価格 = 販売価格の場合：通常価格要素は非表示にして重複を回避
-                            element.style.display = 'none';
-                            element.style.visibility = 'hidden';
-                            element.style.opacity = '0';
+                            element.style.setProperty('display', 'none', 'important');
+                            element.style.setProperty('visibility', 'hidden', 'important');
+                            element.style.setProperty('opacity', '0', 'important');
                             this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格=販売価格、重複回避のため非表示)`);
                         } else {
                             // 通常価格 ≠ 販売価格の場合：白い文字で取り消し線表示
-                            element.style.display = 'block';
-                            element.style.textDecoration = 'line-through';
-                            element.style.color = '#ccc';
-                            element.style.fontSize = '0.9em';
-                            element.style.fontWeight = 'normal';
-                            element.style.visibility = 'visible';
-                            element.style.opacity = '1';
+                            element.style.setProperty('display', 'block', 'important');
+                            element.style.setProperty('text-decoration', 'line-through', 'important');
+                            element.style.setProperty('color', '#ccc', 'important');
+                            element.style.setProperty('font-size', '0.9em', 'important');
+                            element.style.setProperty('font-weight', 'normal', 'important');
+                            element.style.setProperty('visibility', 'visible', 'important');
+                            element.style.setProperty('opacity', '1', 'important');
                             this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格≠販売価格、取り消し線表示)`);
                         }
                     } else {
@@ -345,11 +345,13 @@ class AdminIntegration {
                     // 商品管理の表示設定に基づく一貫したセール価格表示ロジック
                     if (product.visible) {
                         // 表示中の商品の場合：黄色の大きい文字で表示
-                        element.style.display = '';
-                        element.style.textDecoration = 'none';
-                        element.style.color = '#ffd700';
-                        element.style.fontSize = '1.4em';
-                        element.style.fontWeight = 'bold';
+                        element.style.setProperty('display', 'block', 'important');
+                        element.style.setProperty('text-decoration', 'none', 'important');
+                        element.style.setProperty('color', '#ffd700', 'important');
+                        element.style.setProperty('font-size', '1.4em', 'important');
+                        element.style.setProperty('font-weight', 'bold', 'important');
+                        element.style.setProperty('visibility', 'visible', 'important');
+                        element.style.setProperty('opacity', '1', 'important');
                         element.classList.remove('strikethrough', 'gray-text', 'small-text');
                         this.log(`✅ 表示中商品のセール価格: ${serviceKey} (黄色表示)`);
                     } else {
@@ -373,13 +375,13 @@ class AdminIntegration {
                     // デフォルトの価格表示（商品管理の表示設定に基づく）
                     if (product.visible) {
                         // 表示中の商品の場合：黄色の大きい文字で表示
-                        element.style.display = 'block';
-                        element.style.textDecoration = 'none';
-                        element.style.color = '#ffd700';
-                        element.style.fontSize = '1.4em';
-                        element.style.fontWeight = 'bold';
-                        element.style.visibility = 'visible';
-                        element.style.opacity = '1';
+                        element.style.setProperty('display', 'block', 'important');
+                        element.style.setProperty('text-decoration', 'none', 'important');
+                        element.style.setProperty('color', '#ffd700', 'important');
+                        element.style.setProperty('font-size', '1.4em', 'important');
+                        element.style.setProperty('font-weight', 'bold', 'important');
+                        element.style.setProperty('visibility', 'visible', 'important');
+                        element.style.setProperty('opacity', '1', 'important');
                         element.classList.remove('strikethrough', 'gray-text', 'small-text');
                         this.log(`✅ 表示中商品のデフォルト価格: ${serviceKey} (黄色表示)`);
                     } else {
@@ -535,22 +537,22 @@ class AdminIntegration {
                     element.onclick = () => window.open(link.url, '_blank');
                     
                     // 決済ボタンの表示を強制
-                    element.style.display = 'block';
-                    element.style.visibility = 'visible';
-                    element.style.opacity = '1';
-                    element.style.pointerEvents = 'auto';
-                    element.style.cursor = 'pointer';
-                    element.style.position = 'relative';
-                    element.style.zIndex = '999';
+                    element.style.setProperty('display', 'block', 'important');
+                    element.style.setProperty('visibility', 'visible', 'important');
+                    element.style.setProperty('opacity', '1', 'important');
+                    element.style.setProperty('pointer-events', 'auto', 'important');
+                    element.style.setProperty('cursor', 'pointer', 'important');
+                    element.style.setProperty('position', 'relative', 'important');
+                    element.style.setProperty('z-index', '999', 'important');
                     
                     // 親要素の表示も強制
                     let parent = element.parentElement;
                     let depth = 0;
                     while (parent && parent !== document.body && depth < 5) {
-                        parent.style.display = 'block';
-                        parent.style.visibility = 'visible';
-                        parent.style.opacity = '1';
-                        parent.style.position = 'relative';
+                        parent.style.setProperty('display', 'block', 'important');
+                        parent.style.setProperty('visibility', 'visible', 'important');
+                        parent.style.setProperty('opacity', '1', 'important');
+                        parent.style.setProperty('position', 'relative', 'important');
                         parent = parent.parentElement;
                         depth++;
                     }
