@@ -730,6 +730,14 @@ class AdminIntegration {
                 salePrice: product.salePrice
             });
             
+            // 商品管理で通常価格を表示にしている場合、表示文言を「ー」に強制設定
+            if (product.visible && product.regularPrice === product.salePrice) {
+                if (!product.displayText || product.displayText === '') {
+                    product.displayText = 'ー';
+                    this.log(`🔧 ${product.productName || product.name} の表示文言を「ー」に強制設定`);
+                }
+            }
+            
             const serviceKey = this.getServiceKeyFromProduct(product);
             if (!serviceKey) {
                 this.log(`⚠️ サービスキーが見つからない商品: ${product.productName || product.name}`);
