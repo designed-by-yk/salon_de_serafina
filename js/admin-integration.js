@@ -732,9 +732,9 @@ class AdminIntegration {
             
             // 商品管理で通常価格を表示にしている場合、表示文言を「ー」に強制設定
             if (product.visible && product.regularPrice === product.salePrice) {
-                if (!product.displayText || product.displayText === '') {
+                if (!product.displayText || product.displayText === '' || product.displayText.includes('オープン') || product.displayText.includes('記念')) {
                     product.displayText = 'ー';
-                    this.log(`🔧 ${product.productName || product.name} の表示文言を「ー」に強制設定`);
+                    this.log(`🔧 ${product.productName || product.name} の表示文言を「ー」に強制設定 (元: "${product.displayText}")`);
                 }
             }
             
@@ -761,6 +761,16 @@ class AdminIntegration {
             const displayElements = document.querySelectorAll(`[data-service="${serviceKey}"] .display-text, [data-service="${serviceKey}"][data-text-type], [data-service="${serviceKey}"][data-price-type], .display-text[data-service="${serviceKey}"]`);
             
             this.log(`🔍 ${serviceKey} の表示文言要素: ${displayElements.length}個発見`);
+            displayElements.forEach(function(element, index) {
+                console.log(`🔍 要素${index + 1}:`, {
+                    tagName: element.tagName,
+                    className: element.className,
+                    textType: element.getAttribute('data-text-type'),
+                    priceType: element.getAttribute('data-price-type'),
+                    currentText: element.textContent,
+                    service: element.getAttribute('data-service')
+                });
+            });
             
             displayElements.forEach(function(element) {
                 const textType = element.getAttribute('data-text-type');
@@ -929,6 +939,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('🔧 表示文言の強制更新を実行しました');
             }
         }, 1000); // 1秒後に強制更新
+        
+        // さらに強制更新（2秒後）
+        setTimeout(() => {
+            if (window.adminIntegration) {
+                window.adminIntegration.updateDisplayTexts();
+                console.log('🔧 表示文言の2回目強制更新を実行しました');
+            }
+        }, 2000); // 2秒後に強制更新
     }, 100); // 100ms待機に短縮
 });
 
@@ -950,6 +968,14 @@ if (document.readyState === 'loading') {
                     console.log('🔧 表示文言の強制更新を実行しました（既存ページ）');
                 }
             }, 1000); // 1秒後に強制更新
+            
+            // さらに強制更新（2秒後）
+            setTimeout(() => {
+                if (window.adminIntegration) {
+                    window.adminIntegration.updateDisplayTexts();
+                    console.log('🔧 表示文言の2回目強制更新を実行しました（既存ページ）');
+                }
+            }, 2000); // 2秒後に強制更新
         }, 100); // 100ms待機に短縮
     }
 }
