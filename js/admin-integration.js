@@ -920,7 +920,15 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         window.adminIntegration = new AdminIntegration();
         window.adminIntegration.initialize();
-    }, 500); // 500ms待機
+        
+        // 表示文言の強制更新を追加
+        setTimeout(() => {
+            if (window.adminIntegration) {
+                window.adminIntegration.updateDisplayTexts();
+                console.log('🔧 表示文言の強制更新を実行しました');
+            }
+        }, 1000); // 1秒後に強制更新
+    }, 100); // 100ms待機に短縮
 });
 
 // ページが既に読み込まれている場合の対応
@@ -933,7 +941,15 @@ if (document.readyState === 'loading') {
         setTimeout(() => {
             window.adminIntegration = new AdminIntegration();
             window.adminIntegration.initialize();
-        }, 500);
+            
+            // 表示文言の強制更新を追加
+            setTimeout(() => {
+                if (window.adminIntegration) {
+                    window.adminIntegration.updateDisplayTexts();
+                    console.log('🔧 表示文言の強制更新を実行しました（既存ページ）');
+                }
+            }, 1000); // 1秒後に強制更新
+        }, 100); // 100ms待機に短縮
     }
 }
 
