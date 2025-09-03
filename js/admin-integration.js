@@ -281,11 +281,19 @@ class AdminIntegration {
         }
 
         let elementsFound = 0;
+        const processedElements = new Set(); // 処理済み要素を追跡
+        
         priceSelectors.forEach(selector => {
             const elements = document.querySelectorAll(selector);
             this.log(`🔍 セレクタ "${selector}" で ${elements.length} 個の要素を発見`);
             
             elements.forEach(element => {
+                // 既に処理済みの要素はスキップ
+                if (processedElements.has(element)) {
+                    this.log(`⏭️ 要素は既に処理済みのためスキップ: ${selector}`);
+                    return;
+                }
+                processedElements.add(element);
                 const oldPrice = element.textContent;
                 let formattedPrice;
                 
