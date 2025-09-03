@@ -715,6 +715,15 @@ class AdminIntegration {
 
         let updatedCount = 0;
         adminData.products.forEach(product => {
+            this.log(`🔍 商品データ詳細:`, {
+                productName: product.productName,
+                name: product.name,
+                displayText: product.displayText,
+                visible: product.visible,
+                regularPrice: product.regularPrice,
+                salePrice: product.salePrice
+            });
+            
             const serviceKey = this.getServiceKeyFromProduct(product);
             if (!serviceKey) {
                 this.log(`⚠️ サービスキーが見つからない商品: ${product.productName || product.name}`);
@@ -772,6 +781,19 @@ class AdminIntegration {
                         element.textContent = product.displayText || '';
                         updatedCount++;
                         console.log('フォールバック表示文言更新:', element.tagName, element.className, '→', product.displayText);
+                    }
+                });
+            }
+            
+            // 強制的に表示文言を適用（最後の手段）
+            if (updatedCount === 0) {
+                this.log(`🚨 ${serviceKey} の表示文言が適用されませんでした。強制適用を試行します。`);
+                const allElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
+                allElements.forEach(function(element) {
+                    if (element.textContent && element.textContent.includes('オープン') || element.textContent.includes('記念')) {
+                        element.textContent = product.displayText || '';
+                        updatedCount++;
+                        console.log('強制表示文言更新:', element.tagName, element.className, '→', product.displayText);
                     }
                 });
             }
