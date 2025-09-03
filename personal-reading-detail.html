@@ -442,6 +442,19 @@
             backdrop-filter: blur(10px);
             text-align: center !important;
         }
+        
+        /* 強制的な中央揃えルール */
+        .option-card * {
+            text-align: center !important;
+        }
+        
+        .option-card ul {
+            text-align: center !important;
+        }
+        
+        .option-card li {
+            text-align: center !important;
+        }
 
         .option-header h3 {
             color: #ffd700;
@@ -782,6 +795,7 @@
 
             .option-card {
                 padding: 20px;
+                text-align: center !important;
             }
 
             .bundle-content {
@@ -1379,6 +1393,30 @@
                 }
                 console.log('🔧 個人鑑定: クーポン表示の強制非表示完了');
             }, 1000);
+            
+            // 強制的に中央揃えを適用
+            setTimeout(function() {
+                const optionCards = document.querySelectorAll('.option-card');
+                optionCards.forEach(card => {
+                    card.style.setProperty('text-align', 'center', 'important');
+                    
+                    // 子要素も強制的に中央揃え
+                    const children = card.querySelectorAll('*');
+                    children.forEach(child => {
+                        if (child.tagName === 'H3' || child.tagName === 'H4' || child.tagName === 'P') {
+                            child.style.setProperty('text-align', 'center', 'important');
+                        }
+                        if (child.tagName === 'UL') {
+                            child.style.setProperty('text-align', 'center', 'important');
+                        }
+                        if (child.tagName === 'LI') {
+                            child.style.setProperty('text-align', 'center', 'important');
+                        }
+                    });
+                });
+                
+                console.log('🔧 個人鑑定: 強制的な中央揃え適用完了');
+            }, 2000);
         });
 
         function initializePersonalCoupons() {
