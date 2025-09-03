@@ -1407,21 +1407,25 @@
             console.log('🔧 個別クーポンシステム初期化開始');
             console.log('📊 使用する価格データ:', originalPrices);
             
+            // 統合管理から最新の価格を再取得
+            const currentPrices = getCurrentPrices();
+            console.log('🔄 統合管理から最新価格を再取得:', currentPrices);
+            
             const services = [
                 { 
                     name: 'tarot', 
                     serviceType: 'personal_tarot',
-                    price: originalPrices.tarot 
+                    price: currentPrices.tarot 
                 },
                 { 
                     name: 'star', 
                     serviceType: 'personal_birthday',
-                    price: originalPrices.star 
+                    price: currentPrices.star 
                 },
                 { 
                     name: 'bundle', 
                     serviceType: 'personal_set',
-                    price: originalPrices.bundle 
+                    price: currentPrices.bundle 
                 }
             ];
             

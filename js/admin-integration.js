@@ -300,16 +300,11 @@ class AdminIntegration {
                     if (product.visible) {
                         // 表示中の商品の場合
                         if (regularPrice === salePrice) {
-                            // 通常価格 = 販売価格の場合：黄色の大きい文字で表示（取り消し線なし）
-                            element.style.display = 'block';
-                            element.style.textDecoration = 'none';
-                            element.style.color = '#ffd700';
-                            element.style.fontSize = '1.4em';
-                            element.style.fontWeight = 'bold';
-                            element.style.visibility = 'visible';
-                            element.style.opacity = '1';
-                            element.classList.remove('strikethrough', 'gray-text', 'small-text');
-                            this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格=販売価格、黄色表示)`);
+                            // 通常価格 = 販売価格の場合：通常価格要素は非表示にして重複を回避
+                            element.style.display = 'none';
+                            element.style.visibility = 'hidden';
+                            element.style.opacity = '0';
+                            this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格=販売価格、重複回避のため非表示)`);
                         } else {
                             // 通常価格 ≠ 販売価格の場合：白い文字で取り消し線表示
                             element.style.display = 'block';
@@ -485,33 +480,28 @@ class AdminIntegration {
      * リンク要素の更新
      */
     updateLinkElements(serviceKey, link) {
-        // 決済ボタンのリンクを更新（ナビゲーションボタンは除外）
+        // 決済ボタンのリンクを更新（サービス固有のセレクタのみ使用）
         const linkSelectors = [
-            // 決済専用ボタンのみをターゲット
-            `#payment-btn`, // 神託・星詠み決済ボタン
-            `#tarot-payment-btn`, // 個人鑑定タロット
-            `#star-payment-btn`, // 個人鑑定星詠み
-            `#bundle-payment-btn`, // 個人鑑定セット
-            `.payment-button`, // 決済ボタン用クラス
+            // サービス固有のセレクタのみ（グローバルセレクタを削除して競合を回避）
             `[data-payment-button="${serviceKey}"]`, // 決済ボタン用データ属性
-            `.btn-primary`, // プライマリボタン
-            `button[class*="btn"]`, // ボタンクラスを含む要素
-            `.option-button`, // 個人鑑定のオプションボタン
-            `.bundle-button`, // 個人鑑定のバンドルボタン
-            `button[onclick*="handlePersonalPayment"]`, // 個人鑑定の決済ボタン
-            `button[onclick*="payment"]`, // 決済関連のボタン
-            `button[onclick*="checkout"]`, // チェックアウトボタン
-            `a[href*="square.link"]`, // Square決済リンク
-            `a[href*="payment"]`, // 決済関連のリンク
-            // 個人鑑定ページ専用の追加セレクタ
-            `.option-card button`, // オプションカード内のボタン
-            `.bundle-pricing button`, // バンドル価格内のボタン
-            `.service-option button`, // サービスオプション内のボタン
             `button[data-service="${serviceKey}"]`, // サービス固有のボタン
-            `button[onclick*="7000"]`, // 7000円の決済ボタン
-            `button[onclick*="10000"]`, // 10000円の決済ボタン
-            `button[onclick*="square.link"]` // Square決済リンクを含むボタン
         ];
+        
+        // サービス別の専用セレクタを追加
+        if (serviceKey === 'personal_tarot') {
+            linkSelectors.push(`#tarot-payment-btn`); // タロット専用
+            linkSelectors.push(`button[onclick*="7000"]`); // 7000円の決済ボタン
+        } else if (serviceKey === 'personal_birthday') {
+            linkSelectors.push(`#star-payment-btn`); // 誕生日専用
+            linkSelectors.push(`button[onclick*="7000"]`); // 7000円の決済ボタン
+        } else if (serviceKey === 'personal_set') {
+            linkSelectors.push(`#bundle-payment-btn`); // セット専用
+            linkSelectors.push(`button[onclick*="10000"]`); // 10000円の決済ボタン
+        } else if (serviceKey === 'shintaku') {
+            linkSelectors.push(`#payment-btn`); // 神託専用
+        } else if (serviceKey === 'star_yomi') {
+            linkSelectors.push(`#payment-btn`); // 星詠み専用
+        }
 
         let buttonFound = false;
         linkSelectors.forEach(selector => {
