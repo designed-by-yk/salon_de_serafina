@@ -694,6 +694,12 @@ class AdminIntegration {
             this.updatePaymentLinks();
             this.updatePaymentButtons();
             
+            // 表示文言の更新を確実にするため、少し遅延して再実行
+            setTimeout(() => {
+                this.log('🔄 表示文言の再更新を実行');
+                this.updateDisplayTexts();
+            }, 1000);
+            
             this.log('✅ 全同期完了');
         } finally {
             // 同期完了フラグをリセット
@@ -744,7 +750,7 @@ class AdminIntegration {
 
             this.log(`🔍 ${serviceKey} の表示文言を更新: "${product.displayText}" (商品: ${product.productName || product.name})`);
 
-            const displayElements = document.querySelectorAll(`[data-service="${serviceKey}"] .display-text, [data-service="${serviceKey}"][data-text-type]`);
+            const displayElements = document.querySelectorAll(`[data-service="${serviceKey}"] .display-text, [data-service="${serviceKey}"][data-text-type], .display-text[data-service="${serviceKey}"]`);
             
             this.log(`🔍 ${serviceKey} の表示文言要素: ${displayElements.length}個発見`);
             
@@ -790,10 +796,25 @@ class AdminIntegration {
                 this.log(`🚨 ${serviceKey} の表示文言が適用されませんでした。強制適用を試行します。`);
                 const allElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
                 allElements.forEach(function(element) {
-                    if (element.textContent && element.textContent.includes('オープン') || element.textContent.includes('記念')) {
+                    if (element.textContent && (element.textContent.includes('オープン') || element.textContent.includes('記念'))) {
                         element.textContent = product.displayText || '';
                         updatedCount++;
                         console.log('強制表示文言更新:', element.tagName, element.className, '→', product.displayText);
+                    }
+                });
+            }
+            
+            // さらに強制的に表示文言を適用（最終手段）
+            if (updatedCount === 0 && product.displayText) {
+                this.log(`🚨🚨 ${serviceKey} の表示文言が全く適用されませんでした。最終手段を実行します。`);
+                const allElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
+                allElements.forEach(function(element) {
+                    // テキストコンテンツがある要素をすべて対象にする
+                    if (element.textContent && element.textContent.trim() !== '') {
+                        const oldText = element.textContent;
+                        element.textContent = product.displayText;
+                        updatedCount++;
+                        console.log('最終手段表示文言更新:', element.tagName, element.className, oldText, '→', product.displayText);
                     }
                 });
             }
