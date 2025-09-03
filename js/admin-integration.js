@@ -305,6 +305,8 @@ class AdminIntegration {
                             element.style.setProperty('visibility', 'hidden', 'important');
                             element.style.setProperty('opacity', '0', 'important');
                             this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格=販売価格、重複回避のため非表示)`);
+                            // 価格テキストの更新をスキップ（非表示なので不要）
+                            return;
                         } else {
                             // 通常価格 ≠ 販売価格の場合：白い文字で取り消し線表示
                             element.style.setProperty('display', 'block', 'important');
@@ -707,6 +709,12 @@ class AdminIntegration {
         adminData.products.forEach(product => {
             const serviceKey = this.getServiceKeyFromProduct(product);
             if (!serviceKey || !product.displayText) return;
+
+            // 表示中の商品のみ処理
+            if (!product.visible) {
+                this.log(`⏭️ ${serviceKey} の表示文言更新をスキップ（非表示商品）`);
+                return;
+            }
 
             // 現在のページに適したサービスのみ処理
             if (!this.isServiceRelevantToCurrentPage(serviceKey)) {
