@@ -301,29 +301,29 @@ class AdminIntegration {
                         // 表示中の商品の場合
                         if (regularPrice === salePrice) {
                             // 通常価格 = 販売価格の場合：黄色の大きい文字で表示（取り消し線なし）
-                            element.style.display = 'block !important';
-                            element.style.textDecoration = 'none !important';
-                            element.style.color = '#ffd700 !important';
-                            element.style.fontSize = '1.4em !important';
-                            element.style.fontWeight = 'bold !important';
-                            element.style.visibility = 'visible !important';
-                            element.style.opacity = '1 !important';
+                            element.style.display = 'block';
+                            element.style.textDecoration = 'none';
+                            element.style.color = '#ffd700';
+                            element.style.fontSize = '1.4em';
+                            element.style.fontWeight = 'bold';
+                            element.style.visibility = 'visible';
+                            element.style.opacity = '1';
                             element.classList.remove('strikethrough', 'gray-text', 'small-text');
                             this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格=販売価格、黄色表示)`);
                         } else {
                             // 通常価格 ≠ 販売価格の場合：白い文字で取り消し線表示
-                            element.style.display = 'block !important';
-                            element.style.textDecoration = 'line-through !important';
-                            element.style.color = '#ccc !important';
-                            element.style.fontSize = '0.9em !important';
-                            element.style.fontWeight = 'normal !important';
-                            element.style.visibility = 'visible !important';
-                            element.style.opacity = '1 !important';
+                            element.style.display = 'block';
+                            element.style.textDecoration = 'line-through';
+                            element.style.color = '#ccc';
+                            element.style.fontSize = '0.9em';
+                            element.style.fontWeight = 'normal';
+                            element.style.visibility = 'visible';
+                            element.style.opacity = '1';
                             this.log(`✅ 表示中商品の通常価格: ${serviceKey} (通常価格≠販売価格、取り消し線表示)`);
                         }
                     } else {
                         // 非表示商品の場合：非表示
-                        element.style.display = 'none !important';
+                        element.style.display = 'none';
                         this.log(`🚫 非表示商品の通常価格: ${serviceKey} (非表示)`);
                     }
                     
@@ -378,18 +378,18 @@ class AdminIntegration {
                     // デフォルトの価格表示（商品管理の表示設定に基づく）
                     if (product.visible) {
                         // 表示中の商品の場合：黄色の大きい文字で表示
-                        element.style.display = 'block !important';
-                        element.style.textDecoration = 'none !important';
-                        element.style.color = '#ffd700 !important';
-                        element.style.fontSize = '1.4em !important';
-                        element.style.fontWeight = 'bold !important';
-                        element.style.visibility = 'visible !important';
-                        element.style.opacity = '1 !important';
+                        element.style.display = 'block';
+                        element.style.textDecoration = 'none';
+                        element.style.color = '#ffd700';
+                        element.style.fontSize = '1.4em';
+                        element.style.fontWeight = 'bold';
+                        element.style.visibility = 'visible';
+                        element.style.opacity = '1';
                         element.classList.remove('strikethrough', 'gray-text', 'small-text');
                         this.log(`✅ 表示中商品のデフォルト価格: ${serviceKey} (黄色表示)`);
                     } else {
                         // 非表示商品の場合：非表示
-                        element.style.display = 'none !important';
+                        element.style.display = 'none';
                         this.log(`🚫 非表示商品のデフォルト価格: ${serviceKey} (非表示)`);
                     }
                     
@@ -399,10 +399,10 @@ class AdminIntegration {
                 element.textContent = formattedPrice;
                 
                 // 価格要素の表示を強制
-                element.style.display = 'block !important';
-                element.style.visibility = 'visible !important';
-                element.style.opacity = '1 !important';
-                element.style.position = 'relative !important';
+                element.style.display = 'block';
+                element.style.visibility = 'visible';
+                element.style.opacity = '1';
+                element.style.position = 'relative';
                 
                 // 強制的にDOMに再描画させる
                 element.offsetHeight;
@@ -545,22 +545,22 @@ class AdminIntegration {
                     element.onclick = () => window.open(link.url, '_blank');
                     
                     // 決済ボタンの表示を強制
-                    element.style.display = 'block !important';
-                    element.style.visibility = 'visible !important';
-                    element.style.opacity = '1 !important';
-                    element.style.pointerEvents = 'auto !important';
-                    element.style.cursor = 'pointer !important';
-                    element.style.position = 'relative !important';
-                    element.style.zIndex = '999 !important';
+                    element.style.display = 'block';
+                    element.style.visibility = 'visible';
+                    element.style.opacity = '1';
+                    element.style.pointerEvents = 'auto';
+                    element.style.cursor = 'pointer';
+                    element.style.position = 'relative';
+                    element.style.zIndex = '999';
                     
                     // 親要素の表示も強制
                     let parent = element.parentElement;
                     let depth = 0;
                     while (parent && parent !== document.body && depth < 5) {
-                        parent.style.display = 'block !important';
-                        parent.style.visibility = 'visible !important';
-                        parent.style.opacity = '1 !important';
-                        parent.style.position = 'relative !important';
+                        parent.style.display = 'block';
+                        parent.style.visibility = 'visible';
+                        parent.style.opacity = '1';
+                        parent.style.position = 'relative';
                         parent = parent.parentElement;
                         depth++;
                     }
