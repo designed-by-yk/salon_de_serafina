@@ -252,11 +252,7 @@ class AdminIntegration {
             `.special-price[data-service="${serviceKey}"]`,
             `.price-large[data-service="${serviceKey}"]`,
             
-            // ページ固有のセレクタ（共通セレクタを削除して競合を回避）
-            `#shintaku-original-display`,
-            `#shintaku-final-price`,
-            `#star-yomi-price`,
-            `#star-yomi-final-price`
+            // ページ固有のセレクタ（共通セレクタを完全削除して競合を回避）
         ];
         
         // ページ固有のセレクタを追加（各サービス専用で競合を回避）
