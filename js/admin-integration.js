@@ -716,7 +716,7 @@ class AdminIntegration {
         let updatedCount = 0;
         adminData.products.forEach(product => {
             const serviceKey = this.getServiceKeyFromProduct(product);
-            if (!serviceKey || !product.displayText) return;
+            if (!serviceKey) return;
 
             // 表示中の商品のみ処理
             if (!product.visible) {
@@ -737,22 +737,20 @@ class AdminIntegration {
             displayElements.forEach(function(element) {
                 const textType = element.getAttribute('data-text-type');
                 const oldText = element.textContent;
-                let newText = product.displayText;
+                let newText = product.displayText || '';
                 
-                // 表示文言が「無し」の場合は空文字にする
-                if (product.displayText === '無し' || product.displayText === 'なし' || product.displayText === '') {
-                    newText = '';
-                } else {
-                    if (textType === 'header') {
-                        newText = '🌟 ' + product.displayText;
-                    } else if (textType === 'discount') {
-                        newText = product.displayText;
-                    }
+                // 表示文言の処理
+                if (textType === 'header') {
+                    newText = '🌟 ' + (product.displayText || '');
+                } else if (textType === 'discount') {
+                    newText = product.displayText || '';
+                } else if (textType === 'savings') {
+                    newText = product.displayText || '';
                 }
                     
                 element.textContent = newText;
                 updatedCount++;
-                console.log('表示文言更新:', textType, oldText, newText);
+                console.log('表示文言更新:', textType, oldText, newText, '商品:', product.productName, '表示文言:', product.displayText);
             });
         });
 
