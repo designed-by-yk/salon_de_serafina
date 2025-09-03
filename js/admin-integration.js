@@ -732,9 +732,10 @@ class AdminIntegration {
             
             // 商品管理で通常価格を表示にしている場合、表示文言を「ー」に強制設定
             if (product.visible && product.regularPrice === product.salePrice) {
+                const originalDisplayText = product.displayText;
                 if (!product.displayText || product.displayText === '' || product.displayText.includes('オープン') || product.displayText.includes('記念')) {
                     product.displayText = 'ー';
-                    this.log(`🔧 ${product.productName || product.name} の表示文言を「ー」に強制設定 (元: "${product.displayText}")`);
+                    this.log(`🔧 ${product.productName || product.name} の表示文言を「ー」に強制設定 (元: "${originalDisplayText}")`);
                 }
             }
             
@@ -769,6 +770,23 @@ class AdminIntegration {
                     priceType: element.getAttribute('data-price-type'),
                     currentText: element.textContent,
                     service: element.getAttribute('data-service')
+                });
+            });
+            
+            // セレクターの詳細テスト
+            console.log(`🔍 ${serviceKey} セレクターテスト:`);
+            const testSelectors = [
+                `[data-service="${serviceKey}"] .display-text`,
+                `[data-service="${serviceKey}"][data-text-type]`,
+                `[data-service="${serviceKey}"][data-price-type]`,
+                `.display-text[data-service="${serviceKey}"]`
+            ];
+            
+            testSelectors.forEach(function(selector, index) {
+                const elements = document.querySelectorAll(selector);
+                console.log(`🔍 セレクター${index + 1} "${selector}": ${elements.length}個発見`);
+                elements.forEach(function(element, elemIndex) {
+                    console.log(`  - 要素${elemIndex + 1}: ${element.tagName}.${element.className} "${element.textContent}"`);
                 });
             });
             
@@ -981,3 +999,79 @@ if (document.readyState === 'loading') {
 }
 
 console.log('🔗 AdminIntegration スクリプト読み込み完了');
+
+// 手動テスト用の関数を追加
+window.testDisplayTexts = function() {
+    console.log('🧪 手動テスト: 表示文言の更新を実行');
+    if (window.adminIntegration) {
+        window.adminIntegration.updateDisplayTexts();
+    } else {
+        console.log('⚠️ adminIntegrationが初期化されていません');
+    }
+};
+
+window.testSelectors = function(serviceKey) {
+    console.log(`🧪 手動テスト: ${serviceKey} のセレクターテスト`);
+    const testSelectors = [
+        `[data-service="${serviceKey}"] .display-text`,
+        `[data-service="${serviceKey}"][data-text-type]`,
+        `[data-service="${serviceKey}"][data-price-type]`,
+        `.display-text[data-service="${serviceKey}"]`
+    ];
+    
+    testSelectors.forEach(function(selector, index) {
+        const elements = document.querySelectorAll(selector);
+        console.log(`🔍 セレクター${index + 1} "${selector}": ${elements.length}個発見`);
+        elements.forEach(function(element, elemIndex) {
+            console.log(`  - 要素${elemIndex + 1}: ${element.tagName}.${element.className} "${element.textContent}"`);
+        });
+    });
+};
+
+window.checkAdminData = function() {
+    console.log('🧪 手動テスト: localStorageのadminDataを確認');
+    const adminData = localStorage.getItem('adminData');
+    if (adminData) {
+        const data = JSON.parse(adminData);
+        console.log('📊 localStorageのadminData:', data);
+        console.log('📊 商品データ:', data.products);
+        console.log('📊 決済リンクデータ:', data.paymentLinks);
+        
+        // 各商品の詳細を表示
+        if (data.products) {
+            data.products.forEach(function(product, index) {
+                console.log(`📊 商品${index + 1}:`, {
+                    productName: product.productName,
+                    name: product.name,
+                    regularPrice: product.regularPrice,
+                    salePrice: product.salePrice,
+                    displayText: product.displayText,
+                    visible: product.visible,
+                    stableId: product.stableId
+                });
+            });
+        }
+    } else {
+        console.log('⚠️ localStorageにadminDataが見つかりません');
+    }
+};
+
+window.forceReloadAdminData = function() {
+    console.log('🧪 手動テスト: adminDataを強制再読み込み');
+    if (window.adminIntegration) {
+        const adminData = window.adminIntegration.getAdminData();
+        console.log('📊 再読み込みしたadminData:', adminData);
+        if (adminData && adminData.products) {
+            adminData.products.forEach(function(product, index) {
+                console.log(`📊 再読み込み商品${index + 1}:`, {
+                    productName: product.productName,
+                    name: product.name,
+                    regularPrice: product.regularPrice,
+                    salePrice: product.salePrice,
+                    displayText: product.displayText,
+                    visible: product.visible
+                });
+            });
+        }
+    }
+};
