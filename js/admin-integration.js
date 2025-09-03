@@ -758,19 +758,20 @@ class AdminIntegration {
 
             this.log(`🔍 ${serviceKey} の表示文言を更新: "${product.displayText}" (商品: ${product.productName || product.name})`);
 
-            const displayElements = document.querySelectorAll(`[data-service="${serviceKey}"] .display-text, [data-service="${serviceKey}"][data-text-type], .display-text[data-service="${serviceKey}"]`);
+            const displayElements = document.querySelectorAll(`[data-service="${serviceKey}"] .display-text, [data-service="${serviceKey}"][data-text-type], [data-service="${serviceKey}"][data-price-type], .display-text[data-service="${serviceKey}"]`);
             
             this.log(`🔍 ${serviceKey} の表示文言要素: ${displayElements.length}個発見`);
             
             displayElements.forEach(function(element) {
                 const textType = element.getAttribute('data-text-type');
+                const priceType = element.getAttribute('data-price-type');
                 const oldText = element.textContent;
                 let newText = product.displayText || '';
                 
                 // 表示文言の処理
                 if (textType === 'header') {
                     newText = '🌟 ' + (product.displayText || '');
-                } else if (textType === 'discount') {
+                } else if (textType === 'discount' || priceType === 'savings') {
                     newText = product.displayText || '';
                 } else if (textType === 'savings') {
                     newText = product.displayText || '';
@@ -791,7 +792,7 @@ class AdminIntegration {
                 const fallbackElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
                 this.log(`🔍 ${serviceKey} のフォールバック要素: ${fallbackElements.length}個発見`);
                 fallbackElements.forEach(function(element) {
-                    if (element.classList.contains('display-text') || element.hasAttribute('data-text-type')) {
+                    if (element.classList.contains('display-text') || element.hasAttribute('data-text-type') || element.hasAttribute('data-price-type')) {
                         element.textContent = product.displayText || '';
                         updatedCount++;
                         console.log('フォールバック表示文言更新:', element.tagName, element.className, '→', product.displayText);
