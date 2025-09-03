@@ -716,7 +716,10 @@ class AdminIntegration {
         let updatedCount = 0;
         adminData.products.forEach(product => {
             const serviceKey = this.getServiceKeyFromProduct(product);
-            if (!serviceKey) return;
+            if (!serviceKey) {
+                this.log(`⚠️ サービスキーが見つからない商品: ${product.productName || product.name}`);
+                return;
+            }
 
             // 表示中の商品のみ処理
             if (!product.visible) {
@@ -729,6 +732,8 @@ class AdminIntegration {
                 this.log(`⏭️ ${serviceKey} の表示文言更新をスキップ（現在のページに関連しない）`);
                 return;
             }
+
+            this.log(`🔍 ${serviceKey} の表示文言を更新: "${product.displayText}" (商品: ${product.productName || product.name})`);
 
             const displayElements = document.querySelectorAll(`[data-service="${serviceKey}"] .display-text, [data-service="${serviceKey}"][data-text-type]`);
             
@@ -746,12 +751,30 @@ class AdminIntegration {
                     newText = product.displayText || '';
                 } else if (textType === 'savings') {
                     newText = product.displayText || '';
+                } else {
+                    // data-text-typeが設定されていない場合も表示文言を適用
+                    newText = product.displayText || '';
                 }
                     
                 element.textContent = newText;
                 updatedCount++;
-                console.log('表示文言更新:', textType, oldText, newText, '商品:', product.productName, '表示文言:', product.displayText);
+                console.log('表示文言更新:', textType, oldText, '→', newText, '商品:', product.productName, '表示文言:', product.displayText);
             });
+            
+            // 表示文言が適用されなかった場合のフォールバック処理
+            if (displayElements.length === 0) {
+                this.log(`⚠️ ${serviceKey} の表示文言要素が見つかりませんでした`);
+                // より広範囲のセレクタで再試行
+                const fallbackElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
+                this.log(`🔍 ${serviceKey} のフォールバック要素: ${fallbackElements.length}個発見`);
+                fallbackElements.forEach(function(element) {
+                    if (element.classList.contains('display-text') || element.hasAttribute('data-text-type')) {
+                        element.textContent = product.displayText || '';
+                        updatedCount++;
+                        console.log('フォールバック表示文言更新:', element.tagName, element.className, '→', product.displayText);
+                    }
+                });
+            }
         });
 
         this.log('✅ 表示文言更新完了: ' + updatedCount + '個の要素を更新');
