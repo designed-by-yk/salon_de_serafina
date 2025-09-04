@@ -708,90 +708,44 @@ class AdminIntegration {
     }
 
     /**
-     * 商品データを強制修正
+     * 商品管理データの整合性をチェック
      */
-    fixProductData() {
+    validateAdminData() {
         const adminData = this.getAdminData();
         if (!adminData || !adminData.products) {
-            this.log('⚠️ 管理データが見つからないため、データ修正をスキップ');
-            return;
+            this.log('⚠️ 商品管理データが見つかりません');
+            return false;
         }
 
-        this.log('🔧 商品データを強制修正中...');
-        let fixedCount = 0;
-
+        this.log('🔍 商品管理データの整合性をチェック中...');
+        
+        // 各商品のデータを確認
         adminData.products.forEach(product => {
-            // 商品名が未定義の場合、強制設定
-            if (!product.productName || product.productName === 'undefined') {
-                if (product.stableId === 'shintaku_001') {
-                    product.productName = '神託システムタロット占い';
-                    product.name = '神託システムタロット占い';
-                    product.regularPrice = 3000;
-                    product.salePrice = 3000;
-                    product.displayText = 'ー';
-                    product.visible = true;
-                    fixedCount++;
-                    this.log(`🔧 神託システムのデータを修正`);
-                } else if (product.stableId === 'star_yomi_001') {
-                    product.productName = '星詠みシステム星座占い';
-                    product.name = '星詠みシステム星座占い';
-                    product.regularPrice = 3000;
-                    product.salePrice = 3000;
-                    product.displayText = 'ー';
-                    product.visible = true;
-                    fixedCount++;
-                    this.log(`🔧 星詠みシステムのデータを修正`);
-                } else if (product.stableId === 'personal_tarot_001') {
-                    product.productName = '個人鑑定タロット';
-                    product.name = '個人鑑定タロット';
-                    product.regularPrice = 7000;
-                    product.salePrice = 7000;
-                    product.displayText = 'ー';
-                    product.visible = true;
-                    fixedCount++;
-                    this.log(`🔧 個人鑑定タロットのデータを修正`);
-                } else if (product.stableId === 'personal_birthday_001') {
-                    product.productName = '個人鑑定誕生日';
-                    product.name = '個人鑑定誕生日';
-                    product.regularPrice = 7000;
-                    product.salePrice = 7000;
-                    product.displayText = 'ー';
-                    product.visible = true;
-                    fixedCount++;
-                    this.log(`🔧 個人鑑定誕生日のデータを修正`);
-                } else if (product.stableId === 'personal_set_001') {
-                    product.productName = '個人鑑定セット';
-                    product.name = '個人鑑定セット';
-                    product.regularPrice = 10000;
-                    product.salePrice = 10000;
-                    product.displayText = 'ー';
-                    product.visible = true;
-                    fixedCount++;
-                    this.log(`🔧 個人鑑定セットのデータを修正`);
-                }
-            }
+            this.log(`📊 商品データ: ${product.productName || product.name}`, {
+                stableId: product.stableId,
+                productName: product.productName,
+                name: product.name,
+                regularPrice: product.regularPrice,
+                salePrice: product.salePrice,
+                displayText: product.displayText,
+                visible: product.visible
+            });
         });
 
-        if (fixedCount > 0) {
-            // 修正したデータを保存
-            localStorage.setItem('adminData', JSON.stringify(adminData));
-            this.log(`✅ ${fixedCount}件の商品データを修正しました`);
-        }
+        return true;
     }
 
     /**
      * 表示文言を更新
      */
     updateDisplayTexts() {
-        // まず商品データを修正
-        this.fixProductData();
-        
-        const adminData = this.getAdminData();
-        if (!adminData || !adminData.products) {
-            this.log('⚠️ 管理データが見つからないため、表示文言更新をスキップ');
+        // 商品管理データの整合性をチェック
+        if (!this.validateAdminData()) {
+            this.log('⚠️ 商品管理データが無効なため、表示文言更新をスキップ');
             return;
         }
 
+        const adminData = this.getAdminData();
         this.log('📝 表示文言を更新中...', adminData.products);
 
         let updatedCount = 0;
@@ -805,13 +759,10 @@ class AdminIntegration {
                 salePrice: product.salePrice
             });
             
-            // 商品管理で通常価格を表示にしている場合、表示文言を「ー」に強制設定
-            if (product.visible && product.regularPrice === product.salePrice) {
-                const originalDisplayText = product.displayText;
-                if (!product.displayText || product.displayText === '' || product.displayText.includes('オープン') || product.displayText.includes('記念')) {
-                    product.displayText = 'ー';
-                    this.log(`🔧 ${product.productName || product.name} の表示文言を「ー」に強制設定 (元: "${originalDisplayText}")`);
-                }
+            // 商品管理で表示設定がfalseの場合はスキップ
+            if (!product.visible) {
+                this.log(`⏭️ ${product.productName || product.name} は非表示設定のためスキップ`);
+                return;
             }
             
             const serviceKey = this.getServiceKeyFromProduct(product);
@@ -950,8 +901,8 @@ class AdminIntegration {
                 maintenanceMode: adminData.maintenanceMode
             });
             
-            // 商品データを自動修正
-            this.fixProductData();
+            // 商品管理データの整合性をチェック
+            this.validateAdminData();
         } else {
             this.log('⚠️ 管理データが見つかりません - 手動で統合管理画面から初期化してください');
         }
