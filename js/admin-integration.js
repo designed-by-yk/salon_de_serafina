@@ -222,13 +222,23 @@ class AdminIntegration {
      * 価格要素の更新
      */
     updatePriceElements(serviceKey, product) {
-        const price = product.salePrice || product.regularPrice;
-        if (!price) {
+        // 商品管理で表示設定された商品の価格を取得
+        let displayPrice;
+        if (product.visible) {
+            // 表示中の商品の場合、販売価格を優先
+            displayPrice = product.salePrice || product.regularPrice;
+        } else {
+            // 非表示の商品は処理しない
+            this.log(`⏭️ 非表示商品のため価格更新をスキップ: ${product.name || product.productName}`);
+            return;
+        }
+        
+        if (!displayPrice) {
             this.log(`⚠️ 価格が設定されていません: ${product.name || product.productName}`);
             return;
         }
 
-        this.log(`💰 ${serviceKey} の価格更新開始: ¥${price.toLocaleString()}`);
+        this.log(`💰 ${serviceKey} の価格更新開始: ¥${displayPrice.toLocaleString()} (表示設定: ${product.visible})`);
 
         // 価格表示要素を検索して更新（data-price-type別に処理）
         const priceSelectors = [
@@ -302,8 +312,8 @@ class AdminIntegration {
                 const priceType = element.getAttribute('data-price-type');
                 if (priceType === 'regular') {
                     // 通常価格は regularPrice を使用
-                    const regularPrice = product.regularPrice || price;
-                    const salePrice = product.salePrice || price;
+                    const regularPrice = product.regularPrice;
+                    const salePrice = product.salePrice;
                     
                     // 商品管理の表示設定に基づく一貫した価格表示ロジック
                     if (product.visible) {
@@ -349,11 +359,9 @@ class AdminIntegration {
                         formattedPrice = `${regularPrice.toLocaleString()}円`;
                     }
                 } else if (priceType === 'sale') {
-                    // セール価格は salePrice を使用
-                    const regularPrice = product.regularPrice || price;
-                    const salePrice = product.salePrice || price;
+                    // 販売価格は商品管理で表示設定された価格を使用
                     
-                    // 商品管理の表示設定に基づく一貫したセール価格表示ロジック
+                    // 商品管理の表示設定に基づく一貫した販売価格表示ロジック
                     if (product.visible) {
                         // 表示中の商品の場合：黄色の大きい文字で表示
                         element.style.setProperty('display', 'block', 'important');
