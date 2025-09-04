@@ -153,12 +153,11 @@ class AdminIntegration {
         this.log('💰 価格情報を更新中...', adminData.products);
 
         let updatedCount = 0;
-        adminData.products.forEach(product => {
-            // 表示中の商品のみ処理（visible: true）
-            if (!product.visible) {
-                this.log(`⏭️ 非表示商品をスキップ: ${product.name || product.productName}`);
-                return;
-            }
+        // 重複を避けるため、表示中の商品のみをフィルタリング
+        const visibleProducts = adminData.products.filter(product => product.visible);
+        this.log(`👁️ 表示中の商品: ${visibleProducts.length}件`);
+        
+        visibleProducts.forEach(product => {
             
             const serviceKey = this.getServiceKeyFromProduct(product);
             this.log(`🔍 商品チェック: ${product.name || product.productName} → サービスキー: ${serviceKey}`);
@@ -379,7 +378,7 @@ class AdminIntegration {
                         this.log(`🚫 非表示商品のセール価格: ${serviceKey} (非表示)`);
                     }
                     
-                    formattedPrice = `${salePrice.toLocaleString()}円`;
+                    formattedPrice = `${displayPrice.toLocaleString()}円`;
                 } else if (priceType === 'savings') {
                     // 割引額表示の場合
                     const regularPrice = product.regularPrice || price;
@@ -409,7 +408,7 @@ class AdminIntegration {
                         this.log(`🚫 非表示商品のデフォルト価格: ${serviceKey} (非表示)`);
                     }
                     
-                    formattedPrice = `${price.toLocaleString()}円`;
+                    formattedPrice = `${displayPrice.toLocaleString()}円`;
                 }
                 
                 element.textContent = formattedPrice;
@@ -790,7 +789,11 @@ class AdminIntegration {
         this.log('📝 表示文言を更新中...', adminData.products);
 
         let updatedCount = 0;
-        adminData.products.forEach(product => {
+        // 重複を避けるため、表示中の商品のみをフィルタリング
+        const visibleProducts = adminData.products.filter(product => product.visible);
+        this.log(`👁️ 表示中の商品: ${visibleProducts.length}件`);
+        
+        visibleProducts.forEach(product => {
             this.log(`🔍 商品データ詳細:`, {
                 productName: product.productName,
                 name: product.name,
@@ -799,12 +802,6 @@ class AdminIntegration {
                 regularPrice: product.regularPrice,
                 salePrice: product.salePrice
             });
-            
-            // 商品管理で表示設定がfalseの場合はスキップ
-            if (!product.visible) {
-                this.log(`⏭️ ${product.productName || product.name} は非表示設定のためスキップ`);
-                return;
-            }
             
             // 表示文言データの詳細をログ出力
             this.log(`🔍 表示文言更新対象商品: ${product.productName || product.name}`, {
@@ -877,6 +874,9 @@ class AdminIntegration {
                 // 商品管理で登録された表示文言をそのまま使用
                 if (textType === 'header') {
                     newText = '🌟 ' + (product.displayText || '');
+                } else if (priceType === 'savings') {
+                    // 割引表示の場合は商品管理の表示文言を使用
+                    newText = product.displayText || '';
                 } else {
                     // その他の場合は商品管理の表示文言をそのまま使用
                     newText = product.displayText || '';
