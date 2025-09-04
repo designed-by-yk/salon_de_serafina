@@ -1142,14 +1142,32 @@ window.checkAdminData = function() {
         
         // 各商品の詳細を表示
         if (data.products) {
+            console.log(`📊 全商品数: ${data.products.length}件`);
             data.products.forEach(function(product, index) {
                 console.log(`📊 商品${index + 1}:`, {
+                    id: product.id,
+                    productId: product.productId,
                     productName: product.productName,
                     name: product.name,
                     regularPrice: product.regularPrice,
                     salePrice: product.salePrice,
                     displayText: product.displayText,
                     visible: product.visible,
+                    stableId: product.stableId
+                });
+            });
+            
+            // 表示中の商品のみをフィルタリング
+            const visibleProducts = data.products.filter(p => p.visible === true);
+            console.log(`📊 表示中の商品数: ${visibleProducts.length}件`);
+            visibleProducts.forEach(function(product, index) {
+                console.log(`📊 表示中商品${index + 1}:`, {
+                    id: product.id,
+                    productId: product.productId,
+                    name: product.name,
+                    regularPrice: product.regularPrice,
+                    salePrice: product.salePrice,
+                    displayText: product.displayText,
                     stableId: product.stableId
                 });
             });
@@ -1189,4 +1207,38 @@ window.resetAdminData = function() {
     console.log('🧪 手動テスト: adminDataをリセット');
     localStorage.removeItem('adminData');
     console.log('✅ adminDataをクリアしました（商品管理画面で再登録してください）');
+};
+
+window.cleanDuplicateProducts = function() {
+    console.log('🧪 手動テスト: 重複商品をクリーンアップ');
+    const adminData = localStorage.getItem('adminData');
+    if (adminData) {
+        const data = JSON.parse(adminData);
+        if (data.products) {
+            console.log(`📊 クリーンアップ前の商品数: ${data.products.length}件`);
+            
+            // 重複を除去（同じstableIdの商品は1つだけ残す）
+            const uniqueProducts = [];
+            const seenStableIds = new Set();
+            
+            data.products.forEach(product => {
+                if (!seenStableIds.has(product.stableId)) {
+                    seenStableIds.add(product.stableId);
+                    uniqueProducts.push(product);
+                    console.log(`✅ 保持: ${product.name} (stableId: ${product.stableId})`);
+                } else {
+                    console.log(`🔄 削除: ${product.name} (stableId: ${product.stableId}) - 重複`);
+                }
+            });
+            
+            data.products = uniqueProducts;
+            console.log(`📊 クリーンアップ後の商品数: ${data.products.length}件`);
+            
+            // 保存
+            localStorage.setItem('adminData', JSON.stringify(data));
+            console.log('✅ 重複商品のクリーンアップ完了');
+        }
+    } else {
+        console.log('⚠️ localStorageにadminDataが見つかりません');
+    }
 };
