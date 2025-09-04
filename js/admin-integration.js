@@ -157,8 +157,22 @@ class AdminIntegration {
         const visibleProducts = adminData.products.filter(product => product.visible);
         this.log(`👁️ 表示中の商品: ${visibleProducts.length}件`);
         
+        // 重複商品を除去（同じstableIdの商品は1つだけ残す）
+        const uniqueProducts = [];
+        const seenStableIds = new Set();
+        
         visibleProducts.forEach(product => {
-            
+            if (!seenStableIds.has(product.stableId)) {
+                seenStableIds.add(product.stableId);
+                uniqueProducts.push(product);
+            } else {
+                this.log(`🔄 重複商品をスキップ: ${product.name} (stableId: ${product.stableId})`);
+            }
+        });
+        
+        this.log(`✅ 重複除去後の商品数: ${uniqueProducts.length}件`);
+        
+        uniqueProducts.forEach(product => {
             const serviceKey = this.getServiceKeyFromProduct(product);
             this.log(`🔍 商品チェック: ${product.name || product.productName} → サービスキー: ${serviceKey}`);
             this.log(`🔍 価格データ: 通常価格=${product.regularPrice}, 販売価格=${product.salePrice}, 表示=${product.visible}`);
@@ -793,7 +807,22 @@ class AdminIntegration {
         const visibleProducts = adminData.products.filter(product => product.visible);
         this.log(`👁️ 表示中の商品: ${visibleProducts.length}件`);
         
+        // 重複商品を除去（同じstableIdの商品は1つだけ残す）
+        const uniqueProducts = [];
+        const seenStableIds = new Set();
+        
         visibleProducts.forEach(product => {
+            if (!seenStableIds.has(product.stableId)) {
+                seenStableIds.add(product.stableId);
+                uniqueProducts.push(product);
+            } else {
+                this.log(`🔄 重複商品をスキップ: ${product.name} (stableId: ${product.stableId})`);
+            }
+        });
+        
+        this.log(`✅ 重複除去後の商品数: ${uniqueProducts.length}件`);
+        
+        uniqueProducts.forEach(product => {
             this.log(`🔍 商品データ詳細:`, {
                 productName: product.productName,
                 name: product.name,
@@ -869,17 +898,14 @@ class AdminIntegration {
                 const textType = element.getAttribute('data-text-type');
                 const priceType = element.getAttribute('data-price-type');
                 const oldText = element.textContent;
-                let newText = product.displayText || '';
+                let newText = product.displayText;
                 
                 // 商品管理で登録された表示文言をそのまま使用
                 if (textType === 'header') {
-                    newText = '🌟 ' + (product.displayText || '');
-                } else if (priceType === 'savings') {
-                    // 割引表示の場合は商品管理の表示文言を使用
-                    newText = product.displayText || '';
+                    newText = '🌟 ' + product.displayText;
                 } else {
                     // その他の場合は商品管理の表示文言をそのまま使用
-                    newText = product.displayText || '';
+                    newText = product.displayText;
                 }
                     
                 element.textContent = newText;
@@ -1162,66 +1188,5 @@ window.clearAdminData = function() {
 window.resetAdminData = function() {
     console.log('🧪 手動テスト: adminDataをリセット');
     localStorage.removeItem('adminData');
-    
-    // 初期データを設定
-    const initialData = {
-        products: [
-            {
-                stableId: 'shintaku_001',
-                productName: '神託システムタロット占い',
-                name: '神託システムタロット占い',
-                regularPrice: 3000,
-                salePrice: 3000,
-                displayText: 'ー',
-                visible: true,
-                created: new Date().toISOString()
-            },
-            {
-                stableId: 'star_yomi_001',
-                productName: '星詠みシステム星座占い',
-                name: '星詠みシステム星座占い',
-                regularPrice: 3000,
-                salePrice: 3000,
-                displayText: 'ー',
-                visible: true,
-                created: new Date().toISOString()
-            },
-            {
-                stableId: 'personal_tarot_001',
-                productName: '個人鑑定タロット',
-                name: '個人鑑定タロット',
-                regularPrice: 7000,
-                salePrice: 7000,
-                displayText: 'ー',
-                visible: true,
-                created: new Date().toISOString()
-            },
-            {
-                stableId: 'personal_birthday_001',
-                productName: '個人鑑定誕生日',
-                name: '個人鑑定誕生日',
-                regularPrice: 7000,
-                salePrice: 7000,
-                displayText: 'ー',
-                visible: true,
-                created: new Date().toISOString()
-            },
-            {
-                stableId: 'personal_set_001',
-                productName: '個人鑑定セット',
-                name: '個人鑑定セット',
-                regularPrice: 10000,
-                salePrice: 10000,
-                displayText: 'ー',
-                visible: true,
-                created: new Date().toISOString()
-            }
-        ],
-        paymentLinks: [],
-        lastModified: Date.now()
-    };
-    
-    localStorage.setItem('adminData', JSON.stringify(initialData));
-    console.log('✅ adminDataをリセットしました');
-    console.log('📊 設定したデータ:', initialData);
+    console.log('✅ adminDataをクリアしました（商品管理画面で再登録してください）');
 };
