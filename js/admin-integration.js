@@ -162,6 +162,7 @@ class AdminIntegration {
             
             const serviceKey = this.getServiceKeyFromProduct(product);
             this.log(`🔍 商品チェック: ${product.name || product.productName} → サービスキー: ${serviceKey}`);
+            this.log(`🔍 価格データ: 通常価格=${product.regularPrice}, 販売価格=${product.salePrice}, 表示=${product.visible}`);
             
             if (serviceKey) {
                 // 現在のページに適したサービスのみ処理
@@ -586,11 +587,43 @@ class AdminIntegration {
      * 商品からサービスキーを取得
      */
     getServiceKeyFromProduct(product) {
-        for (const [key, name] of Object.entries(this.serviceMapping)) {
-            if (product.productName === name || product.name === name) {
-                return key;
+        // デバッグ用ログ
+        this.log(`🔍 商品からサービスキー取得:`, {
+            productName: product.productName,
+            name: product.name,
+            stableId: product.stableId
+        });
+        
+        // まず productName で検索
+        if (product.productName) {
+            for (const [key, name] of Object.entries(this.serviceMapping)) {
+                if (product.productName === name) {
+                    this.log(`✅ productName でマッチ: ${product.productName} → ${key}`);
+                    return key;
+                }
             }
         }
+        
+        // 次に name で検索
+        if (product.name) {
+            for (const [key, name] of Object.entries(this.serviceMapping)) {
+                if (product.name === name) {
+                    this.log(`✅ name でマッチ: ${product.name} → ${key}`);
+                    return key;
+                }
+            }
+        }
+        
+        // stableId から推測（フォールバック）
+        if (product.stableId) {
+            if (product.stableId.includes('shintaku')) return 'shintaku';
+            if (product.stableId.includes('star_yomi')) return 'star_yomi';
+            if (product.stableId.includes('personal_tarot')) return 'personal_tarot';
+            if (product.stableId.includes('personal_birthday')) return 'personal_birthday';
+            if (product.stableId.includes('personal_set')) return 'personal_set';
+        }
+        
+        this.log(`⚠️ サービスキーが見つかりません:`, product);
         return null;
     }
 
@@ -765,6 +798,17 @@ class AdminIntegration {
                 return;
             }
             
+            // 表示文言データの詳細をログ出力
+            this.log(`🔍 表示文言更新対象商品: ${product.productName || product.name}`, {
+                displayText: product.displayText,
+                visible: product.visible,
+                regularPrice: product.regularPrice,
+                salePrice: product.salePrice
+            });
+            
+            // 商品管理で登録された表示文言をそのまま使用（強制設定なし）
+            this.log(`📝 商品管理の表示文言を使用: "${product.displayText}"`);
+            
             const serviceKey = this.getServiceKeyFromProduct(product);
             if (!serviceKey) {
                 this.log(`⚠️ サービスキーが見つからない商品: ${product.productName || product.name}`);
@@ -822,21 +866,17 @@ class AdminIntegration {
                 const oldText = element.textContent;
                 let newText = product.displayText || '';
                 
-                // 表示文言の処理
+                // 商品管理で登録された表示文言をそのまま使用
                 if (textType === 'header') {
                     newText = '🌟 ' + (product.displayText || '');
-                } else if (textType === 'discount' || priceType === 'savings') {
-                    newText = product.displayText || '';
-                } else if (textType === 'savings') {
-                    newText = product.displayText || '';
                 } else {
-                    // data-text-typeが設定されていない場合も表示文言を適用
+                    // その他の場合は商品管理の表示文言をそのまま使用
                     newText = product.displayText || '';
                 }
                     
                 element.textContent = newText;
                 updatedCount++;
-                console.log('表示文言更新:', textType, oldText, '→', newText, '商品:', product.productName, '表示文言:', product.displayText);
+                console.log('表示文言更新:', textType, oldText, '→', newText, '商品:', product.productName || product.name, '表示文言:', product.displayText);
             });
             
             // 表示文言が適用されなかった場合のフォールバック処理
