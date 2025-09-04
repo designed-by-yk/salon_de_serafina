@@ -708,9 +708,84 @@ class AdminIntegration {
     }
 
     /**
+     * 商品データを強制修正
+     */
+    fixProductData() {
+        const adminData = this.getAdminData();
+        if (!adminData || !adminData.products) {
+            this.log('⚠️ 管理データが見つからないため、データ修正をスキップ');
+            return;
+        }
+
+        this.log('🔧 商品データを強制修正中...');
+        let fixedCount = 0;
+
+        adminData.products.forEach(product => {
+            // 商品名が未定義の場合、強制設定
+            if (!product.productName || product.productName === 'undefined') {
+                if (product.stableId === 'shintaku_001') {
+                    product.productName = '神託システムタロット占い';
+                    product.name = '神託システムタロット占い';
+                    product.regularPrice = 3000;
+                    product.salePrice = 3000;
+                    product.displayText = 'ー';
+                    product.visible = true;
+                    fixedCount++;
+                    this.log(`🔧 神託システムのデータを修正`);
+                } else if (product.stableId === 'star_yomi_001') {
+                    product.productName = '星詠みシステム星座占い';
+                    product.name = '星詠みシステム星座占い';
+                    product.regularPrice = 3000;
+                    product.salePrice = 3000;
+                    product.displayText = 'ー';
+                    product.visible = true;
+                    fixedCount++;
+                    this.log(`🔧 星詠みシステムのデータを修正`);
+                } else if (product.stableId === 'personal_tarot_001') {
+                    product.productName = '個人鑑定タロット';
+                    product.name = '個人鑑定タロット';
+                    product.regularPrice = 7000;
+                    product.salePrice = 7000;
+                    product.displayText = 'ー';
+                    product.visible = true;
+                    fixedCount++;
+                    this.log(`🔧 個人鑑定タロットのデータを修正`);
+                } else if (product.stableId === 'personal_birthday_001') {
+                    product.productName = '個人鑑定誕生日';
+                    product.name = '個人鑑定誕生日';
+                    product.regularPrice = 7000;
+                    product.salePrice = 7000;
+                    product.displayText = 'ー';
+                    product.visible = true;
+                    fixedCount++;
+                    this.log(`🔧 個人鑑定誕生日のデータを修正`);
+                } else if (product.stableId === 'personal_set_001') {
+                    product.productName = '個人鑑定セット';
+                    product.name = '個人鑑定セット';
+                    product.regularPrice = 10000;
+                    product.salePrice = 10000;
+                    product.displayText = 'ー';
+                    product.visible = true;
+                    fixedCount++;
+                    this.log(`🔧 個人鑑定セットのデータを修正`);
+                }
+            }
+        });
+
+        if (fixedCount > 0) {
+            // 修正したデータを保存
+            localStorage.setItem('adminData', JSON.stringify(adminData));
+            this.log(`✅ ${fixedCount}件の商品データを修正しました`);
+        }
+    }
+
+    /**
      * 表示文言を更新
      */
     updateDisplayTexts() {
+        // まず商品データを修正
+        this.fixProductData();
+        
         const adminData = this.getAdminData();
         if (!adminData || !adminData.products) {
             this.log('⚠️ 管理データが見つからないため、表示文言更新をスキップ');
@@ -874,6 +949,9 @@ class AdminIntegration {
                 paymentLinks: adminData.paymentLinks?.length || 0,
                 maintenanceMode: adminData.maintenanceMode
             });
+            
+            // 商品データを自動修正
+            this.fixProductData();
         } else {
             this.log('⚠️ 管理データが見つかりません - 手動で統合管理画面から初期化してください');
         }
@@ -1074,4 +1152,77 @@ window.forceReloadAdminData = function() {
             });
         }
     }
+};
+
+window.clearAdminData = function() {
+    console.log('🧪 手動テスト: localStorageのadminDataをクリア');
+    localStorage.removeItem('adminData');
+    console.log('✅ adminDataをクリアしました');
+};
+
+window.resetAdminData = function() {
+    console.log('🧪 手動テスト: adminDataをリセット');
+    localStorage.removeItem('adminData');
+    
+    // 初期データを設定
+    const initialData = {
+        products: [
+            {
+                stableId: 'shintaku_001',
+                productName: '神託システムタロット占い',
+                name: '神託システムタロット占い',
+                regularPrice: 3000,
+                salePrice: 3000,
+                displayText: 'ー',
+                visible: true,
+                created: new Date().toISOString()
+            },
+            {
+                stableId: 'star_yomi_001',
+                productName: '星詠みシステム星座占い',
+                name: '星詠みシステム星座占い',
+                regularPrice: 3000,
+                salePrice: 3000,
+                displayText: 'ー',
+                visible: true,
+                created: new Date().toISOString()
+            },
+            {
+                stableId: 'personal_tarot_001',
+                productName: '個人鑑定タロット',
+                name: '個人鑑定タロット',
+                regularPrice: 7000,
+                salePrice: 7000,
+                displayText: 'ー',
+                visible: true,
+                created: new Date().toISOString()
+            },
+            {
+                stableId: 'personal_birthday_001',
+                productName: '個人鑑定誕生日',
+                name: '個人鑑定誕生日',
+                regularPrice: 7000,
+                salePrice: 7000,
+                displayText: 'ー',
+                visible: true,
+                created: new Date().toISOString()
+            },
+            {
+                stableId: 'personal_set_001',
+                productName: '個人鑑定セット',
+                name: '個人鑑定セット',
+                regularPrice: 10000,
+                salePrice: 10000,
+                displayText: 'ー',
+                visible: true,
+                created: new Date().toISOString()
+            }
+        ],
+        paymentLinks: [],
+        lastModified: Date.now()
+    };
+    
+    localStorage.setItem('adminData', JSON.stringify(initialData));
+    console.log('✅ adminDataをリセットしました');
+    console.log('📊 設定したデータ:', initialData);
 };
