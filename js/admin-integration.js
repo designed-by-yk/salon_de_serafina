@@ -454,8 +454,8 @@ class AdminIntegration {
         
         serviceElements.forEach(element => {
             const oldDataPrice = element.getAttribute('data-price');
-            element.setAttribute('data-price', price);
-            this.log(`🔢 data-price更新: ${oldDataPrice} → ${price}`);
+            element.setAttribute('data-price', displayPrice);
+            this.log(`🔢 data-price更新: ${oldDataPrice} → ${displayPrice}`);
         });
 
         if (elementsFound === 0) {
@@ -922,19 +922,19 @@ class AdminIntegration {
                 const textType = element.getAttribute('data-text-type');
                 const priceType = element.getAttribute('data-price-type');
                 const oldText = element.textContent;
-                let newText = product.displayText;
+                let newText = product.displayText || '';
                 
-                // 商品管理で登録された表示文言をそのまま使用
+                // 商品管理で登録された表示文言をそのまま使用（undefinedの場合は空文字）
                 if (textType === 'header') {
-                    newText = '🌟 ' + product.displayText;
+                    newText = '🌟 ' + (product.displayText || '');
                 } else {
                     // その他の場合は商品管理の表示文言をそのまま使用
-                    newText = product.displayText;
+                    newText = product.displayText || '';
                 }
                     
                 element.textContent = newText;
                 updatedCount++;
-                console.log('表示文言更新:', textType, oldText, '→', newText, '商品:', product.productName || product.name, '表示文言:', product.displayText);
+                console.log('表示文言更新:', textType, oldText, '→', newText, '商品:', product.productName || product.name, '表示文言:', product.displayText || 'undefined');
             });
             
             // 表示文言が適用されなかった場合のフォールバック処理
@@ -947,7 +947,7 @@ class AdminIntegration {
                     if (element.classList.contains('display-text') || element.hasAttribute('data-text-type') || element.hasAttribute('data-price-type')) {
                         element.textContent = product.displayText || '';
                         updatedCount++;
-                        console.log('フォールバック表示文言更新:', element.tagName, element.className, '→', product.displayText);
+                        console.log('フォールバック表示文言更新:', element.tagName, element.className, '→', product.displayText || 'undefined');
                     }
                 });
             }
@@ -960,7 +960,7 @@ class AdminIntegration {
                     if (element.textContent && (element.textContent.includes('オープン') || element.textContent.includes('記念'))) {
                         element.textContent = product.displayText || '';
                         updatedCount++;
-                        console.log('強制表示文言更新:', element.tagName, element.className, '→', product.displayText);
+                        console.log('強制表示文言更新:', element.tagName, element.className, '→', product.displayText || 'undefined');
                     }
                 });
             }
@@ -973,9 +973,9 @@ class AdminIntegration {
                     // テキストコンテンツがある要素をすべて対象にする
                     if (element.textContent && element.textContent.trim() !== '') {
                         const oldText = element.textContent;
-                        element.textContent = product.displayText;
+                        element.textContent = product.displayText || '';
                         updatedCount++;
-                        console.log('最終手段表示文言更新:', element.tagName, element.className, oldText, '→', product.displayText);
+                        console.log('最終手段表示文言更新:', element.tagName, element.className, oldText, '→', product.displayText || 'undefined');
                     }
                 });
             }
