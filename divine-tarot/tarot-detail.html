@@ -253,12 +253,12 @@
                     margin: 15px 0;
                     font-size: 16px;
                 ">
-                    <div>元の価格: <span id="shintaku-original-display">1,500円</span></div>
+                    <div>元の価格: <span id="shintaku-original-display">2,000円</span></div>
                     <div id="shintaku-discount-row" style="display: none; color: #4caf50; margin: 5px 0;">
                         割引額: <span id="shintaku-discount-amount">0円</span>
                     </div>
                     <div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 10px 0; padding-top: 10px; font-weight: bold; font-size: 18px;">
-                        お支払い金額: <span id="shintaku-final-price" style="color: #ffd700;">1,500円</span>
+                        お支払い金額: <span id="shintaku-final-price" style="color: #ffd700;">2,000円</span>
                     </div>
                 </div>
             </div>
@@ -269,8 +269,19 @@
                 <span class="btn-sub">安心の決済システム</span>
             </button>
 
-            <!-- ✅ テストボタンは完全に削除されました - 2025年8月19日 15:28:59 -->
-            <!-- ✅ この下にはテスト用ボタンはありません -->
+            <!-- デバッグ用ボタン -->
+            <div style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; text-align: center;">
+                <h4 style="color: #ffd700; margin-bottom: 10px;">🔍 デバッグ用ボタン</h4>
+                <button onclick="debugDisplayData()" style="margin: 5px; padding: 8px 16px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    全データ調査
+                </button>
+                <button onclick="debugPriceDisplay()" style="margin: 5px; padding: 8px 16px; background: #2196f3; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    価格表示調査
+                </button>
+                <button onclick="findElements('shintaku')" style="margin: 5px; padding: 8px 16px; background: #ff9800; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    神託要素調査
+                </button>
+            </div>
             
             <div class="trust-indicators">
                 <div class="trust-item">🔒 SSL暗号化通信</div>

@@ -1325,3 +1325,102 @@ window.findElements = function(serviceKey) {
         console.log(`  ${index + 1}. ${element.tagName}.${element.className}: "${element.textContent}"`);
     });
 };
+
+// デバッグ用の詳細調査関数を追加
+window.debugDisplayData = function() {
+    console.log('🔍 表示データの詳細調査を開始...');
+    
+    // 商品管理データを確認
+    const adminData = localStorage.getItem('adminData');
+    if (adminData) {
+        const data = JSON.parse(adminData);
+        console.log('📊 商品管理データ:', data);
+        
+        if (data.products) {
+            console.log('📦 全商品データ:');
+            data.products.forEach((product, index) => {
+                console.log(`  ${index + 1}. ${product.name}:`, {
+                    stableId: product.stableId,
+                    regularPrice: product.regularPrice,
+                    salePrice: product.salePrice,
+                    displayText: product.displayText,
+                    visible: product.visible
+                });
+            });
+            
+            // 表示中の商品のみ
+            const visibleProducts = data.products.filter(p => p.visible === true);
+            console.log('👁️ 表示中の商品:');
+            visibleProducts.forEach((product, index) => {
+                console.log(`  ${index + 1}. ${product.name}:`, {
+                    stableId: product.stableId,
+                    regularPrice: product.regularPrice,
+                    salePrice: product.salePrice,
+                    displayText: product.displayText
+                });
+            });
+        }
+    } else {
+        console.log('⚠️ 商品管理データが見つかりません');
+    }
+    
+    // 各ページの要素を確認
+    console.log('🔍 神託システムの要素:');
+    findElements('shintaku');
+    
+    console.log('🔍 星詠みシステムの要素:');
+    findElements('star_yomi');
+    
+    console.log('🔍 個人鑑定タロットの要素:');
+    findElements('personal_tarot');
+    
+    console.log('🔍 個人鑑定誕生日の要素:');
+    findElements('personal_birthday');
+    
+    console.log('🔍 個人鑑定セットの要素:');
+    findElements('personal_set');
+};
+
+// 特定の要素の詳細を調査する関数
+window.debugElement = function(selector) {
+    console.log(`🔍 要素調査: ${selector}`);
+    const elements = document.querySelectorAll(selector);
+    console.log(`📊 発見された要素数: ${elements.length}`);
+    
+    elements.forEach((element, index) => {
+        console.log(`  ${index + 1}. 要素詳細:`, {
+            tagName: element.tagName,
+            className: element.className,
+            id: element.id,
+            textContent: element.textContent,
+            innerHTML: element.innerHTML,
+            dataService: element.getAttribute('data-service'),
+            dataTextType: element.getAttribute('data-text-type'),
+            dataPriceType: element.getAttribute('data-price-type'),
+            style: element.style.cssText
+        });
+    });
+};
+
+// 価格表示の詳細調査
+window.debugPriceDisplay = function() {
+    console.log('💰 価格表示の詳細調査...');
+    
+    // 神託システム
+    console.log('🔮 神託システム:');
+    debugElement('[data-service="shintaku"]');
+    
+    // 星詠みシステム
+    console.log('⭐ 星詠みシステム:');
+    debugElement('[data-service="star_yomi"]');
+    
+    // 個人鑑定
+    console.log('👤 個人鑑定タロット:');
+    debugElement('[data-service="personal_tarot"]');
+    
+    console.log('👤 個人鑑定誕生日:');
+    debugElement('[data-service="personal_birthday"]');
+    
+    console.log('👤 個人鑑定セット:');
+    debugElement('[data-service="personal_set"]');
+};
