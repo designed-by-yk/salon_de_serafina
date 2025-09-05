@@ -601,19 +601,19 @@
     <script>
         // クーポンシステムの初期化
         let couponUI;
-        let originalPrice = 980; // デフォルト価格
+        let originalPrice = 1280; // デフォルト価格（admin-integration.jsが管理）
         
         // 統合管理画面から現在の販売価格を取得（無効化 - admin-integration.jsが管理）
         function getCurrentPrice() {
             console.log('🔧 getCurrentPrice は無効化されました - admin-integration.jsが価格を管理します');
             // この関数は無効化されました - admin-integration.jsが価格表示を管理します
-            return 980; // デフォルト価格（使用されない）
+            return 1280; // デフォルト価格（使用されない）
         }
         
         document.addEventListener('DOMContentLoaded', function() {
-            // 現在の販売価格を取得
+            // 現在の販売価格を取得（admin-integration.jsが管理するため、ローカルでは設定しない）
             originalPrice = getCurrentPrice();
-            console.log('🎯 星詠みシステム現在価格を設定:', originalPrice);
+            console.log('🔧 星詠みシステム: 価格はadmin-integration.jsが管理します');
             
             // 確実に価格が更新されてからクーポンシステムを初期化
             setTimeout(function() {

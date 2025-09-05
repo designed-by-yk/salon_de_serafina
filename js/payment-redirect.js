@@ -75,7 +75,13 @@ class PaymentRedirect {
             );
             if (product) {
                 config.price = product.salePrice || product.regularPrice || config.price;
-                config.name = product.productName || config.name;
+                config.name = product.productName || product.name || config.name;
+                console.log(`🔍 ${serviceKey} 設定更新:`, {
+                    productName: product.productName,
+                    name: product.name,
+                    finalName: config.name,
+                    price: config.price
+                });
             }
         }
 
@@ -93,7 +99,18 @@ class PaymentRedirect {
             '個人鑑定誕生日占い': 'personal_birthday',
             '個人鑑定セット': 'personal_set'
         };
-        return mapping[product.productName] || null;
+        
+        // まず productName で検索
+        if (product.productName && mapping[product.productName]) {
+            return mapping[product.productName];
+        }
+        
+        // 次に name で検索
+        if (product.name && mapping[product.name]) {
+            return mapping[product.name];
+        }
+        
+        return null;
     }
 
     /**

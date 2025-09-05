@@ -1492,3 +1492,9 @@ window.debugPriceDisplay = function() {
     console.log('👤 個人鑑定セット:');
     debugElement('[data-service="personal_set"]');
 };
+
+// デバッグ関数の読み込み確認
+console.log('🔧 デバッグ関数を読み込み中...');
+console.log('debugDisplayData:', typeof window.debugDisplayData);
+console.log('debugPriceDisplay:', typeof window.debugPriceDisplay);
+console.log('findElements:', typeof window.findElements);
