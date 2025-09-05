@@ -360,33 +360,11 @@
         let couponUI;
         let originalPrice = 1500; // デフォルト価格
         
-        // 統合管理画面から現在の販売価格を取得
+        // 統合管理画面から現在の販売価格を取得（無効化 - admin-integration.jsが管理）
         function getCurrentPrice() {
-            try {
-                const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
-                if (adminData.products) {
-                    console.log('🔍 管理画面データから神託システム価格を取得中...');
-                    console.log('📊 全商品データ:', adminData.products);
-                    
-                    // 表示中の商品のみを対象として価格を取得
-                    const visibleProducts = adminData.products.filter(p => p.visible);
-                    console.log('👁️ 表示中の商品:', visibleProducts);
-                    
-                    const shintakuProduct = visibleProducts.find(p => 
-                        p.stableId === 'shintaku' || 
-                        p.name === '神託システムタロット占い' ||
-                        p.name.includes('神託システムタロット占い')
-                    );
-                    if (shintakuProduct && shintakuProduct.salePrice) {
-                        const price = parseInt(shintakuProduct.salePrice);
-                        console.log(`✅ 神託システム価格: ¥${price} (${shintakuProduct.name})`);
-                        return price;
-                    }
-                }
-            } catch (e) {
-                console.log('統合管理画面データ取得エラー:', e);
-            }
-            return 1500; // デフォルト価格
+            console.log('🔧 getCurrentPrice は無効化されました - admin-integration.jsが価格を管理します');
+            // この関数は無効化されました - admin-integration.jsが価格表示を管理します
+            return 1500; // デフォルト価格（使用されない）
         }
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -445,11 +423,9 @@
             
             console.log(`💰 クーポンシステム初期化 - 基準価格: ¥${originalPrice}`);
             
-            // 元の価格を表示更新
-            document.getElementById('shintaku-original-display').textContent = `${originalPrice.toLocaleString()}円`;
-            document.getElementById('shintaku-final-price').textContent = `${originalPrice.toLocaleString()}円`;
-            
-            console.log(`✅ 価格表示を更新: 元価格とファイナル価格を ¥${originalPrice.toLocaleString()} に設定`);
+            // 価格表示更新（無効化 - admin-integration.jsが管理）
+            console.log('🔧 価格表示更新は無効化されました - admin-integration.jsが価格を管理します');
+            // この処理は無効化されました - admin-integration.jsが価格表示を管理します
             
             // クーポン適用ボタン
             document.getElementById('shintaku-apply-coupon').addEventListener('click', function() {

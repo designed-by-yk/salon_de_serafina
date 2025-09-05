@@ -592,33 +592,11 @@
         let couponUI;
         let originalPrice = 980; // デフォルト価格
         
-        // 統合管理画面から現在の販売価格を取得
+        // 統合管理画面から現在の販売価格を取得（無効化 - admin-integration.jsが管理）
         function getCurrentPrice() {
-            try {
-                const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
-                if (adminData.products) {
-                    console.log('🔍 管理画面データから星詠みシステム価格を取得中...');
-                    console.log('📊 全商品データ:', adminData.products);
-                    
-                    // 表示中の商品のみを対象として価格を取得
-                    const visibleProducts = adminData.products.filter(p => p.visible);
-                    console.log('👁️ 表示中の商品:', visibleProducts);
-                    
-                    const starProduct = visibleProducts.find(p => 
-                        p.stableId === 'star_yomi' || 
-                        p.name === '星詠みシステム星座占い' ||
-                        p.name.includes('星詠みシステム星座占い')
-                    );
-                    if (starProduct && starProduct.salePrice) {
-                        const price = parseInt(starProduct.salePrice);
-                        console.log(`✅ 星詠みシステム価格: ¥${price} (${starProduct.name})`);
-                        return price;
-                    }
-                }
-            } catch (e) {
-                console.log('統合管理画面データ取得エラー:', e);
-            }
-            return 980; // デフォルト価格
+            console.log('🔧 getCurrentPrice は無効化されました - admin-integration.jsが価格を管理します');
+            // この関数は無効化されました - admin-integration.jsが価格表示を管理します
+            return 980; // デフォルト価格（使用されない）
         }
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -672,11 +650,9 @@
             
             console.log(`💰 星詠みクーポンシステム初期化 - 基準価格: ¥${originalPrice}`);
             
-            // 元の価格を表示更新
-            document.getElementById('star-original-display').textContent = `${originalPrice.toLocaleString()}円`;
-            document.getElementById('star-final-price').textContent = `${originalPrice.toLocaleString()}円`;
-            
-            console.log(`✅ 星詠み価格表示を更新: 元価格とファイナル価格を ¥${originalPrice.toLocaleString()} に設定`);
+            // 価格表示更新（無効化 - admin-integration.jsが管理）
+            console.log('🔧 価格表示更新は無効化されました - admin-integration.jsが価格を管理します');
+            // この処理は無効化されました - admin-integration.jsが価格表示を管理します
             
             // クーポン適用ボタン
             document.getElementById('star-apply-coupon').addEventListener('click', function() {

@@ -1296,78 +1296,12 @@
             bundle: 8000
         };
         
-        // 統合管理画面から現在の販売価格を取得
+        // 統合管理画面から現在の販売価格を取得（無効化 - admin-integration.jsが管理）
         function getCurrentPrices() {
-            try {
-                const adminData = JSON.parse(localStorage.getItem('adminData') || '{}');
-                if (adminData.products) {
-                    const prices = { tarot: 5000, star: 5000, bundle: 8000 }; // デフォルト
-                    
-                    console.log('🔍 管理画面データから価格を取得中...');
-                    console.log('📊 全商品データ:', adminData.products);
-                    
-                    // 表示中の商品のみを対象として価格を取得
-                    const visibleProducts = adminData.products.filter(p => p.visible);
-                    console.log('👁️ 表示中の商品:', visibleProducts);
-                    
-                    // タロット価格（安定IDまたは商品名で検索）
-                    const tarotProduct = visibleProducts.find(p => 
-                        p.stableId === 'personal_tarot' || 
-                        p.name === '個人鑑定タロット' ||
-                        p.name.includes('個人鑑定タロット')
-                    );
-                    if (tarotProduct) {
-                        // 表示中の価格を取得（通常価格と販売価格が同じ場合は通常価格、異なる場合は販売価格）
-                        if (tarotProduct.regularPrice === tarotProduct.salePrice) {
-                            prices.tarot = parseInt(tarotProduct.regularPrice);
-                            console.log(`✅ タロット価格: ¥${prices.tarot} (通常価格=販売価格, ${tarotProduct.name})`);
-                        } else {
-                            prices.tarot = parseInt(tarotProduct.salePrice || tarotProduct.regularPrice);
-                            console.log(`✅ タロット価格: ¥${prices.tarot} (販売価格優先, ${tarotProduct.name})`);
-                        }
-                    }
-                    
-                    // 星詠み価格（安定IDまたは商品名で検索）
-                    const starProduct = visibleProducts.find(p => 
-                        p.stableId === 'personal_birthday' || 
-                        p.name === '個人鑑定誕生日' ||
-                        p.name.includes('個人鑑定誕生日')
-                    );
-                    if (starProduct) {
-                        // 表示中の価格を取得（通常価格と販売価格が同じ場合は通常価格、異なる場合は販売価格）
-                        if (starProduct.regularPrice === starProduct.salePrice) {
-                            prices.star = parseInt(starProduct.regularPrice);
-                            console.log(`✅ 星詠み価格: ¥${prices.star} (通常価格=販売価格, ${starProduct.name})`);
-                        } else {
-                            prices.star = parseInt(starProduct.salePrice || starProduct.regularPrice);
-                            console.log(`✅ 星詠み価格: ¥${prices.star} (販売価格優先, ${starProduct.name})`);
-                        }
-                    }
-                    
-                    // セット価格（安定IDまたは商品名で検索）
-                    const bundleProduct = visibleProducts.find(p => 
-                        p.stableId === 'personal_set' || 
-                        p.name === '個人鑑定セット' ||
-                        p.name.includes('個人鑑定セット')
-                    );
-                    if (bundleProduct) {
-                        // 表示中の価格を取得（通常価格と販売価格が同じ場合は通常価格、異なる場合は販売価格）
-                        if (bundleProduct.regularPrice === bundleProduct.salePrice) {
-                            prices.bundle = parseInt(bundleProduct.regularPrice);
-                            console.log(`✅ セット価格: ¥${prices.bundle} (通常価格=販売価格, ${bundleProduct.name})`);
-                        } else {
-                            prices.bundle = parseInt(bundleProduct.salePrice || bundleProduct.regularPrice);
-                            console.log(`✅ セット価格: ¥${prices.bundle} (販売価格優先, ${bundleProduct.name})`);
-                        }
-                    }
-                    
-                    console.log('💰 取得した価格データ:', prices);
-                    return prices;
-                }
-            } catch (e) {
-                console.log('統合管理画面データ取得エラー:', e);
-            }
-            return { tarot: 7000, star: 7000, bundle: 10000 }; // デフォルト価格（現在の設定に合わせて更新）
+            console.log('🔧 getCurrentPrices は無効化されました - admin-integration.jsが価格を管理します');
+            // この関数は無効化されました - admin-integration.jsが価格表示を管理します
+            return { tarot: 5000, star: 5000, bundle: 8000 }; // デフォルト価格（使用されない）
+            // 残りの処理は無効化されました - admin-integration.jsが価格表示を管理します
         }
 
         document.addEventListener('DOMContentLoaded', function() {
