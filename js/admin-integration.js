@@ -1053,21 +1053,21 @@ document.addEventListener('DOMContentLoaded', function() {
         window.adminIntegration = new AdminIntegration();
         window.adminIntegration.initialize();
         
-        // 表示文言の強制更新を追加
-        setTimeout(() => {
+        // 継続的な更新で他のスクリプトの上書きを防ぐ
+        const updateInterval = setInterval(() => {
             if (window.adminIntegration) {
                 window.adminIntegration.updateDisplayTexts();
-                console.log('🔧 表示文言の強制更新を実行しました');
+                window.adminIntegration.updatePrices();
+                window.adminIntegration.updatePaymentLinks();
+                console.log('🔧 継続的な更新を実行しました');
             }
-        }, 1000); // 1秒後に強制更新
+        }, 2000); // 2秒ごとに更新
         
-        // さらに強制更新（2秒後）
+        // 10秒後に停止
         setTimeout(() => {
-            if (window.adminIntegration) {
-                window.adminIntegration.updateDisplayTexts();
-                console.log('🔧 表示文言の2回目強制更新を実行しました');
-            }
-        }, 2000); // 2秒後に強制更新
+            clearInterval(updateInterval);
+            console.log('🔧 継続的な更新を停止しました');
+        }, 10000);
     }, 100); // 100ms待機に短縮
 });
 
@@ -1082,21 +1082,21 @@ if (document.readyState === 'loading') {
             window.adminIntegration = new AdminIntegration();
             window.adminIntegration.initialize();
             
-            // 表示文言の強制更新を追加
-            setTimeout(() => {
+            // 継続的な更新で他のスクリプトの上書きを防ぐ
+            const updateInterval = setInterval(() => {
                 if (window.adminIntegration) {
                     window.adminIntegration.updateDisplayTexts();
-                    console.log('🔧 表示文言の強制更新を実行しました（既存ページ）');
+                    window.adminIntegration.updatePrices();
+                    window.adminIntegration.updatePaymentLinks();
+                    console.log('🔧 継続的な更新を実行しました（既存ページ）');
                 }
-            }, 1000); // 1秒後に強制更新
+            }, 2000); // 2秒ごとに更新
             
-            // さらに強制更新（2秒後）
+            // 10秒後に停止
             setTimeout(() => {
-                if (window.adminIntegration) {
-                    window.adminIntegration.updateDisplayTexts();
-                    console.log('🔧 表示文言の2回目強制更新を実行しました（既存ページ）');
-                }
-            }, 2000); // 2秒後に強制更新
+                clearInterval(updateInterval);
+                console.log('🔧 継続的な更新を停止しました（既存ページ）');
+            }, 10000);
         }, 100); // 100ms待機に短縮
     }
 }

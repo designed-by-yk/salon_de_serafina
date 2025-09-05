@@ -1670,8 +1670,12 @@
             }
         }
 
-        // 全ての価格を更新
+        // 全ての価格を更新（無効化 - admin-integration.jsが管理）
         function updateAllPrices(discountAmount, appliedCoupon) {
+            console.log('🔧 updateAllPrices は無効化されました - admin-integration.jsが価格を管理します');
+            // この関数は無効化されました - admin-integration.jsが価格表示を管理します
+            return;
+            
             // タロット鑑定価格更新
             const tarotPrice = Math.max(0, originalPrices.tarot - discountAmount);
             const tarotPriceSpan = document.getElementById('tarot-price');
