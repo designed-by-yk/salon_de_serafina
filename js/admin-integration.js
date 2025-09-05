@@ -276,6 +276,13 @@ class AdminIntegration {
             `.special-price[data-service="${serviceKey}"]`,
             `.price-large[data-service="${serviceKey}"]`,
             
+            // より広範囲のセレクタを追加
+            `[data-service="${serviceKey}"] span`,
+            `[data-service="${serviceKey}"] p`,
+            `[data-service="${serviceKey}"] div`,
+            `[data-service="${serviceKey}"] h3`,
+            `[data-service="${serviceKey}"] h4`,
+            
             // ページ固有のセレクタ（共通セレクタを完全削除して競合を回避）
         ];
         
@@ -519,6 +526,12 @@ class AdminIntegration {
             // サービス固有のセレクタのみ（グローバルセレクタを削除して競合を回避）
             `[data-payment-button="${serviceKey}"]`, // 決済ボタン用データ属性
             `button[data-service="${serviceKey}"]`, // サービス固有のボタン
+            
+            // より広範囲のセレクタを追加
+            `[data-service="${serviceKey}"] button`,
+            `[data-service="${serviceKey}"] a`,
+            `[data-service="${serviceKey}"] .btn`,
+            `[data-service="${serviceKey}"] .button`,
         ];
         
         // サービス別の専用セレクタを追加
@@ -863,7 +876,18 @@ class AdminIntegration {
 
             this.log(`🔍 ${serviceKey} の表示文言を更新: "${product.displayText}" (商品: ${product.productName || product.name})`);
 
-            const displayElements = document.querySelectorAll(`[data-service="${serviceKey}"] .display-text, [data-service="${serviceKey}"][data-text-type], [data-service="${serviceKey}"][data-price-type], .display-text[data-service="${serviceKey}"]`);
+            // より確実なセレクタに修正
+            const displayElements = document.querySelectorAll(`
+                [data-service="${serviceKey}"].display-text,
+                [data-service="${serviceKey}"][data-text-type],
+                [data-service="${serviceKey}"][data-price-type],
+                .display-text[data-service="${serviceKey}"],
+                [data-service="${serviceKey}"] .display-text,
+                [data-service="${serviceKey}"] h3,
+                [data-service="${serviceKey}"] h4,
+                [data-service="${serviceKey}"] p,
+                [data-service="${serviceKey}"] span
+            `);
             
             this.log(`🔍 ${serviceKey} の表示文言要素: ${displayElements.length}個発見`);
             displayElements.forEach(function(element, index) {
@@ -1241,4 +1265,63 @@ window.cleanDuplicateProducts = function() {
     } else {
         console.log('⚠️ localStorageにadminDataが見つかりません');
     }
+};
+
+// 強制更新用の関数を追加
+window.forceUpdateAll = function() {
+    console.log('🧪 手動テスト: 全要素を強制更新');
+    if (window.adminIntegration) {
+        // 全要素を強制的に更新
+        window.adminIntegration.updateDisplayTexts();
+        window.adminIntegration.updatePrices();
+        window.adminIntegration.updatePaymentLinks();
+        console.log('✅ 強制更新完了');
+    }
+};
+
+// 要素検索用の関数を追加
+window.findElements = function(serviceKey) {
+    console.log(`🔍 ${serviceKey} の要素を検索中...`);
+    
+    // 表示文言要素
+    const displayElements = document.querySelectorAll(`
+        [data-service="${serviceKey}"].display-text,
+        [data-service="${serviceKey}"][data-text-type],
+        [data-service="${serviceKey}"][data-price-type],
+        .display-text[data-service="${serviceKey}"],
+        [data-service="${serviceKey}"] .display-text,
+        [data-service="${serviceKey}"] h3,
+        [data-service="${serviceKey}"] h4,
+        [data-service="${serviceKey}"] p,
+        [data-service="${serviceKey}"] span
+    `);
+    
+    console.log(`📝 表示文言要素: ${displayElements.length}個`);
+    displayElements.forEach((element, index) => {
+        console.log(`  ${index + 1}. ${element.tagName}.${element.className}: "${element.textContent}"`);
+    });
+    
+    // 価格要素
+    const priceElements = document.querySelectorAll(`
+        [data-service="${serviceKey}"] .price,
+        [data-service="${serviceKey}"][data-price-type],
+        .price[data-service="${serviceKey}"]
+    `);
+    
+    console.log(`💰 価格要素: ${priceElements.length}個`);
+    priceElements.forEach((element, index) => {
+        console.log(`  ${index + 1}. ${element.tagName}.${element.className}: "${element.textContent}"`);
+    });
+    
+    // 決済ボタン要素
+    const buttonElements = document.querySelectorAll(`
+        [data-service="${serviceKey}"] button,
+        [data-service="${serviceKey}"] .btn,
+        [data-service="${serviceKey}"] .button
+    `);
+    
+    console.log(`🔗 決済ボタン要素: ${buttonElements.length}個`);
+    buttonElements.forEach((element, index) => {
+        console.log(`  ${index + 1}. ${element.tagName}.${element.className}: "${element.textContent}"`);
+    });
 };
