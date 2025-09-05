@@ -924,6 +924,21 @@ class AdminIntegration {
                 const oldText = element.textContent;
                 let newText = product.displayText || '';
                 
+                // 価格要素は表示文言として更新しない
+                if (priceType || 
+                    element.classList.contains('price') || 
+                    element.classList.contains('price-display') ||
+                    element.classList.contains('price-badge') ||
+                    element.classList.contains('original-price') ||
+                    element.classList.contains('special-price') ||
+                    oldText.includes('円') ||
+                    oldText.includes('価格') ||
+                    oldText.includes('割引') ||
+                    oldText.includes('支払い')) {
+                    console.log('価格要素のためスキップ:', element.tagName, element.className, oldText);
+                    return;
+                }
+                
                 // 商品管理で登録された表示文言をそのまま使用（undefinedの場合は空文字）
                 if (textType === 'header') {
                     newText = '🌟 ' + (product.displayText || '');
@@ -944,10 +959,28 @@ class AdminIntegration {
                 const fallbackElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
                 this.log(`🔍 ${serviceKey} のフォールバック要素: ${fallbackElements.length}個発見`);
                 fallbackElements.forEach(function(element) {
-                    if (element.classList.contains('display-text') || element.hasAttribute('data-text-type') || element.hasAttribute('data-price-type')) {
+                    const oldText = element.textContent;
+                    const priceType = element.getAttribute('data-price-type');
+                    
+                    // 価格要素は表示文言として更新しない
+                    if (priceType || 
+                        element.classList.contains('price') || 
+                        element.classList.contains('price-display') ||
+                        element.classList.contains('price-badge') ||
+                        element.classList.contains('original-price') ||
+                        element.classList.contains('special-price') ||
+                        oldText.includes('円') ||
+                        oldText.includes('価格') ||
+                        oldText.includes('割引') ||
+                        oldText.includes('支払い')) {
+                        console.log('フォールバック価格要素のためスキップ:', element.tagName, element.className, oldText);
+                        return;
+                    }
+                    
+                    if (element.classList.contains('display-text') || element.hasAttribute('data-text-type')) {
                         element.textContent = product.displayText || '';
                         updatedCount++;
-                        console.log('フォールバック表示文言更新:', element.tagName, element.className, '→', product.displayText || 'undefined');
+                        console.log('フォールバック表示文言更新:', element.tagName, element.className, oldText, '→', product.displayText || 'undefined');
                     }
                 });
             }
@@ -957,10 +990,28 @@ class AdminIntegration {
                 this.log(`🚨 ${serviceKey} の表示文言が適用されませんでした。強制適用を試行します。`);
                 const allElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
                 allElements.forEach(function(element) {
-                    if (element.textContent && (element.textContent.includes('オープン') || element.textContent.includes('記念'))) {
+                    const oldText = element.textContent;
+                    const priceType = element.getAttribute('data-price-type');
+                    
+                    // 価格要素は表示文言として更新しない
+                    if (priceType || 
+                        element.classList.contains('price') || 
+                        element.classList.contains('price-display') ||
+                        element.classList.contains('price-badge') ||
+                        element.classList.contains('original-price') ||
+                        element.classList.contains('special-price') ||
+                        oldText.includes('円') ||
+                        oldText.includes('価格') ||
+                        oldText.includes('割引') ||
+                        oldText.includes('支払い')) {
+                        console.log('強制適用価格要素のためスキップ:', element.tagName, element.className, oldText);
+                        return;
+                    }
+                    
+                    if (oldText && (oldText.includes('オープン') || oldText.includes('記念'))) {
                         element.textContent = product.displayText || '';
                         updatedCount++;
-                        console.log('強制表示文言更新:', element.tagName, element.className, '→', product.displayText || 'undefined');
+                        console.log('強制表示文言更新:', element.tagName, element.className, oldText, '→', product.displayText || 'undefined');
                     }
                 });
             }
@@ -970,9 +1021,26 @@ class AdminIntegration {
                 this.log(`🚨🚨 ${serviceKey} の表示文言が全く適用されませんでした。最終手段を実行します。`);
                 const allElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
                 allElements.forEach(function(element) {
+                    const oldText = element.textContent;
+                    const priceType = element.getAttribute('data-price-type');
+                    
+                    // 価格要素は表示文言として更新しない
+                    if (priceType || 
+                        element.classList.contains('price') || 
+                        element.classList.contains('price-display') ||
+                        element.classList.contains('price-badge') ||
+                        element.classList.contains('original-price') ||
+                        element.classList.contains('special-price') ||
+                        oldText.includes('円') ||
+                        oldText.includes('価格') ||
+                        oldText.includes('割引') ||
+                        oldText.includes('支払い')) {
+                        console.log('最終手段価格要素のためスキップ:', element.tagName, element.className, oldText);
+                        return;
+                    }
+                    
                     // テキストコンテンツがある要素をすべて対象にする
-                    if (element.textContent && element.textContent.trim() !== '') {
-                        const oldText = element.textContent;
+                    if (oldText && oldText.trim() !== '') {
                         element.textContent = product.displayText || '';
                         updatedCount++;
                         console.log('最終手段表示文言更新:', element.tagName, element.className, oldText, '→', product.displayText || 'undefined');

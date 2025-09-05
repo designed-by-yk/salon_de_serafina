@@ -438,13 +438,13 @@
             <!-- デバッグ用ボタン -->
             <div style="margin: 20px 0; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; text-align: center;">
                 <h4 style="color: #ffd700; margin-bottom: 10px;">🔍 デバッグ用ボタン</h4>
-                <button onclick="debugDisplayData()" style="margin: 5px; padding: 8px 16px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                <button onclick="if(typeof debugDisplayData === 'function') debugDisplayData(); else console.log('デバッグ関数が読み込まれていません');" style="margin: 5px; padding: 8px 16px; background: #4caf50; color: white; border: none; border-radius: 5px; cursor: pointer;">
                     全データ調査
                 </button>
-                <button onclick="debugPriceDisplay()" style="margin: 5px; padding: 8px 16px; background: #2196f3; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                <button onclick="if(typeof debugPriceDisplay === 'function') debugPriceDisplay(); else console.log('デバッグ関数が読み込まれていません');" style="margin: 5px; padding: 8px 16px; background: #2196f3; color: white; border: none; border-radius: 5px; cursor: pointer;">
                     価格表示調査
                 </button>
-                <button onclick="findElements('star_yomi')" style="margin: 5px; padding: 8px 16px; background: #ff9800; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                <button onclick="if(typeof findElements === 'function') findElements('star_yomi'); else console.log('デバッグ関数が読み込まれていません');" style="margin: 5px; padding: 8px 16px; background: #ff9800; color: white; border: none; border-radius: 5px; cursor: pointer;">
                     星詠み要素調査
                 </button>
             </div>
