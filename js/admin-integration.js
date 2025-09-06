@@ -410,7 +410,8 @@ class AdminIntegration {
                     if (savings > 0) {
                         formattedPrice = `${savings.toLocaleString()}円お得！`;
                     } else {
-                        formattedPrice = 'オープン記念価格';
+                        // 商品管理の表示文言を使用（ハードコードを削除）
+                        formattedPrice = product.displayText || '◆';
                     }
                 } else {
                     // デフォルトの価格表示（商品管理の表示設定に基づく）
@@ -580,6 +581,8 @@ class AdminIntegration {
                                       element.onclick?.toString().includes('10000');
                 
                 if (isPaymentButton) {
+                    // 既存のonclick属性を完全に削除
+                    element.removeAttribute('onclick');
                     // onclickイベントを更新（決済ボタンのみ）
                     element.onclick = () => window.open(link.url, '_blank');
                     
@@ -951,6 +954,7 @@ class AdminIntegration {
                 if (textType === 'discount' || priceType === 'savings') {
                     console.log(`${textType || priceType}の要素を表示文言として更新:`, element.tagName, element.className, oldText);
                     // この要素は表示文言として更新する
+                    newText = product.displayText || '◆';
                 } else if (
                     element.classList.contains('price') || 
                     element.classList.contains('price-display') ||
@@ -1014,6 +1018,10 @@ class AdminIntegration {
                     if (textType === 'discount' || priceType === 'savings') {
                         console.log(`フォールバック: ${textType || priceType}の要素を表示文言として更新:`, element.tagName, element.className, oldText);
                         // この要素は表示文言として更新する
+                        element.textContent = product.displayText || '◆';
+                        updatedCount++;
+                        console.log('フォールバック表示文言更新:', element.tagName, element.className, oldText, '→', product.displayText || '◆');
+                        return;
                     } else if (
                         element.classList.contains('price') || 
                         element.classList.contains('price-display') ||
@@ -1060,6 +1068,10 @@ class AdminIntegration {
                     if (textType === 'discount' || priceType === 'savings') {
                         console.log(`強制適用: ${textType || priceType}の要素を表示文言として更新:`, element.tagName, element.className, oldText);
                         // この要素は表示文言として更新する
+                        element.textContent = product.displayText || '◆';
+                        updatedCount++;
+                        console.log('強制表示文言更新:', element.tagName, element.className, oldText, '→', product.displayText || '◆');
+                        return;
                     } else if (
                         element.classList.contains('price') || 
                         element.classList.contains('price-display') ||
@@ -1106,6 +1118,10 @@ class AdminIntegration {
                     if (textType === 'discount' || priceType === 'savings') {
                         console.log(`最終手段: ${textType || priceType}の要素を表示文言として更新:`, element.tagName, element.className, oldText);
                         // この要素は表示文言として更新する
+                        element.textContent = product.displayText || '◆';
+                        updatedCount++;
+                        console.log('最終手段表示文言更新:', element.tagName, element.className, oldText, '→', product.displayText || '◆');
+                        return;
                     } else if (
                         element.classList.contains('price') || 
                         element.classList.contains('price-display') ||
@@ -1285,7 +1301,7 @@ if (document.readyState === 'loading') {
     }
 }
 
-console.log('🔗 AdminIntegration スクリプト読み込み完了');
+console.log('🔗 AdminIntegration スクリプト読み込み完了 v=20250906c');
 
 // 手動テスト用の関数を追加
 window.testDisplayTexts = function() {
