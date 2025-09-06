@@ -948,8 +948,19 @@ class AdminIntegration {
                 let newText = product.displayText || '';
                 
                 // 価格要素は表示文言として更新しない（ただし、data-text-type="discount"やdata-price-type="savings"は表示文言として更新）
-                if ((priceType && priceType !== 'savings') || 
-                    (textType && textType !== 'discount') ||
+                // 特別に表示文言として更新すべき要素を明示的に許可
+                const shouldUpdateAsDisplayText = (
+                    textType === 'discount' || 
+                    priceType === 'savings' ||
+                    element.classList.contains('discount') ||
+                    element.classList.contains('savings') ||
+                    element.classList.contains('bundle-savings') ||
+                    (oldText.includes('オープン') || oldText.includes('記念')) ||
+                    (oldText.includes('お得') && !oldText.includes('円'))
+                );
+                
+                // 純粋な価格要素のみをスキップ（表示文言要素は更新する）
+                if (!shouldUpdateAsDisplayText && (
                     element.classList.contains('price') || 
                     element.classList.contains('price-display') ||
                     element.classList.contains('price-badge') ||
@@ -958,7 +969,8 @@ class AdminIntegration {
                     (oldText.includes('円') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                     (oldText.includes('価格') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                     (oldText.includes('割引') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
-                    oldText.includes('支払い')) {
+                    oldText.includes('支払い')
+                )) {
                     console.log('価格要素のためスキップ:', element.tagName, element.className, oldText);
                     return;
                 }
@@ -972,6 +984,17 @@ class AdminIntegration {
                 }
                     
                 element.textContent = newText;
+                
+                // 表示文言の可視性を強制
+                element.style.setProperty('display', 'block', 'important');
+                element.style.setProperty('visibility', 'visible', 'important');
+                element.style.setProperty('opacity', '1', 'important');
+                element.style.setProperty('position', 'relative', 'important');
+                element.style.setProperty('z-index', '999', 'important');
+                
+                // 強制的にDOMに再描画させる
+                element.offsetHeight;
+                
                 updatedCount++;
                 console.log('表示文言更新:', textType, oldText, '→', newText, '商品:', product.productName || product.name, '表示文言:', product.displayText || 'undefined');
             });
@@ -988,8 +1011,19 @@ class AdminIntegration {
                     const textType = element.getAttribute('data-text-type');
                     
                     // 価格要素は表示文言として更新しない（ただし、data-text-type="discount"やdata-price-type="savings"は表示文言として更新）
-                    if ((priceType && priceType !== 'savings') || 
-                        (textType && textType !== 'discount') ||
+                    // 特別に表示文言として更新すべき要素を明示的に許可
+                    const shouldUpdateAsDisplayText = (
+                        textType === 'discount' || 
+                        priceType === 'savings' ||
+                        element.classList.contains('discount') ||
+                        element.classList.contains('savings') ||
+                        element.classList.contains('bundle-savings') ||
+                        (oldText.includes('オープン') || oldText.includes('記念')) ||
+                        (oldText.includes('お得') && !oldText.includes('円'))
+                    );
+                    
+                    // 純粋な価格要素のみをスキップ（表示文言要素は更新する）
+                    if (!shouldUpdateAsDisplayText && (
                         element.classList.contains('price') || 
                         element.classList.contains('price-display') ||
                         element.classList.contains('price-badge') ||
@@ -998,7 +1032,8 @@ class AdminIntegration {
                         (oldText.includes('円') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                         (oldText.includes('価格') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                         (oldText.includes('割引') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
-                        oldText.includes('支払い')) {
+                        oldText.includes('支払い')
+                    )) {
                         console.log('フォールバック価格要素のためスキップ:', element.tagName, element.className, oldText);
                         return;
                     }
@@ -1021,8 +1056,19 @@ class AdminIntegration {
                     const textType = element.getAttribute('data-text-type');
                     
                     // 価格要素は表示文言として更新しない（ただし、data-text-type="discount"やdata-price-type="savings"は表示文言として更新）
-                    if ((priceType && priceType !== 'savings') || 
-                        (textType && textType !== 'discount') ||
+                    // 特別に表示文言として更新すべき要素を明示的に許可
+                    const shouldUpdateAsDisplayText = (
+                        textType === 'discount' || 
+                        priceType === 'savings' ||
+                        element.classList.contains('discount') ||
+                        element.classList.contains('savings') ||
+                        element.classList.contains('bundle-savings') ||
+                        (oldText.includes('オープン') || oldText.includes('記念')) ||
+                        (oldText.includes('お得') && !oldText.includes('円'))
+                    );
+                    
+                    // 純粋な価格要素のみをスキップ（表示文言要素は更新する）
+                    if (!shouldUpdateAsDisplayText && (
                         element.classList.contains('price') || 
                         element.classList.contains('price-display') ||
                         element.classList.contains('price-badge') ||
@@ -1031,7 +1077,8 @@ class AdminIntegration {
                         (oldText.includes('円') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                         (oldText.includes('価格') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                         (oldText.includes('割引') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
-                        oldText.includes('支払い')) {
+                        oldText.includes('支払い')
+                    )) {
                         console.log('強制適用価格要素のためスキップ:', element.tagName, element.className, oldText);
                         return;
                     }
@@ -1054,8 +1101,19 @@ class AdminIntegration {
                     const textType = element.getAttribute('data-text-type');
                     
                     // 価格要素は表示文言として更新しない（ただし、data-text-type="discount"やdata-price-type="savings"は表示文言として更新）
-                    if ((priceType && priceType !== 'savings') || 
-                        (textType && textType !== 'discount') ||
+                    // 特別に表示文言として更新すべき要素を明示的に許可
+                    const shouldUpdateAsDisplayText = (
+                        textType === 'discount' || 
+                        priceType === 'savings' ||
+                        element.classList.contains('discount') ||
+                        element.classList.contains('savings') ||
+                        element.classList.contains('bundle-savings') ||
+                        (oldText.includes('オープン') || oldText.includes('記念')) ||
+                        (oldText.includes('お得') && !oldText.includes('円'))
+                    );
+                    
+                    // 純粋な価格要素のみをスキップ（表示文言要素は更新する）
+                    if (!shouldUpdateAsDisplayText && (
                         element.classList.contains('price') || 
                         element.classList.contains('price-display') ||
                         element.classList.contains('price-badge') ||
@@ -1064,7 +1122,8 @@ class AdminIntegration {
                         (oldText.includes('円') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                         (oldText.includes('価格') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                         (oldText.includes('割引') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
-                        oldText.includes('支払い')) {
+                        oldText.includes('支払い')
+                    )) {
                         console.log('最終手段価格要素のためスキップ:', element.tagName, element.className, oldText);
                         return;
                     }
