@@ -947,16 +947,17 @@ class AdminIntegration {
                 const oldText = element.textContent;
                 let newText = product.displayText || '';
                 
-                // 価格要素は表示文言として更新しない
-                if (priceType || 
+                // 価格要素は表示文言として更新しない（ただし、data-text-type="discount"やdata-price-type="savings"は表示文言として更新）
+                if ((priceType && priceType !== 'savings') || 
+                    (textType && textType !== 'discount') ||
                     element.classList.contains('price') || 
                     element.classList.contains('price-display') ||
                     element.classList.contains('price-badge') ||
                     element.classList.contains('original-price') ||
                     element.classList.contains('special-price') ||
-                    oldText.includes('円') ||
-                    oldText.includes('価格') ||
-                    oldText.includes('割引') ||
+                    (oldText.includes('円') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
+                    (oldText.includes('価格') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
+                    (oldText.includes('割引') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                     oldText.includes('支払い')) {
                     console.log('価格要素のためスキップ:', element.tagName, element.className, oldText);
                     return;
@@ -984,23 +985,25 @@ class AdminIntegration {
                 fallbackElements.forEach(function(element) {
                     const oldText = element.textContent;
                     const priceType = element.getAttribute('data-price-type');
+                    const textType = element.getAttribute('data-text-type');
                     
-                    // 価格要素は表示文言として更新しない
-                    if (priceType || 
+                    // 価格要素は表示文言として更新しない（ただし、data-text-type="discount"やdata-price-type="savings"は表示文言として更新）
+                    if ((priceType && priceType !== 'savings') || 
+                        (textType && textType !== 'discount') ||
                         element.classList.contains('price') || 
                         element.classList.contains('price-display') ||
                         element.classList.contains('price-badge') ||
                         element.classList.contains('original-price') ||
                         element.classList.contains('special-price') ||
-                        oldText.includes('円') ||
-                        oldText.includes('価格') ||
-                        oldText.includes('割引') ||
+                        (oldText.includes('円') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
+                        (oldText.includes('価格') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
+                        (oldText.includes('割引') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                         oldText.includes('支払い')) {
                         console.log('フォールバック価格要素のためスキップ:', element.tagName, element.className, oldText);
                         return;
                     }
                     
-                    if (element.classList.contains('display-text') || element.hasAttribute('data-text-type')) {
+                    if (element.classList.contains('display-text') || element.hasAttribute('data-text-type') || element.hasAttribute('data-price-type')) {
                         element.textContent = product.displayText || '';
                         updatedCount++;
                         console.log('フォールバック表示文言更新:', element.tagName, element.className, oldText, '→', product.displayText || 'undefined');
@@ -1015,17 +1018,19 @@ class AdminIntegration {
                 allElements.forEach(function(element) {
                     const oldText = element.textContent;
                     const priceType = element.getAttribute('data-price-type');
+                    const textType = element.getAttribute('data-text-type');
                     
-                    // 価格要素は表示文言として更新しない
-                    if (priceType || 
+                    // 価格要素は表示文言として更新しない（ただし、data-text-type="discount"やdata-price-type="savings"は表示文言として更新）
+                    if ((priceType && priceType !== 'savings') || 
+                        (textType && textType !== 'discount') ||
                         element.classList.contains('price') || 
                         element.classList.contains('price-display') ||
                         element.classList.contains('price-badge') ||
                         element.classList.contains('original-price') ||
                         element.classList.contains('special-price') ||
-                        oldText.includes('円') ||
-                        oldText.includes('価格') ||
-                        oldText.includes('割引') ||
+                        (oldText.includes('円') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
+                        (oldText.includes('価格') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
+                        (oldText.includes('割引') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                         oldText.includes('支払い')) {
                         console.log('強制適用価格要素のためスキップ:', element.tagName, element.className, oldText);
                         return;
@@ -1046,17 +1051,19 @@ class AdminIntegration {
                 allElements.forEach(function(element) {
                     const oldText = element.textContent;
                     const priceType = element.getAttribute('data-price-type');
+                    const textType = element.getAttribute('data-text-type');
                     
-                    // 価格要素は表示文言として更新しない
-                    if (priceType || 
+                    // 価格要素は表示文言として更新しない（ただし、data-text-type="discount"やdata-price-type="savings"は表示文言として更新）
+                    if ((priceType && priceType !== 'savings') || 
+                        (textType && textType !== 'discount') ||
                         element.classList.contains('price') || 
                         element.classList.contains('price-display') ||
                         element.classList.contains('price-badge') ||
                         element.classList.contains('original-price') ||
                         element.classList.contains('special-price') ||
-                        oldText.includes('円') ||
-                        oldText.includes('価格') ||
-                        oldText.includes('割引') ||
+                        (oldText.includes('円') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
+                        (oldText.includes('価格') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
+                        (oldText.includes('割引') && !oldText.includes('オープン') && !oldText.includes('記念')) ||
                         oldText.includes('支払い')) {
                         console.log('最終手段価格要素のためスキップ:', element.tagName, element.className, oldText);
                         return;

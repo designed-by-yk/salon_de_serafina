@@ -70,7 +70,9 @@ class PaymentRedirect {
         let config = this.defaultConfig[serviceKey] || {};
 
         if (adminData && adminData.products) {
-            const product = adminData.products.find(p => 
+            // 表示中の商品のみを対象にする
+            const visibleProducts = adminData.products.filter(p => p.visible === true);
+            const product = visibleProducts.find(p => 
                 this.getServiceKeyFromProduct(p) === serviceKey
             );
             if (product) {
@@ -80,8 +82,18 @@ class PaymentRedirect {
                     productName: product.productName,
                     name: product.name,
                     finalName: config.name,
-                    price: config.price
+                    price: config.price,
+                    visible: product.visible
                 });
+            } else {
+                console.log(`⚠️ ${serviceKey} の表示中商品が見つかりません`);
+                // デバッグ用: 利用可能な商品を表示
+                console.log('📋 利用可能な商品:', visibleProducts.map(p => ({
+                    name: p.name,
+                    productName: p.productName,
+                    serviceKey: this.getServiceKeyFromProduct(p),
+                    visible: p.visible
+                })));
             }
         }
 
