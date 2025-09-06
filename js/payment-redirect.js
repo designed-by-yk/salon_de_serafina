@@ -122,6 +122,15 @@ class PaymentRedirect {
             return mapping[product.name];
         }
         
+        // stableId から推測（フォールバック）
+        if (product.stableId) {
+            if (product.stableId.includes('shintaku')) return 'shintaku';
+            if (product.stableId.includes('star_yomi')) return 'star_yomi';
+            if (product.stableId.includes('personal_tarot')) return 'personal_tarot';
+            if (product.stableId.includes('personal_birthday')) return 'personal_birthday';
+            if (product.stableId.includes('personal_set')) return 'personal_set';
+        }
+        
         return null;
     }
 
