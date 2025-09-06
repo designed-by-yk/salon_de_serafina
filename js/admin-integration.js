@@ -625,7 +625,9 @@ class AdminIntegration {
         this.log(`🔍 商品からサービスキー取得:`, {
             productName: product.productName,
             name: product.name,
-            stableId: product.stableId
+            stableId: product.stableId,
+            visible: product.visible,
+            displayText: product.displayText
         });
         
         // まず productName で検索
@@ -854,7 +856,13 @@ class AdminIntegration {
             });
             
             // 商品管理で登録された表示文言をそのまま使用（強制設定なし）
-            this.log(`📝 商品管理の表示文言を使用: "${product.displayText}"`);
+            this.log(`📝 商品管理の表示文言を使用: "${product.displayText || '未設定'}"`);
+            
+            // 表示文言が空の場合はスキップ
+            if (!product.displayText || product.displayText.trim() === '') {
+                this.log(`⏭️ ${serviceKey} の表示文言が空のためスキップ`);
+                return;
+            }
             
             const serviceKey = this.getServiceKeyFromProduct(product);
             if (!serviceKey) {
