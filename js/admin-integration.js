@@ -404,8 +404,8 @@ class AdminIntegration {
                     formattedPrice = `${displayPrice.toLocaleString()}円`;
                 } else if (priceType === 'savings') {
                     // 割引額表示の場合
-                    const regularPrice = product.regularPrice || price;
-                    const salePrice = product.salePrice || price;
+                    const regularPrice = product.regularPrice || displayPrice;
+                    const salePrice = product.salePrice || displayPrice;
                     const savings = regularPrice - salePrice;
                     if (savings > 0) {
                         formattedPrice = `${savings.toLocaleString()}円お得！`;
@@ -540,13 +540,10 @@ class AdminIntegration {
         // サービス別の専用セレクタを追加
         if (serviceKey === 'personal_tarot') {
             linkSelectors.push(`#tarot-payment-btn`); // タロット専用
-            linkSelectors.push(`button[onclick*="7000"]`); // 7000円の決済ボタン
         } else if (serviceKey === 'personal_birthday') {
             linkSelectors.push(`#star-payment-btn`); // 誕生日専用
-            linkSelectors.push(`button[onclick*="7000"]`); // 7000円の決済ボタン
         } else if (serviceKey === 'personal_set') {
             linkSelectors.push(`#bundle-payment-btn`); // セット専用
-            linkSelectors.push(`button[onclick*="10000"]`); // 10000円の決済ボタン
         } else if (serviceKey === 'shintaku') {
             linkSelectors.push(`#payment-btn`); // 神託専用
         } else if (serviceKey === 'star_yomi') {
@@ -1301,7 +1298,7 @@ if (document.readyState === 'loading') {
     }
 }
 
-console.log('🔗 AdminIntegration スクリプト読み込み完了 v=20250906c');
+console.log('🔗 AdminIntegration スクリプト読み込み完了 v=20250906d');
 
 // 手動テスト用の関数を追加
 window.testDisplayTexts = function() {
