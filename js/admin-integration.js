@@ -157,16 +157,18 @@ class AdminIntegration {
         const visibleProducts = adminData.products.filter(product => product.visible);
         this.log(`👁️ 表示中の商品: ${visibleProducts.length}件`);
         
-        // 重複商品を除去（同じstableIdの商品は1つだけ残す）
+        // 重複商品を除去（同じサービスキーの商品は1つだけ残す）
         const uniqueProducts = [];
-        const seenStableIds = new Set();
+        const seenServiceKeys = new Set();
         
         visibleProducts.forEach(product => {
-            if (!seenStableIds.has(product.stableId)) {
-                seenStableIds.add(product.stableId);
+            const serviceKey = this.getServiceKeyFromProduct(product);
+            if (serviceKey && !seenServiceKeys.has(serviceKey)) {
+                seenServiceKeys.add(serviceKey);
                 uniqueProducts.push(product);
+                this.log(`✅ 表示商品として選択: ${product.name} (${serviceKey})`);
             } else {
-                this.log(`🔄 重複商品をスキップ: ${product.name} (stableId: ${product.stableId})`);
+                this.log(`🔄 重複商品をスキップ: ${product.name} (${serviceKey})`);
             }
         });
         
@@ -822,16 +824,29 @@ class AdminIntegration {
         const visibleProducts = adminData.products.filter(product => product.visible);
         this.log(`👁️ 表示中の商品: ${visibleProducts.length}件`);
         
-        // 重複商品を除去（同じstableIdの商品は1つだけ残す）
+        // デバッグ用：全商品の詳細をログ出力
+        this.log('🔍 全商品の詳細:');
+        adminData.products.forEach((product, index) => {
+            this.log(`  ${index + 1}. ${product.name}: visible=${product.visible}, displayText="${product.displayText}"`);
+        });
+        
+        this.log('🔍 表示中の商品の詳細:');
+        visibleProducts.forEach((product, index) => {
+            this.log(`  ${index + 1}. ${product.name}: displayText="${product.displayText}"`);
+        });
+        
+        // 重複商品を除去（同じサービスキーの商品は1つだけ残す）
         const uniqueProducts = [];
-        const seenStableIds = new Set();
+        const seenServiceKeys = new Set();
         
         visibleProducts.forEach(product => {
-            if (!seenStableIds.has(product.stableId)) {
-                seenStableIds.add(product.stableId);
+            const serviceKey = this.getServiceKeyFromProduct(product);
+            if (serviceKey && !seenServiceKeys.has(serviceKey)) {
+                seenServiceKeys.add(serviceKey);
                 uniqueProducts.push(product);
+                this.log(`✅ 表示商品として選択: ${product.name} (${serviceKey})`);
             } else {
-                this.log(`🔄 重複商品をスキップ: ${product.name} (stableId: ${product.stableId})`);
+                this.log(`🔄 重複商品をスキップ: ${product.name} (${serviceKey})`);
             }
         });
         
