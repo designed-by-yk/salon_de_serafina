@@ -899,17 +899,13 @@ class AdminIntegration {
 
             this.log(`🔍 ${serviceKey} の表示文言を更新: "${product.displayText}" (商品: ${product.productName || product.name})`);
 
-            // より確実なセレクタに修正
+            // より確実なセレクタに修正（価格要素を除外）
             const displayElements = document.querySelectorAll(`
                 [data-service="${serviceKey}"].display-text,
                 [data-service="${serviceKey}"][data-text-type],
                 [data-service="${serviceKey}"][data-price-type],
                 .display-text[data-service="${serviceKey}"],
-                [data-service="${serviceKey}"] .display-text,
-                [data-service="${serviceKey}"] h3,
-                [data-service="${serviceKey}"] h4,
-                [data-service="${serviceKey}"] p,
-                [data-service="${serviceKey}"] span
+                [data-service="${serviceKey}"] .display-text
             `);
             
             this.log(`🔍 ${serviceKey} の表示文言要素: ${displayElements.length}個発見`);
@@ -1003,8 +999,13 @@ class AdminIntegration {
             // 表示文言が適用されなかった場合のフォールバック処理
             if (displayElements.length === 0) {
                 this.log(`⚠️ ${serviceKey} の表示文言要素が見つかりませんでした`);
-                // より広範囲のセレクタで再試行
-                const fallbackElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
+                // より広範囲のセレクタで再試行（価格要素を除外）
+                const fallbackElements = document.querySelectorAll(`
+                    [data-service="${serviceKey}"].display-text,
+                    [data-service="${serviceKey}"][data-text-type],
+                    [data-service="${serviceKey}"][data-price-type],
+                    .display-text[data-service="${serviceKey}"]
+                `);
                 this.log(`🔍 ${serviceKey} のフォールバック要素: ${fallbackElements.length}個発見`);
                 fallbackElements.forEach(function(element) {
                     const oldText = element.textContent;
@@ -1055,7 +1056,12 @@ class AdminIntegration {
             // 強制的に表示文言を適用（最後の手段）
             if (updatedCount === 0) {
                 this.log(`🚨 ${serviceKey} の表示文言が適用されませんでした。強制適用を試行します。`);
-                const allElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
+                const allElements = document.querySelectorAll(`
+                    [data-service="${serviceKey}"].display-text,
+                    [data-service="${serviceKey}"][data-text-type],
+                    [data-service="${serviceKey}"][data-price-type],
+                    .display-text[data-service="${serviceKey}"]
+                `);
                 allElements.forEach(function(element) {
                     const oldText = element.textContent;
                     const priceType = element.getAttribute('data-price-type');
@@ -1105,7 +1111,12 @@ class AdminIntegration {
             // さらに強制的に表示文言を適用（最終手段）
             if (updatedCount === 0 && product.displayText) {
                 this.log(`🚨🚨 ${serviceKey} の表示文言が全く適用されませんでした。最終手段を実行します。`);
-                const allElements = document.querySelectorAll(`[data-service="${serviceKey}"]`);
+                const allElements = document.querySelectorAll(`
+                    [data-service="${serviceKey}"].display-text,
+                    [data-service="${serviceKey}"][data-text-type],
+                    [data-service="${serviceKey}"][data-price-type],
+                    .display-text[data-service="${serviceKey}"]
+                `);
                 allElements.forEach(function(element) {
                     const oldText = element.textContent;
                     const priceType = element.getAttribute('data-price-type');
@@ -1298,7 +1309,7 @@ if (document.readyState === 'loading') {
     }
 }
 
-console.log('🔗 AdminIntegration スクリプト読み込み完了 v=20250906d');
+console.log('🔗 AdminIntegration スクリプト読み込み完了 v=20250906e');
 
 // 手動テスト用の関数を追加
 window.testDisplayTexts = function() {
