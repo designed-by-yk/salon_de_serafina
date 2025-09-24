@@ -622,24 +622,47 @@
             
             // 確実に価格が更新されてからクーポンシステムを初期化
             setTimeout(function() {
-                // 価格を再取得して更新
-                originalPrice = getCurrentPrice();
-                console.log('🔧 クーポンシステム初期化開始 - 基準価格:', originalPrice);
-                
-                // 価格表示を更新
-                const originalDisplay = document.getElementById('star-original-display');
-                const finalPriceDisplay = document.getElementById('star-final-price');
-                if (originalDisplay) {
-                    originalDisplay.textContent = `${originalPrice.toLocaleString()}円`;
-                    console.log('🎯 星詠みシステム - 元の価格を更新:', `${originalPrice.toLocaleString()}円`);
-                }
-                if (finalPriceDisplay) {
-                    finalPriceDisplay.textContent = `${originalPrice.toLocaleString()}円`;
-                    console.log('🎯 星詠みシステム - お支払い金額を更新:', `${originalPrice.toLocaleString()}円`);
-                }
-                
-                initializeStarCouponSystem();
-            }, 1000); // 1秒待機してadmin-integration.jsの処理を待つ
+                // 価格を再取得して更新（複数回試行）
+                let attempts = 0;
+                const maxAttempts = 5;
+                const updatePrice = function() {
+                    attempts++;
+                    const newPrice = getCurrentPrice();
+                    console.log(`🔧 星詠みシステム価格取得試行 ${attempts}/${maxAttempts}:`, {
+                        '取得した価格': newPrice,
+                        '現在のoriginalPrice': originalPrice
+                    });
+                    
+                    if (newPrice !== originalPrice && newPrice !== 1280) {
+                        // 正しい販売価格が取得できた場合
+                        originalPrice = newPrice;
+                        console.log('✅ 星詠みシステム - 正しい販売価格を設定:', originalPrice);
+                        
+                        // 価格表示を更新
+                        const originalDisplay = document.getElementById('star-original-display');
+                        const finalPriceDisplay = document.getElementById('star-final-price');
+                        if (originalDisplay) {
+                            originalDisplay.textContent = `${originalPrice.toLocaleString()}円`;
+                            console.log('🎯 星詠みシステム - 元の価格を更新:', `${originalPrice.toLocaleString()}円`);
+                        }
+                        if (finalPriceDisplay) {
+                            finalPriceDisplay.textContent = `${originalPrice.toLocaleString()}円`;
+                            console.log('🎯 星詠みシステム - お支払い金額を更新:', `${originalPrice.toLocaleString()}円`);
+                        }
+                        
+                        initializeStarCouponSystem();
+                    } else if (attempts < maxAttempts) {
+                        // まだ正しい価格が取得できない場合は再試行
+                        console.log('⏳ 星詠みシステム - admin-integration.jsの処理完了を待機中...');
+                        setTimeout(updatePrice, 500);
+                    } else {
+                        // 最大試行回数に達した場合は現在の価格で初期化
+                        console.log('⚠️ 星詠みシステム - 最大試行回数に達しました。現在の価格で初期化:', originalPrice);
+                        initializeStarCouponSystem();
+                    }
+                };
+                updatePrice();
+            }, 1500); // 1.5秒待機してadmin-integration.jsの処理を確実に待つ
             
             // 確実にクーポン適用済み表示を隠す（強制実行）
             setTimeout(function() {
