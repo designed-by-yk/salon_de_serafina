@@ -422,12 +422,12 @@
                     margin: 15px 0;
                     font-size: 16px;
                 ">
-                    <div>元の価格: <span id="star-original-display">1,280円</span></div>
+                    <div>元の価格: <span id="star-original-display">980円</span></div>
                     <div id="star-discount-row" style="display: none; color: #4caf50; margin: 5px 0;">
                         割引額: <span id="star-discount-amount">0円</span>
                     </div>
                     <div style="border-top: 1px solid rgba(255,255,255,0.3); margin: 10px 0; padding-top: 10px; font-weight: bold; font-size: 18px;">
-                        お支払い金額: <span id="star-final-price" style="color: #ffd700;">1,280円</span>
+                        お支払い金額: <span id="star-final-price" style="color: #ffd700;">980円</span>
                     </div>
                 </div>
             </div>
@@ -627,10 +627,16 @@
                 console.log('🔧 クーポンシステム初期化開始 - 基準価格:', originalPrice);
                 
                 // 価格表示を更新
-                const originalDisplay = document.getElementById('star-yomi-original-display');
-                const finalPriceDisplay = document.getElementById('star-yomi-final-price');
-                if (originalDisplay) originalDisplay.textContent = `${originalPrice.toLocaleString()}円`;
-                if (finalPriceDisplay) finalPriceDisplay.textContent = `${originalPrice.toLocaleString()}円`;
+                const originalDisplay = document.getElementById('star-original-display');
+                const finalPriceDisplay = document.getElementById('star-final-price');
+                if (originalDisplay) {
+                    originalDisplay.textContent = `${originalPrice.toLocaleString()}円`;
+                    console.log('🎯 星詠みシステム - 元の価格を更新:', `${originalPrice.toLocaleString()}円`);
+                }
+                if (finalPriceDisplay) {
+                    finalPriceDisplay.textContent = `${originalPrice.toLocaleString()}円`;
+                    console.log('🎯 星詠みシステム - お支払い金額を更新:', `${originalPrice.toLocaleString()}円`);
+                }
                 
                 initializeStarCouponSystem();
             }, 1000); // 1秒待機してadmin-integration.jsの処理を待つ
