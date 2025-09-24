@@ -1329,9 +1329,17 @@
                 // デバッグ用アラート
                 if (!existingCoupons) {
                     console.log('⚠️ salon_coupons が空です');
-                    showMessage('salon_coupons データが見つかりません', 'info');
+                    showMessage('salon_coupons データが見つかりません。先にクーポン管理画面でクーポンを作成してください。', 'info');
                     return;
                 }
+                
+                // インポート前に既存の重複を整理
+                console.log('🧹 インポート前の重複整理開始...');
+                const beforeCount = currentData.pricingRules.length;
+                currentData.pricingRules = currentData.pricingRules.filter(rule => !rule.imported);
+                const afterCount = currentData.pricingRules.length;
+                console.log(`🧹 既存のインポートルールを削除: ${beforeCount} → ${afterCount} (削除: ${beforeCount - afterCount}件)`);
+                
                 
                 if (existingCoupons) {
                     console.log('🔍 JSON解析を試行中...');
@@ -1392,30 +1400,39 @@
                                     throw new Error('クーポンコードが見つかりません');
                                 }
                                 
-                                // 既存ルールの重複チェックを緩和（imported フラグで区別）
-                                const existingImportedRule = currentData.pricingRules.find(r => r.couponCode === coupon.code && r.imported === true);
-                                if (!existingImportedRule) {
-                                    // デフォルト値を設定
-                                    const discountType = coupon.discountType || 'fixed';
-                                    const discountValue = coupon.discountValue || 0;
-                                    const isActive = coupon.isActive !== false && coupon.active !== false;
-                                    
-                                    const newRule = {
-                                        id: 'imported_' + coupon.code + '_' + Date.now() + '_' + index,
-                                        couponCode: coupon.code,
-                                        description: `${coupon.code} (${discountType === 'percentage' ? discountValue + '%' : '¥' + discountValue} OFF)`,
-                                        active: isActive,
-                                        products: convertCouponToProducts(coupon),
-                                        created: coupon.createdAt || coupon.created || new Date().toISOString(),
-                                        imported: true
-                                    };
-                                    
-                                    currentData.pricingRules.push(newRule);
-                                    processedCount++;
-                                    console.log('✅ 価格ルール追加:', newRule.couponCode);
-                                } else {
-                                    console.log('⚠️ 既存ルールをスキップ:', coupon.code);
-                                }
+                                // デフォルト値を設定
+                                const discountType = coupon.discountType || 'fixed';
+                                const discountValue = coupon.discountValue || 0;
+                                const isActive = coupon.isActive !== false && coupon.active !== false;
+                                
+                                console.log(`📋 クーポン詳細 [${coupon.code}]:`, {
+                                    discountType,
+                                    discountValue,
+                                    isActive,
+                                    applicableServices: coupon.applicableServices
+                                });
+                                
+                                const newRule = {
+                                    id: 'imported_' + coupon.code + '_' + Date.now() + '_' + index,
+                                    couponCode: coupon.code,
+                                    description: coupon.description || `${coupon.code} (${discountType === 'percentage' ? discountValue + '%' : '¥' + discountValue} OFF)`,
+                                    active: isActive,
+                                    products: convertCouponToProducts(coupon),
+                                    created: coupon.createdAt || coupon.created || new Date().toISOString(),
+                                    imported: true,
+                                    importedAt: new Date().toISOString()
+                                };
+                                
+                                console.log(`📊 作成されたルール [${coupon.code}]:`, {
+                                    id: newRule.id,
+                                    couponCode: newRule.couponCode,
+                                    active: newRule.active,
+                                    productCount: newRule.products.length
+                                });
+                                
+                                currentData.pricingRules.push(newRule);
+                                processedCount++;
+                                console.log('✅ 価格ルール追加:', newRule.couponCode);
                                 
                             } catch (couponError) {
                                 errorCount++;
@@ -1429,10 +1446,20 @@
                         console.log('📊 処理エラー:', errorCount + '件');
                         console.log('📊 最終的な価格ルール数:', currentData.pricingRules.length);
                         
+                        saveData();
+                        updateAllTables();
+                        
                         if (processedCount > 0) {
-                            showMessage(`クーポン統合完了: ${processedCount}件成功`, 'success');
+                            // 詳細な成功レポート
+                            const importedRules = currentData.pricingRules.filter(r => r.imported);
+                            const reportMessage = `クーポンインポート完了！
+✅ 正常にインポート: ${processedCount}件
+${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格ルール総数: ${currentData.pricingRules.length}件
+📋 インポートされたクーポン: ${importedRules.map(r => r.couponCode).join(', ')}`;
+                            
+                            showMessage(reportMessage, errorCount > 0 ? 'warning' : 'success');
                         } else {
-                            showMessage('クーポンの統合に失敗しました', 'error');
+                            showMessage('クーポンの統合に失敗しました。コンソールでエラー詳細を確認してください。', 'error');
                         }
                         
                     } else {
@@ -1471,6 +1498,15 @@
                 console.log('📋 適用サービス:', services);
                 console.log('📊 利用可能商品数:', currentData.products.length);
                 
+                // サービスIDからstableIdへのマッピング
+                const serviceToStableIdMapping = {
+                    'shintaku': 'shintaku',
+                    'star_yomi': 'star_yomi', 
+                    'personal_tarot': 'personal_tarot',
+                    'personal_birthday': 'personal_birthday',
+                    'personal_set': 'personal_set'
+                };
+                
                 if (services.includes('all')) {
                     // 全商品に適用
                     console.log('🌐 全商品に適用中...');
@@ -1488,13 +1524,41 @@
                     console.log('🎯 特定サービスに適用中...', services);
                     services.forEach((serviceId, index) => {
                         try {
-                            const product = currentData.products.find(p => p.id === serviceId);
+                            console.log(`🔍 サービスID「${serviceId}」に対応する商品を検索中...`);
+                            
+                            // まずサービスIDからstableIdに変換
+                            const stableId = serviceToStableIdMapping[serviceId] || serviceId;
+                            console.log(`🔄 マッピング結果: ${serviceId} → ${stableId}`);
+                            
+                            // stableIdで商品を検索
+                            let product = currentData.products.find(p => p.stableId === stableId);
+                            
+                            // stableIdで見つからない場合は、idやnameでも検索
+                            if (!product) {
+                                product = currentData.products.find(p => 
+                                    p.id === serviceId || 
+                                    p.id === stableId ||
+                                    p.name === serviceId ||
+                                    p.name === stableId
+                                );
+                            }
+                            
+                            console.log(`🔍 商品検索結果:`, product ? {
+                                id: product.id,
+                                name: product.name,
+                                stableId: product.stableId
+                            } : 'なし');
+                            
                             if (product) {
                                 const productRule = createProductRule(product, coupon);
                                 products.push(productRule);
                                 console.log(`✅ 特定商品ルール作成 [${index}]:`, product.name);
                             } else {
-                                console.log(`⚠️ 商品が見つかりません [${index}]:`, serviceId);
+                                console.log(`⚠️ 商品が見つかりません [${index}]:`, serviceId, '→', stableId);
+                                console.log('📋 利用可能な商品一覧:');
+                                currentData.products.forEach((p, i) => {
+                                    console.log(`  ${i + 1}. ${p.name} (id: ${p.id}, stableId: ${p.stableId})`);
+                                });
                             }
                         } catch (serviceError) {
                             console.error(`❌ 特定サービス処理エラー [${index}]:`, serviceError, serviceId);
