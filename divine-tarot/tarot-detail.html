@@ -389,10 +389,19 @@
             // 確実に価格が更新されてからクーポンシステムを初期化
             setTimeout(function() {
                 // 価格を再取得して更新
-                originalPrice = getCurrentPrice();
+                const newPrice = getCurrentPrice();
+                console.log('🔧 価格再取得結果:', {
+                    '以前のoriginalPrice': originalPrice,
+                    '新しく取得した価格': newPrice
+                });
+                originalPrice = newPrice;
                 console.log('🔧 クーポンシステム初期化開始 - 基準価格:', originalPrice);
                 
                 // 価格表示を更新
+                console.log('💰 クーポン価格表示を更新:', {
+                    '元の価格表示': `${originalPrice.toLocaleString()}円`,
+                    '支払い金額表示': `${originalPrice.toLocaleString()}円`
+                });
                 document.getElementById('shintaku-original-display').textContent = `${originalPrice.toLocaleString()}円`;
                 document.getElementById('shintaku-final-price').textContent = `${originalPrice.toLocaleString()}円`;
                 
@@ -483,6 +492,11 @@
                 const discountAmount = validation.discountAmount || 0;
                 const finalPrice = Math.max(0, originalPrice - discountAmount);
                 
+                console.log('🎯 クーポン適用時の価格計算:');
+                console.log(`  - 元の価格(originalPrice): ¥${originalPrice}`);
+                console.log(`  - 割引額(discountAmount): ¥${discountAmount}`);
+                console.log(`  - 支払い金額(finalPrice): ¥${finalPrice}`);
+                
                 // 割引額表示
                 document.getElementById('shintaku-discount-row').style.display = 'block';
                 document.getElementById('shintaku-discount-amount').textContent = `${Math.round(discountAmount).toLocaleString()}円`;
@@ -567,6 +581,14 @@
             function proceedToShintakuSquarePayment(finalPrice, couponCode) {
                 console.log(`🔗 神託決済開始: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
                 console.log(`📊 使用する基準価格: ¥${originalPrice}, 最終価格: ¥${finalPrice}`);
+                
+                // 価格の詳細確認
+                console.log('💰 決済時の価格情報詳細:', {
+                    'originalPrice': originalPrice,
+                    'finalPrice': finalPrice,
+                    'couponCode': couponCode,
+                    '価格の差': originalPrice - finalPrice
+                });
                 
                 // 決済リンク選択システムを使用
                 if (window.paymentLinkSelector) {
