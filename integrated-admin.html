@@ -931,10 +931,19 @@
                 <h2 class="section-title">🎫 価格ルール設定</h2>
                 <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                     <button class="btn btn-primary" onclick="importExistingCoupons()">🔄 クーポン管理から取得</button>
-                    <button class="btn btn-secondary" onclick="openPricingRuleModal()">➕ 新クーポン追加</button>
                     <button class="btn btn-info" onclick="openCouponManagement()">🎫 クーポン管理画面</button>
                     <button class="btn btn-warning" onclick="debugCouponData()">🔍 デバッグ</button>
+                    <button class="btn btn-danger" onclick="clearAllPricingRules()">🗑️ 全ルール削除</button>
                     <button class="btn btn-info" onclick="window.open('debug-storage.html', '_blank')">🛠️ データ確認画面</button>
+                </div>
+            </div>
+            
+            <div class="info-section" style="background: rgba(33, 150, 243, 0.1); border: 1px solid rgba(33, 150, 243, 0.3); border-radius: 10px; padding: 20px; margin: 20px 0;">
+                <h4 style="color: #2196f3; margin-bottom: 15px;">📋 価格ルール設定について</h4>
+                <div style="color: rgba(255,255,255,0.9); line-height: 1.6;">
+                    <p style="margin-bottom: 10px;">• この画面では<strong>クーポン管理画面で作成されたクーポンのみ</strong>を表示・管理します</p>
+                    <p style="margin-bottom: 10px;">• 新しいクーポンを作成するには「🎫 クーポン管理画面」ボタンから専用画面をご利用ください</p>
+                    <p style="margin-bottom: 0;">• 「🔄 クーポン管理から取得」ボタンで最新のクーポン情報を同期できます</p>
                 </div>
             </div>
             
@@ -6769,6 +6778,7 @@ localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.
                     const integrated = JSON.parse(integratedData);
                     console.log('🎛️ 統合管理データ詳細:', integrated);
                     console.log('📊 価格ルール数:', integrated.pricingRules ? integrated.pricingRules.length : 0);
+                    console.log('📋 価格ルール詳細:', integrated.pricingRules);
                 } catch (error) {
                     console.error('❌ 統合管理データ解析エラー:', error);
                 }
@@ -6777,6 +6787,12 @@ localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.
             // 現在の currentData 確認
             console.log('💾 現在の currentData:', currentData);
             console.log('🎫 価格ルール数:', currentData.pricingRules.length);
+            console.log('📋 価格ルール一覧:', currentData.pricingRules.map(r => ({
+                id: r.id,
+                couponCode: r.couponCode,
+                imported: r.imported,
+                source: r.imported ? 'クーポン管理画面' : '統合管理画面'
+            })));
             
             // DOM要素確認
             const availableCoupons = document.getElementById('available-coupons');
@@ -6788,6 +6804,34 @@ localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.
             
             // ブラウザコンソールに表示
             alert(`デバッグ情報をコンソールに出力しました。\n\nクーポンデータ: ${couponData ? 'あり' : 'なし'}\n価格ルール: ${currentData.pricingRules.length}件\n\n詳細はブラウザのコンソール(F12)をご確認ください。`);
+        }
+
+        // 全価格ルール削除機能
+        function clearAllPricingRules() {
+            if (!confirm('⚠️ 警告：全ての価格ルール設定を削除します。\n\nこの操作は元に戻せません。\n削除後、クーポン管理画面から再度取得してください。\n\n本当に実行しますか？')) {
+                return;
+            }
+            
+            console.log('🗑️ 全価格ルール削除開始...');
+            const beforeCount = currentData.pricingRules.length;
+            
+            // 全ての価格ルールを削除
+            currentData.pricingRules = [];
+            
+            // データ保存
+            saveData();
+            
+            // 画面更新
+            updateAllTables();
+            
+            console.log(`✅ 価格ルール削除完了: ${beforeCount} → 0件`);
+            
+            // 履歴記録
+            addHistoryEntry('全価格ルール削除', 
+                `全ての価格ルール(${beforeCount}件)を削除しました。`, 
+                'danger');
+            
+            showMessage(`全ての価格ルール(${beforeCount}件)を削除しました。`, 'success');
         }
 
         // テスト関数
