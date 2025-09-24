@@ -589,13 +589,30 @@
     <script>
         // クーポンシステムの初期化
         let couponUI;
-        let originalPrice = 1280; // デフォルト価格（admin-integration.jsが管理）
+        let originalPrice = 1280; // デフォルト価格
         
-        // 統合管理画面から現在の販売価格を取得（無効化 - admin-integration.jsが管理）
+        // 統合管理画面から現在の販売価格を取得
         function getCurrentPrice() {
-            console.log('🔧 getCurrentPrice は無効化されました - admin-integration.jsが価格を管理します');
-            // この関数は無効化されました - admin-integration.jsが価格表示を管理します
-            return 1280; // デフォルト価格（使用されない）
+            // admin-integration.jsから販売価格を取得
+            const adminData = localStorage.getItem('adminData');
+            if (adminData) {
+                try {
+                    const data = JSON.parse(adminData);
+                    const starYomiProduct = data.products.find(p => 
+                        p.stableId === 'star_yomi' || 
+                        p.productName === '星詠みシステム' ||
+                        p.name === '星詠みシステム'
+                    );
+                    if (starYomiProduct && starYomiProduct.visible) {
+                        const salePrice = starYomiProduct.salePrice || starYomiProduct.regularPrice;
+                        console.log('🎯 星詠みシステム販売価格を取得:', salePrice);
+                        return salePrice;
+                    }
+                } catch (error) {
+                    console.error('❌ 価格取得エラー:', error);
+                }
+            }
+            return 1280; // フォールバック価格
         }
         
         document.addEventListener('DOMContentLoaded', function() {
@@ -605,9 +622,18 @@
             
             // 確実に価格が更新されてからクーポンシステムを初期化
             setTimeout(function() {
+                // 価格を再取得して更新
+                originalPrice = getCurrentPrice();
                 console.log('🔧 クーポンシステム初期化開始 - 基準価格:', originalPrice);
+                
+                // 価格表示を更新
+                const originalDisplay = document.getElementById('star-yomi-original-display');
+                const finalPriceDisplay = document.getElementById('star-yomi-final-price');
+                if (originalDisplay) originalDisplay.textContent = `${originalPrice.toLocaleString()}円`;
+                if (finalPriceDisplay) finalPriceDisplay.textContent = `${originalPrice.toLocaleString()}円`;
+                
                 initializeStarCouponSystem();
-            }, 100);
+            }, 1000); // 1秒待機してadmin-integration.jsの処理を待つ
             
             // 確実にクーポン適用済み表示を隠す（強制実行）
             setTimeout(function() {

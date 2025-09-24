@@ -1297,14 +1297,76 @@
             bundle: 8000
         };
         
-        // 統合管理画面から現在の販売価格を取得（無効化 - admin-integration.jsが管理）
+        // 統合管理画面から現在の販売価格を取得
         function getCurrentPrices() {
-            console.log('🔧 getCurrentPrices は無効化されました - admin-integration.jsが価格を管理します');
-            // この関数は無効化されました - admin-integration.jsが価格表示を管理します
-            return { tarot: 5000, star: 5000, bundle: 8000 }; // デフォルト価格（使用されない）
-            // 残りの処理は無効化されました - admin-integration.jsが価格表示を管理します
+            const adminData = localStorage.getItem('adminData');
+            if (adminData) {
+                try {
+                    const data = JSON.parse(adminData);
+                    const prices = { tarot: 5000, star: 5000, bundle: 8000 }; // デフォルト価格
+                    
+                    // タロット占い
+                    const tarotProduct = data.products.find(p => 
+                        p.stableId === 'personal_tarot' || 
+                        p.productName === '個人鑑定タロット占い' ||
+                        p.name === '個人鑑定タロット占い'
+                    );
+                    if (tarotProduct && tarotProduct.visible) {
+                        prices.tarot = tarotProduct.salePrice || tarotProduct.regularPrice;
+                        console.log('🎯 タロット占い販売価格を取得:', prices.tarot);
+                    }
+                    
+                    // 誕生日占い
+                    const birthdayProduct = data.products.find(p => 
+                        p.stableId === 'personal_birthday' || 
+                        p.productName === '個人鑑定誕生日占い' ||
+                        p.name === '個人鑑定誕生日占い'
+                    );
+                    if (birthdayProduct && birthdayProduct.visible) {
+                        prices.star = birthdayProduct.salePrice || birthdayProduct.regularPrice;
+                        console.log('🎯 誕生日占い販売価格を取得:', prices.star);
+                    }
+                    
+                    // セット
+                    const bundleProduct = data.products.find(p => 
+                        p.stableId === 'personal_set' || 
+                        p.productName === '個人鑑定セット' ||
+                        p.name === '個人鑑定セット'
+                    );
+                    if (bundleProduct && bundleProduct.visible) {
+                        prices.bundle = bundleProduct.salePrice || bundleProduct.regularPrice;
+                        console.log('🎯 セット販売価格を取得:', prices.bundle);
+                    }
+                    
+                    return prices;
+                } catch (error) {
+                    console.error('❌ 価格取得エラー:', error);
+                }
+            }
+            return { tarot: 5000, star: 5000, bundle: 8000 }; // フォールバック価格
         }
-
+        
+        // 各サービスの価格表示を更新
+        function updateServicePriceDisplays(prices) {
+            // タロット占いの価格表示を更新
+            const tarotOriginal = document.getElementById('tarot-original-display');
+            const tarotFinal = document.getElementById('tarot-final-price');
+            if (tarotOriginal) tarotOriginal.textContent = `${prices.tarot.toLocaleString()}円`;
+            if (tarotFinal) tarotFinal.textContent = `${prices.tarot.toLocaleString()}円`;
+            
+            // 誕生日占いの価格表示を更新
+            const starOriginal = document.getElementById('star-original-display');
+            const starFinal = document.getElementById('star-final-price');
+            if (starOriginal) starOriginal.textContent = `${prices.star.toLocaleString()}円`;
+            if (starFinal) starFinal.textContent = `${prices.star.toLocaleString()}円`;
+            
+            // セットの価格表示を更新
+            const bundleOriginal = document.getElementById('bundle-original-display');
+            const bundleFinal = document.getElementById('bundle-final-price');
+            if (bundleOriginal) bundleOriginal.textContent = `${prices.bundle.toLocaleString()}円`;
+            if (bundleFinal) bundleFinal.textContent = `${prices.bundle.toLocaleString()}円`;
+        }
+        
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Personal Reading page loaded:', new Date().toISOString());
             
@@ -1315,6 +1377,16 @@
             console.log('🎯 originalPricesを更新:', originalPrices);
             console.log('🔄 クーポン計算の基準価格として設定完了');
             console.log('個人鑑定現在価格:', originalPrices);
+            
+            // 価格表示を更新
+            setTimeout(function() {
+                const updatedPrices = getCurrentPrices();
+                originalPrices = updatedPrices;
+                console.log('🔄 価格を再取得して更新:', updatedPrices);
+                
+                // 各サービスの価格表示を更新
+                updateServicePriceDisplays(updatedPrices);
+            }, 1000); // 1秒待機してadmin-integration.jsの処理を待つ
             
             // admin-integration.jsの初期化完了を待ってから個人鑑定システムを初期化
             console.log('🔧 個人鑑定ページ初期化開始');
