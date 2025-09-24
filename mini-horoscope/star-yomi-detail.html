@@ -598,19 +598,41 @@
             if (adminData) {
                 try {
                     const data = JSON.parse(adminData);
+                    console.log('🔍 星詠みシステム - 利用可能な商品一覧:');
+                    data.products.forEach((p, index) => {
+                        console.log(`  ${index + 1}. ${p.name || p.productName} (stableId: ${p.stableId}, visible: ${p.visible}, salePrice: ${p.salePrice})`);
+                    });
+                    
                     const starYomiProduct = data.products.find(p => 
                         p.stableId === 'star_yomi' || 
-                        p.productName === '星詠みシステム' ||
-                        p.name === '星詠みシステム'
+                        p.productName === '星詠みシステム星座占い' ||
+                        p.name === '星詠みシステム星座占い'
                     );
-                    if (starYomiProduct && starYomiProduct.visible) {
-                        const salePrice = starYomiProduct.salePrice || starYomiProduct.regularPrice;
-                        console.log('🎯 星詠みシステム販売価格を取得:', salePrice);
-                        return salePrice;
+                    
+                    if (starYomiProduct) {
+                        console.log('🎯 星詠みシステム商品を発見:', {
+                            name: starYomiProduct.name || starYomiProduct.productName,
+                            stableId: starYomiProduct.stableId,
+                            visible: starYomiProduct.visible,
+                            regularPrice: starYomiProduct.regularPrice,
+                            salePrice: starYomiProduct.salePrice
+                        });
+                        
+                        if (starYomiProduct.visible) {
+                            const salePrice = starYomiProduct.salePrice || starYomiProduct.regularPrice;
+                            console.log('✅ 星詠みシステム販売価格を取得:', salePrice);
+                            return salePrice;
+                        } else {
+                            console.log('⚠️ 星詠みシステム商品は非表示設定です');
+                        }
+                    } else {
+                        console.log('❌ 星詠みシステム商品が見つかりません');
                     }
                 } catch (error) {
                     console.error('❌ 価格取得エラー:', error);
                 }
+            } else {
+                console.log('❌ adminDataが見つかりません');
             }
             return 1280; // フォールバック価格
         }
