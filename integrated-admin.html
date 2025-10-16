@@ -947,6 +947,16 @@
                 </div>
             </div>
             
+            <div class="info-section" style="background: rgba(76, 175, 80, 0.1); border: 1px solid rgba(76, 175, 80, 0.3); border-radius: 10px; padding: 20px; margin: 20px 0;">
+                <h4 style="color: #4caf50; margin-bottom: 15px;">🔧 システム改善のお知らせ</h4>
+                <div style="color: rgba(255,255,255,0.9); line-height: 1.6;">
+                    <p style="margin-bottom: 10px;">• <strong>表示/非表示</strong>と<strong>決済リンクの有効/無効</strong>が独立しました</p>
+                    <p style="margin-bottom: 10px;">• 商品を非表示にしても決済リンクは保持され、クーポン適用時に利用可能です</p>
+                    <p style="margin-bottom: 10px;">• 同じ商品名でも異なる価格の商品は独立して管理されます</p>
+                    <p style="margin-bottom: 0;">• 決済リンクの有効/無効は決済リンク管理画面で個別に制御できます</p>
+                </div>
+            </div>
+            
             <div class="coupon-import-section" style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 10px; padding: 20px; margin: 20px 0;">
                 <h4 style="color: #ffc107; margin-bottom: 15px;">🎯 既存クーポンから選択</h4>
                 <div class="form-grid">
@@ -2582,7 +2592,7 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
                         stableId: product.stableId,
                         price: product.salePrice,
                         squareLink: '', // 空のSquareリンク
-                        active: product.visible, // 表示商品のみアクティブ
+                        active: true, // 決済リンクは常に有効で作成（表示/非表示とは独立）
                         created: new Date().toISOString(),
                         updated: new Date().toISOString()
                     };
@@ -2965,7 +2975,7 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             }
         }
         
-        // 決済リンク選択システム - 安定IDベースの最適な決済リンクを選択（正確な価格マッチング）
+        // 決済リンク選択システム - 統合ID+価格ベースの最適な決済リンク選択（安全で確実）
         function selectOptimalPaymentLink(productName, finalPrice, couponCode = null) {
             console.log(`🔗 決済リンク選択開始: ${productName}, 最終金額: ¥${finalPrice}, クーポン: ${couponCode || 'なし'}`);
             
@@ -2974,18 +2984,73 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
                 return null;
             }
             
-            // 1. 商品名から安定IDを取得
+            // 1. 商品名から商品情報を取得（表示/非表示に関係なく検索）
             const product = currentData.products.find(p => p.name === productName);
             if (!product) {
                 console.error(`❌ 商品「${productName}」が見つかりません`);
+                console.log('📋 利用可能な商品:', currentData.products.map(p => `${p.name} (visible: ${p.visible})`));
                 return null;
             }
             
-            console.log(`🔍 商品「${productName}」の安定ID: ${product.stableId}`);
+            console.log(`🔍 商品情報:`, {
+                name: product.name,
+                productId: product.productId,
+                stableId: product.stableId,
+                salePrice: product.salePrice,
+                visible: product.visible
+            });
             
-            // 2. 安定IDで決済リンクを絞り込み（有効なもののみ）
+            // 2. 統合ID+価格での厳密マッチングを最優先で実行
+            console.log(`🎯 統合ID+価格での厳密検索: productId=${product.productId}, finalPrice=¥${finalPrice}`);
+            
+            // 2-1. 統合IDが最終価格と一致する商品を検索
+            const targetProductId = `${product.stableId}_${finalPrice}`;
+            console.log(`🔍 目標統合ID: ${targetProductId}`);
+            
+            // 該当する商品が存在するかチェック
+            const targetProduct = currentData.products.find(p => p.productId === targetProductId);
+            if (targetProduct) {
+                console.log(`✅ 目標商品発見:`, {
+                    name: targetProduct.name,
+                    productId: targetProduct.productId,
+                    salePrice: targetProduct.salePrice,
+                    visible: targetProduct.visible
+                });
+                
+                // その商品に対応する決済リンクを検索
+                const exactLink = currentData.paymentLinks.find(link => {
+                    const isActive = link.active === true;
+                    const matchesProductId = link.productId === targetProductId;
+                    const matchesPrice = link.price === finalPrice;
+                    const hasValidUrl = link.url && link.url !== 'https://square.link/u/PLACEHOLDER_LINK';
+                    
+                    console.log(`🔍 リンク ${link.id}:`, {
+                        active: isActive,
+                        productIdMatch: matchesProductId,
+                        priceMatch: matchesPrice,
+                        validUrl: hasValidUrl
+                    });
+                    
+                    return isActive && matchesProductId && matchesPrice && hasValidUrl;
+                });
+                
+                if (exactLink) {
+                    console.log(`🎯 統合ID+価格完全一致リンク選択: ${exactLink.id} (¥${exactLink.price})`);
+                    addHistoryEntry('決済リンク選択', 
+                        `統合ID+価格完全一致: ${targetProductId} → ${exactLink.id} (¥${finalPrice}, クーポン: ${couponCode || 'なし'})`
+                    );
+                    return exactLink;
+                }
+            }
+            
+            // 3. フォールバック: 安定ID+価格での検索
+            console.log(`🔄 フォールバック検索: stableId=${product.stableId} + price=¥${finalPrice}`);
             const relatedLinks = currentData.paymentLinks.filter(link => {
-                return link.stableId === product.stableId && link.active;
+                const isActive = link.active === true;
+                const hasStableId = link.stableId === product.stableId;
+                const hasValidUrl = link.url && link.url !== 'https://square.link/u/PLACEHOLDER_LINK';
+                
+                return isActive && hasStableId && hasValidUrl;
             });
             
             console.log(`🔍 安定ID「${product.stableId}」の有効な決済リンク: ${relatedLinks.length}件`);

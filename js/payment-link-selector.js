@@ -193,20 +193,12 @@ class PaymentLinkSelector {
             return null;
         }
         
-        // 1. 商品名から安定IDを取得（複数の方法で検索）
+        // 1. 商品名から商品情報を取得（複数の方法で検索）
         let product = this.currentData.products.find(p => p.name === productName);
         
         // 商品名が完全一致しない場合、部分一致で検索
         if (!product) {
             product = this.currentData.products.find(p => 
-                p.name.includes(productName) || productName.includes(p.name)
-            );
-        }
-        
-        // まだ見つからない場合、表示中の商品（visible: true）のみで検索
-        if (!product) {
-            const visibleProducts = this.currentData.products.filter(p => p.visible === true);
-            product = visibleProducts.find(p => 
                 p.name.includes(productName) || productName.includes(p.name)
             );
         }
@@ -217,15 +209,60 @@ class PaymentLinkSelector {
             return null;
         }
         
-        console.log(`🔍 商品「${productName}」の安定ID: ${product.stableId}`);
+        console.log(`🔍 商品情報:`, {
+            name: product.name,
+            productId: product.productId,
+            stableId: product.stableId,
+            salePrice: product.salePrice,
+            visible: product.visible
+        });
         
-        // 2. 安定IDで決済リンクを絞り込み（有効なリンクのみ）
+        // 2. 統合ID+価格での厳密マッチングを最優先で実行
+        console.log(`🎯 統合ID+価格での厳密検索: stableId=${product.stableId}, finalPrice=¥${finalPrice}`);
+        
+        // 2-1. 統合IDが最終価格と一致する商品を検索
+        const targetProductId = `${product.stableId}_${finalPrice}`;
+        console.log(`🔍 目標統合ID: ${targetProductId}`);
+        
+        // 該当する商品が存在するかチェック
+        const targetProduct = this.currentData.products.find(p => p.productId === targetProductId);
+        if (targetProduct) {
+            console.log(`✅ 目標商品発見:`, {
+                name: targetProduct.name,
+                productId: targetProduct.productId,
+                salePrice: targetProduct.salePrice,
+                visible: targetProduct.visible
+            });
+            
+            // その商品に対応する決済リンクを検索
+            const exactLink = this.currentData.paymentLinks.find(link => {
+                const isActive = link.active === true;
+                const matchesProductId = link.productId === targetProductId;
+                const matchesPrice = link.price === finalPrice;
+                const hasValidUrl = link.url && link.url !== 'https://square.link/u/PLACEHOLDER_LINK';
+                
+                console.log(`🔍 リンク ${link.id}:`, {
+                    active: isActive,
+                    productIdMatch: matchesProductId,
+                    priceMatch: matchesPrice,
+                    validUrl: hasValidUrl
+                });
+                
+                return isActive && matchesProductId && matchesPrice && hasValidUrl;
+            });
+            
+            if (exactLink) {
+                console.log(`🎯 統合ID+価格完全一致リンク選択: ${exactLink.id} (¥${exactLink.price})`);
+                return exactLink;
+            }
+        }
+        
+        // 3. フォールバック: 安定ID+価格での検索
+        console.log(`🔄 フォールバック検索: stableId=${product.stableId} + price=¥${finalPrice}`);
         const relatedLinks = this.currentData.paymentLinks.filter(link => {
             const isActive = link.active === true;
             const hasStableId = link.stableId === product.stableId;
             const hasValidUrl = link.url && link.url !== 'https://square.link/u/PLACEHOLDER_LINK';
-            
-            console.log(`🔍 リンク ${link.id}: active=${isActive}, stableId=${hasStableId}, validUrl=${hasValidUrl}`);
             
             return isActive && hasStableId && hasValidUrl;
         });

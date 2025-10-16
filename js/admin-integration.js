@@ -478,11 +478,11 @@ class AdminIntegration {
 
         this.log('🔗 決済リンクを更新中...');
 
-        // 表示中の商品のみを対象に決済リンクを更新
-        const visibleProducts = adminData.products.filter(p => p.visible === true);
-        this.log(`👁️ 表示中の商品: ${visibleProducts.length}件`);
+        // 全ての商品を対象に決済リンクを更新（表示/非表示に関係なく）
+        const allProducts = adminData.products;
+        this.log(`📦 全商品: ${allProducts.length}件（表示/非表示問わず）`);
 
-        visibleProducts.forEach(product => {
+        allProducts.forEach(product => {
             const serviceKey = this.getServiceKeyFromProduct(product);
             if (!serviceKey) return;
 
