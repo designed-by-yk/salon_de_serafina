@@ -904,7 +904,10 @@
         <div id="payment-links-tab" class="tab-content">
             <div class="section-header">
                 <h2 class="section-title">💳 決済リンク管理</h2>
-                <button class="btn btn-primary" onclick="openPaymentLinkModal()">➕ 新リンク追加</button>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="openPaymentLinkModal()">➕ 新リンク追加</button>
+                    <button class="btn btn-success" onclick="syncProductsAndPaymentLinks()">🔄 商品管理と同期</button>
+                </div>
             </div>
             
             <table class="data-table" id="payment-links-table">
@@ -2045,86 +2048,101 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             }
         }
         
-        // 決済リンクのIDを正しく再設定し、重複を解消
+        // 決済リンクのIDを正しく再設定し、重複を解消（既存リンクを保護）
         function fixPaymentLinkIds() {
-            console.log('🔧 決済リンクIDの完全修正開始');
+            console.log('🔧 決済リンクIDの安全な修正開始');
             let updatedCount = 0;
             
-            // 既存の決済リンクを一旦クリア
+            // 既存の決済リンクを保護（削除しない）
             const originalLinks = [...currentData.paymentLinks];
-            currentData.paymentLinks = [];
+            console.log(`🔒 既存決済リンク ${originalLinks.length}件 を保護中...`);
             
-            // 商品ごとに正しい決済リンクを作成
+            // 新しい決済リンクリストを構築（既存を保持）
+            const newPaymentLinks = [];
+            
+            // 既存の有効な決済リンクを保持
+            originalLinks.forEach(link => {
+                if (link.url && link.url !== 'https://square.link/u/PLACEHOLDER_LINK' && link.url.trim() !== '') {
+                    console.log(`🔒 有効な決済リンクを保持: ${link.id} (${link.productName}, ¥${link.price})`);
+                    newPaymentLinks.push(link);
+                }
+            });
+            
+            // 商品ごとに不足している決済リンクのみを作成
             currentData.products.forEach(product => {
                 // 通常価格の決済リンクを作成（通常=販売のときのみ）
                 if (product.regularPrice > 0 && product.salePrice === product.regularPrice) {
-                    // ユニークなリンクIDを生成（productIdを含める）
-                    const regularLinkId = `link_${product.productId.replace(/_\d+$/, '')}_001`;
-                    const regularLink = {
-                        id: regularLinkId,
-                        productId: product.productId,
-                        productRefId: product.id,
-                        productName: product.name,
-                        stableId: product.stableId,
-                        price: product.regularPrice,
-                        priceType: 'regular',
-                        description: product.displayText || '',
-                        url: '', // 空のURL
-                        active: product.visible,
-                        created: new Date().toISOString(),
-                        updated: new Date().toISOString()
-                    };
-                    
-                    // 既存のリンクからURLを引き継ぐ
-                    const existingRegularLink = originalLinks.find(link => 
+                    // 既存の決済リンクをチェック
+                    const existingRegularLink = newPaymentLinks.find(link => 
                         link.productId === product.productId && 
                         link.price === product.regularPrice &&
                         link.priceType === 'regular'
                     );
-                    if (existingRegularLink && existingRegularLink.url) {
-                        regularLink.url = existingRegularLink.url;
-                    }
                     
-                    currentData.paymentLinks.push(regularLink);
-                    console.log(`✅ 通常価格決済リンク「${regularLinkId}」を作成: ${product.name} ¥${product.regularPrice}`);
+                    if (!existingRegularLink) {
+                        // ユニークなリンクIDを生成（productIdを含める）
+                        const regularLinkId = `link_${product.productId.replace(/_\d+$/, '')}_001`;
+                        const regularLink = {
+                            id: regularLinkId,
+                            productId: product.productId,
+                            productRefId: product.id,
+                            productName: product.name,
+                            stableId: product.stableId,
+                            price: product.regularPrice,
+                            priceType: 'regular',
+                            description: product.displayText || '',
+                            url: 'https://square.link/u/PLACEHOLDER_LINK', // プレースホルダー
+                            active: true, // 決済リンクは有効状態で作成
+                            created: new Date().toISOString(),
+                            updated: new Date().toISOString()
+                        };
+                        
+                        newPaymentLinks.push(regularLink);
+                        console.log(`✅ 通常価格決済リンク「${regularLinkId}」を新規作成: ${product.name} ¥${product.regularPrice}`);
+                    } else {
+                        console.log(`🔒 通常価格決済リンク保持: ${existingRegularLink.id} (${product.name}, ¥${product.regularPrice})`);
+                    }
                 }
                 
                 // 販売価格が通常価格と異なる場合、販売価格の決済リンクを作成
                 if (product.salePrice > 0 && product.salePrice !== product.regularPrice) {
-                    // ユニークなリンクIDを生成（productIdを含める）
-                    const saleLinkId = `link_${product.productId.replace(/_\d+$/, '')}_002`;
-                    const saleLink = {
-                        id: saleLinkId,
-                        productId: product.productId,
-                        productRefId: product.id,
-                        productName: product.name,
-                        stableId: product.stableId,
-                        price: product.salePrice,
-                        priceType: 'sale',
-                        description: product.displayText || '',
-                        url: '', // 空のURL
-                        active: product.visible,
-                        created: new Date().toISOString(),
-                        updated: new Date().toISOString()
-                    };
-                    
-                    // 既存のリンクからURLを引き継ぐ
-                    const existingSaleLink = originalLinks.find(link => 
+                    // 既存の決済リンクをチェック
+                    const existingSaleLink = newPaymentLinks.find(link => 
                         link.productId === product.productId && 
                         link.price === product.salePrice &&
                         link.priceType === 'sale'
                     );
-                    if (existingSaleLink && existingSaleLink.url) {
-                        saleLink.url = existingSaleLink.url;
-                    }
                     
-                    currentData.paymentLinks.push(saleLink);
-                    console.log(`✅ 販売価格決済リンク「${saleLinkId}」を作成: ${product.name} ¥${product.salePrice}`);
+                    if (!existingSaleLink) {
+                        // ユニークなリンクIDを生成（productIdを含める）
+                        const saleLinkId = `link_${product.productId.replace(/_\d+$/, '')}_002`;
+                        const saleLink = {
+                            id: saleLinkId,
+                            productId: product.productId,
+                            productRefId: product.id,
+                            productName: product.name,
+                            stableId: product.stableId,
+                            price: product.salePrice,
+                            priceType: 'sale',
+                            description: product.displayText || '',
+                            url: 'https://square.link/u/PLACEHOLDER_LINK', // プレースホルダー
+                            active: true, // 決済リンクは有効状態で作成
+                            created: new Date().toISOString(),
+                            updated: new Date().toISOString()
+                        };
+                        
+                        newPaymentLinks.push(saleLink);
+                        console.log(`✅ 販売価格決済リンク「${saleLinkId}」を新規作成: ${product.name} ¥${product.salePrice}`);
+                    } else {
+                        console.log(`🔒 販売価格決済リンク保持: ${existingSaleLink.id} (${product.name}, ¥${product.salePrice})`);
+                    }
                 }
             });
             
+            // 新しい決済リンクリストを適用
+            currentData.paymentLinks = newPaymentLinks;
             updatedCount = currentData.paymentLinks.length;
-            console.log(`🔧 ${updatedCount}件の決済リンクを正しく再設定しました`);
+            console.log(`🔧 決済リンク安全修正完了: 保護+新規作成で合計${updatedCount}件`);
             
             // データを保存
             saveData();
@@ -2591,7 +2609,9 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
                         productName: product.name,
                         stableId: product.stableId,
                         price: product.salePrice,
-                        squareLink: '', // 空のSquareリンク
+                        priceType: 'sale',
+                        description: product.displayText || '',
+                        url: 'https://square.link/u/PLACEHOLDER_LINK', // プレースホルダーURL
                         active: true, // 決済リンクは常に有効で作成（表示/非表示とは独立）
                         created: new Date().toISOString(),
                         updated: new Date().toISOString()
@@ -5281,35 +5301,45 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             if (!productId && newProduct) {
                 console.log('🔗 新商品用の決済リンクを自動生成中...');
                 
-                // 既存の決済リンクとの重複を避けるため、ユニークなIDを生成
-                const linkId = generateFixedPriorityLinkId(newProduct.name, newProduct.salePrice);
-                
-                const newPaymentLink = {
-                    id: linkId,
-                    productId: newProduct.productId, // 統合IDを使用
-                    productRefId: newProduct.stableId, // 安定した商品参照IDを追加
-                    stableId: newProduct.stableId, // 安定IDを追加
-                    productName: newProduct.name,
-                    priceType: 'sale',
-                    price: newProduct.salePrice,
-                    description: newProduct.displayText || '',
-                    url: `https://square.link/u/PLACEHOLDER_LINK`,
-                    active: false,  // 新商品は決済リンク未設定状態
-                    created: new Date().toISOString()
-                };
-                
-                console.log('🔗 生成された決済リンク:', newPaymentLink);
-                
                 // 決済リンク配列が存在しない場合は初期化
                 if (!currentData.paymentLinks) {
                     currentData.paymentLinks = [];
                     console.log('🔗 決済リンク配列を初期化しました');
                 }
                 
-                currentData.paymentLinks.push(newPaymentLink);
+                // 既存の決済リンクとの重複を避けるため、ユニークなIDを生成
+                const linkId = generateFixedPriorityLinkId(newProduct.name, newProduct.salePrice);
                 
-                console.log('🔗 決済リンク追加完了。現在の決済リンク数:', currentData.paymentLinks.length);
-                console.log('🔗 追加された決済リンク:', newPaymentLink);
+                // 重複チェック
+                const existingLink = currentData.paymentLinks.find(link => 
+                    link.productId === newProduct.productId || 
+                    (link.stableId === newProduct.stableId && link.price === newProduct.salePrice)
+                );
+                
+                if (!existingLink) {
+                    const newPaymentLink = {
+                        id: linkId,
+                        productId: newProduct.productId, // 統合IDを使用
+                        productRefId: newProduct.id, // 正しい商品参照IDを使用
+                        stableId: newProduct.stableId, // 安定IDを追加
+                        productName: newProduct.name,
+                        priceType: 'sale',
+                        price: newProduct.salePrice,
+                        description: newProduct.displayText || '',
+                        url: 'https://square.link/u/PLACEHOLDER_LINK', // プレースホルダーURL
+                        active: true,  // 新商品の決済リンクも有効状態で作成（URLは後で設定）
+                        created: new Date().toISOString(),
+                        updated: new Date().toISOString()
+                    };
+                    
+                    console.log('🔗 生成された決済リンク:', newPaymentLink);
+                    currentData.paymentLinks.push(newPaymentLink);
+                    
+                    console.log('🔗 決済リンク追加完了。現在の決済リンク数:', currentData.paymentLinks.length);
+                    console.log('🔗 追加された決済リンク:', newPaymentLink);
+                } else {
+                    console.log('🔗 決済リンク既存のためスキップ:', existingLink.id);
+                }
                 
                 // 決済リンクの整合性をチェック
                 checkPaymentLinkConsistency();
@@ -5673,6 +5703,104 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             } else {
                 console.log('✅ 決済リンク整合性チェック完了 - 問題なし');
             }
+        }
+        
+        // 商品管理と決済リンク管理の完全同期
+        function syncProductsAndPaymentLinks() {
+            console.log('🔄 商品管理と決済リンク管理の完全同期開始');
+            
+            if (!currentData.products) {
+                console.error('❌ 商品データが不足しています');
+                return;
+            }
+            
+            if (!currentData.paymentLinks) {
+                currentData.paymentLinks = [];
+                console.log('🔗 決済リンク配列を初期化しました');
+            }
+            
+            let syncedCount = 0;
+            let createdCount = 0;
+            let updatedCount = 0;
+            
+            // 1. 商品に対応する決済リンクを確認・作成
+            currentData.products.forEach(product => {
+                console.log(`🔍 商品「${product.name}」の決済リンクを確認中...`);
+                
+                // 対応する決済リンクを検索
+                let paymentLink = currentData.paymentLinks.find(link => 
+                    link.productId === product.productId ||
+                    (link.stableId === product.stableId && link.price === product.salePrice)
+                );
+                
+                if (!paymentLink) {
+                    // 決済リンクが存在しない場合、新規作成
+                    console.log(`🔗 商品「${product.name}」の決済リンクを新規作成中...`);
+                    
+                    const linkId = generateFixedPriorityLinkId(product.name, product.salePrice);
+                    paymentLink = {
+                        id: linkId,
+                        productId: product.productId,
+                        productRefId: product.id,
+                        productName: product.name,
+                        stableId: product.stableId,
+                        price: product.salePrice,
+                        priceType: 'sale',
+                        description: product.displayText || '',
+                        url: 'https://square.link/u/PLACEHOLDER_LINK',
+                        active: true,
+                        created: new Date().toISOString(),
+                        updated: new Date().toISOString()
+                    };
+                    
+                    currentData.paymentLinks.push(paymentLink);
+                    createdCount++;
+                    console.log(`✅ 決済リンク「${linkId}」を新規作成: ${product.name} ¥${product.salePrice}`);
+                } else {
+                    // 既存の決済リンクの情報を商品データと同期
+                    let needsUpdate = false;
+                    
+                    if (paymentLink.productName !== product.name) {
+                        paymentLink.productName = product.name;
+                        needsUpdate = true;
+                    }
+                    
+                    if (paymentLink.price !== product.salePrice) {
+                        paymentLink.price = product.salePrice;
+                        needsUpdate = true;
+                    }
+                    
+                    if (paymentLink.description !== (product.displayText || '')) {
+                        paymentLink.description = product.displayText || '';
+                        needsUpdate = true;
+                    }
+                    
+                    if (needsUpdate) {
+                        paymentLink.updated = new Date().toISOString();
+                        updatedCount++;
+                        console.log(`🔄 決済リンク「${paymentLink.id}」を更新: ${product.name}`);
+                    }
+                }
+                
+                syncedCount++;
+            });
+            
+            console.log(`🔄 同期完了: ${syncedCount}件処理 (新規作成: ${createdCount}件, 更新: ${updatedCount}件)`);
+            
+            // データを保存
+            saveData();
+            
+            // テーブルを更新
+            updatePaymentLinksTable();
+            
+            // 完了メッセージ
+            showMessage(`商品管理と決済リンク管理を同期しました\n処理: ${syncedCount}件\n新規作成: ${createdCount}件\n更新: ${updatedCount}件`, 'success');
+            
+            return {
+                syncedCount,
+                createdCount,
+                updatedCount
+            };
         }
 
         // 決済リンク保存
