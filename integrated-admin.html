@@ -827,30 +827,18 @@
             <button class="tab-button active" onclick="switchTab('products')">📦 商品管理</button>
             <button class="tab-button" onclick="switchTab('payment-links')">💳 決済リンク管理</button>
             <button class="tab-button" onclick="switchTab('pricing-rules')">🎫 価格ルール設定</button>
-            <button class="tab-button" onclick="switchTab('bulk-operations')">⚡ 一括更新</button>
             <button class="tab-button" onclick="switchTab('history')">📊 変更履歴</button>
-            <button class="tab-button" onclick="switchTab('preview')">👀 プレビュー</button>
         </div>
 
         <!-- 商品管理タブ -->
         <div id="products-tab" class="tab-content active">
             <div class="section-header">
                 <h2 class="section-title">📦 商品管理</h2>
-                <button class="btn btn-primary" onclick="console.log('🔧 新商品追加ボタンがクリックされました'); openProductModal();">➕ 新商品追加</button>
-                        <button class="btn btn-success" onclick="manualSaveData();">💾 データ更新</button>
-        <button class="btn btn-info" onclick="checkDataStatus();">🔍 データ状況確認</button>
-        <button class="btn btn-warning" onclick="debugProductPaymentLinkSync();">🔗 商品・決済リンク同期確認</button>
-        <button class="btn btn-danger" onclick="forceSyncPaymentLinks();">🔄 強制同期実行</button>
-        <button class="btn btn-outline-primary" onclick="fixPaymentLinkIds();">🔧 決済リンクID完全修正</button>
-        <button class="btn btn-outline-info" onclick="checkAndFixPaymentLinkDuplicates();">🔍 重複チェック・修正</button>
-        <button class="btn btn-outline-danger" onclick="forceFixStableIds();">🔧 安定ID強制修正</button>
-                        <button class="btn btn-outline-secondary" onclick="investigateProductPaymentLinkMatching();">🔍 詳細マッチング調査</button>
-                <button class="btn btn-outline-warning" onclick="resetPaymentLinkData();">🔄 決済リンクデータリセット</button>
-                <button class="btn btn-outline-danger" onclick="clearAllPaymentLinks();">🗑️ 全決済リンク削除</button>
-                <button class="btn btn-outline-info" onclick="clearDeletedPaymentLinksInfo();">🧹 削除履歴クリア</button>
-
-        <button class="btn btn-outline-success" onclick="testPaymentLinkSelection();">🧪 決済リンク選択テスト</button>
-
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="console.log('🔧 新商品追加ボタンがクリックされました'); openProductModal();">➕ 新商品追加</button>
+                    <button class="btn btn-success" onclick="manualSaveData();">💾 データ更新</button>
+                    <button class="btn btn-warning" onclick="debugProductPaymentLinkSync();">🔗 同期状況確認</button>
+                </div>
             </div>
             
             <!-- リアルタイム連携ステータス -->
@@ -986,76 +974,6 @@
             </div>
         </div>
 
-        <!-- 一括更新タブ -->
-        <div id="bulk-operations-tab" class="tab-content">
-            <div class="section-header">
-                <h2 class="section-title">⚡ 一括更新機能</h2>
-            </div>
-            
-            <div class="bulk-actions">
-                <h4>🎫 クーポン一括管理</h4>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label">対象クーポン</label>
-                        <select class="form-select" id="bulk-coupon-select" onchange="updateBulkCouponInfo()">
-                            <option value="">クーポンを選択...</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">実行日時</label>
-                        <input type="datetime-local" class="form-input" id="scheduled-datetime">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">操作タイプ</label>
-                        <select class="form-select" id="bulk-update-type" onchange="toggleProductSelection()">
-                            <option value="enable-coupon">クーポンを有効化</option>
-                            <option value="disable-coupon">クーポンを無効化</option>
-                            <option value="enable-selected-products">選択商品でクーポン有効化</option>
-                            <option value="disable-selected-products">選択商品でクーポン無効化</option>
-                            <option value="update-products">対象商品を更新</option>
-                            <option value="update-discount">割引額を更新</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">終了日時 (オプション)</label>
-                        <input type="datetime-local" class="form-input" id="schedule-end-datetime">
-                    </div>
-                </div>
-                
-                <!-- 商品選択エリア -->
-                <div id="bulk-product-selection" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin: 15px 0; display: none;">
-                    <h5 style="color: #4caf50; margin-bottom: 10px;">📦 対象商品選択</h5>
-                    <div class="product-checkbox-grid" id="bulk-product-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
-                        <!-- 商品チェックボックスが動的に生成される -->
-                    </div>
-                </div>
-
-                <div id="bulk-coupon-info" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin: 15px 0; display: none;">
-                    <h5 style="color: #ffc107; margin-bottom: 10px;">選択中のクーポン詳細</h5>
-                    <div id="bulk-coupon-details">
-                        <!-- クーポン詳細が表示 -->
-                    </div>
-                </div>
-                
-                <div class="action-buttons">
-                    <button class="btn btn-warning" onclick="scheduleBulkUpdate()">📅 予約設定</button>
-                    <button class="btn btn-primary" onclick="executeBulkUpdate()">⚡ 即座に実行</button>
-                </div>
-                
-                <div id="scheduled-operations" style="margin-top: 25px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h5 style="color: #ffc107; margin: 0;">📅 予約済み操作</h5>
-                        <div>
-                            <button class="btn btn-success" onclick="openScheduledOperationsManager()" style="font-size: 12px; padding: 5px 10px; margin-right: 5px;">📋 一覧管理</button>
-                            <button class="btn btn-info" onclick="debugScheduledOperations()" style="font-size: 12px; padding: 5px 10px;">🔍 状況確認</button>
-                        </div>
-                    </div>
-                    <div id="scheduled-list">
-                        <!-- 予約済み操作のリスト -->
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- 変更履歴タブ -->
         <div id="history-tab" class="tab-content">
@@ -1073,34 +991,6 @@
             </div>
         </div>
 
-        <!-- プレビュータブ -->
-        <div id="preview-tab" class="tab-content">
-            <div class="section-header">
-                <h2 class="section-title">👀 プレビュー</h2>
-                <button class="btn btn-primary" onclick="refreshPreview()">🔄 プレビュー更新</button>
-            </div>
-            
-            <div class="preview-panel">
-                <h3 class="preview-header">💻 サイトプレビュー</h3>
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <label class="form-label">プレビューページ選択</label>
-                    <select class="form-select" id="preview-page-select" onchange="updatePreviewPage()">
-                        <option value="main">メインページ</option>
-                        <option value="shintaku">神託システムタロット占い</option>
-                        <option value="star_yomi">星詠みシステム星座占い</option>
-                        <option value="personal">個人鑑定ページ</option>
-                    </select>
-                </div>
-                <div id="site-preview" style="border: 2px solid rgba(255, 215, 0, 0.3); border-radius: 10px; background: #fff; min-height: 400px; overflow: auto;">
-                    <!-- プレビュー内容 -->
-                </div>
-            </div>
-            
-            <div class="action-buttons">
-                <button class="btn btn-success" onclick="applyChangesToSite()">🚀 サイトに反映</button>
-                <button class="btn btn-secondary" onclick="saveAsDraft()">📝 下書き保存</button>
-            </div>
-        </div>
 
         <!-- ローディング表示 -->
         <div class="loading" id="loading">処理中...</div>
@@ -1800,8 +1690,10 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             }
         }
         
-        // 商品・決済リンク同期確認機能
+        // 商品・決済リンク同期確認機能（改良版）
         function debugProductPaymentLinkSync() {
+            console.log('🔗 商品・決済リンク同期確認開始（改良版）');
+            
             try {
                 // 価格同期の自動修正を実行
                 console.log('🔄 autoSyncProductPrices関数を呼び出し中...');
@@ -1842,23 +1734,73 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
                 console.log(`   - 更新日時: ${link.updated || 'なし'}`);
             });
             
-            // 同期状況の分析
+            // 同期状況の分析（改良版）
             const syncIssues = [];
+            const syncDetails = [];
             
-            // 1. 商品管理にあるが決済リンクにない商品
-            currentData.products.forEach(product => {
-                if (product.visible) { // 表示状態の商品のみチェック
-                    const hasPaymentLink = currentData.paymentLinks.some(link => 
-                        link.productRefId === product.id || link.productId === product.productId
-                    );
-                    if (!hasPaymentLink) {
-                        syncIssues.push({
-                            type: '決済リンク未作成',
-                            product: product.name,
-                            productId: product.productId,
-                            price: product.salePrice
-                        });
-                    }
+            console.log('📊 詳細分析開始...');
+            
+            // 1. 全商品の状況確認（表示/非表示問わず）
+            currentData.products.forEach((product, index) => {
+                console.log(`\n🔍 商品 ${index + 1}: ${product.name}`);
+                console.log(`   📦 商品ID: ${product.productId}`);
+                console.log(`   💰 価格: ¥${product.salePrice}`);
+                console.log(`   👁️ 表示: ${product.visible ? '表示中' : '非表示'}`);
+                
+                // より柔軟なマッチング条件で決済リンクを検索
+                const matchingLinks = currentData.paymentLinks.filter(link => {
+                    // 統合IDでの完全一致（最優先）
+                    if (link.productId === product.productId) return true;
+                    
+                    // 商品参照IDでの一致
+                    if (link.productRefId === product.id) return true;
+                    
+                    // 安定ID + 価格での一致
+                    if (link.stableId === product.stableId && link.price === product.salePrice) return true;
+                    
+                    // 商品名での一致（フォールバック）
+                    if (link.productName === product.name && link.price === product.salePrice) return true;
+                    
+                    return false;
+                });
+                
+                console.log(`   🔗 対応する決済リンク: ${matchingLinks.length}件`);
+                matchingLinks.forEach((link, linkIndex) => {
+                    console.log(`      ${linkIndex + 1}. ${link.id} (¥${link.price}, ${link.active ? '有効' : '無効'})`);
+                });
+                
+                const activeLinks = matchingLinks.filter(link => link.active);
+                const validLinks = activeLinks.filter(link => 
+                    link.url && 
+                    link.url !== 'https://square.link/u/PLACEHOLDER_LINK' &&
+                    link.url.trim() !== ''
+                );
+                
+                // 同期詳細情報を記録
+                syncDetails.push({
+                    productName: product.name,
+                    productId: product.productId,
+                    price: product.salePrice,
+                    visible: product.visible,
+                    totalLinks: matchingLinks.length,
+                    activeLinks: activeLinks.length,
+                    validLinks: validLinks.length,
+                    status: validLinks.length > 0 ? '✅ 正常' : 
+                            activeLinks.length > 0 ? '⚠️ URL未設定' : 
+                            matchingLinks.length > 0 ? '❌ 無効' : '❌ リンクなし'
+                });
+                
+                // 問題の判定（表示商品は必須、非表示商品は任意）
+                if (product.visible && validLinks.length === 0) {
+                    syncIssues.push({
+                        type: activeLinks.length > 0 ? 'URL未設定' : '決済リンク未作成',
+                        product: product.name,
+                        productId: product.productId,
+                        price: product.salePrice,
+                        visible: product.visible,
+                        foundLinks: matchingLinks.length,
+                        activeLinks: activeLinks.length
+                    });
                 }
             });
             
@@ -1926,8 +1868,14 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
                 }
             });
             
+            console.log('\n📊 同期詳細サマリー:');
+            syncDetails.forEach(detail => {
+                console.log(`${detail.status} ${detail.productName} (¥${detail.price}, ${detail.visible ? '表示' : '非表示'})`);
+                console.log(`   🔗 決済リンク: 全${detail.totalLinks}件, 有効${detail.activeLinks}件, URL設定済${detail.validLinks}件`);
+            });
+            
             // 画面表示用のデータを準備
-            updateSyncStatusModal(syncIssues);
+            updateSyncStatusModal(syncIssues, syncDetails);
             
             // 結果表示
             if (syncIssues.length > 0) {
@@ -2429,26 +2377,40 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             console.log('🔍 調査完了');
         }
         
-        // 同期状況モーダル更新関数
-        function updateSyncStatusModal(syncIssues) {
+        // 同期状況モーダル更新関数（改良版）
+        function updateSyncStatusModal(syncIssues, syncDetails = []) {
+            console.log('📊 同期状況モーダル更新開始');
+            
             // 概要サマリーの更新
             const productsCount = currentData.products ? currentData.products.length : 0;
             const linksCount = currentData.paymentLinks ? currentData.paymentLinks.length : 0;
-            const matchCount = syncIssues.length === 0 ? productsCount : Math.max(0, productsCount - syncIssues.length);
             
-            // 同期状況の判定
+            // より詳細な統計
+            const visibleProducts = currentData.products.filter(p => p.visible).length;
+            const hiddenProducts = productsCount - visibleProducts;
+            const validLinksCount = syncDetails.filter(d => d.validLinks > 0).length;
+            
+            // 同期状況の判定（より詳細）
             let syncStatus = '✅';
             let syncStatusText = '良好';
             if (syncIssues.length > 0) {
-                syncStatus = '⚠️';
-                syncStatusText = '問題あり';
+                const criticalIssues = syncIssues.filter(issue => issue.type === '決済リンク未作成');
+                const warningIssues = syncIssues.filter(issue => issue.type === 'URL未設定');
+                
+                if (criticalIssues.length > 0) {
+                    syncStatus = '❌';
+                    syncStatusText = '重大な問題';
+                } else if (warningIssues.length > 0) {
+                    syncStatus = '⚠️';
+                    syncStatusText = 'URL未設定';
+                }
             }
             
-            // 概要カードの更新
+            // 概要カードの更新（より詳細に）
             document.getElementById('sync-overview-status').textContent = syncStatus;
-            document.getElementById('sync-products-count').textContent = productsCount;
+            document.getElementById('sync-products-count').textContent = `${productsCount} (表示:${visibleProducts})`;
             document.getElementById('sync-links-count').textContent = linksCount;
-            document.getElementById('sync-match-count').textContent = `${matchCount}/${productsCount}`;
+            document.getElementById('sync-match-count').textContent = `${validLinksCount}/${productsCount}`;
             
             // 商品詳細テーブルの作成
             let productsHtml = `
@@ -2466,22 +2428,67 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
                     <tbody>
             `;
             
-            currentData.products.forEach((product, index) => {
-                const statusClass = product.visible ? 'text-success' : 'text-muted';
-                const statusIcon = product.visible ? '✅' : '❌';
-                const updatedText = product.updated ? new Date(product.updated).toLocaleString('ja-JP') : 'なし';
-                
-                productsHtml += `
-                    <tr>
-                        <td><strong>${product.name}</strong></td>
-                        <td><code>${product.productId || '未設定'}</code></td>
-                        <td>¥${product.regularPrice.toLocaleString()}</td>
-                        <td>¥${product.salePrice.toLocaleString()}</td>
-                        <td class="${statusClass}">${statusIcon} ${product.visible ? '表示' : '非表示'}</td>
-                        <td><small>${updatedText}</small></td>
-                    </tr>
-                `;
-            });
+            // sync詳細情報があれば統合表示、なければ従来の表示
+            if (syncDetails && syncDetails.length > 0) {
+                syncDetails.forEach((detail, index) => {
+                    const product = currentData.products.find(p => p.name === detail.productName);
+                    const statusClass = detail.visible ? 'text-success' : 'text-muted';
+                    const statusIcon = detail.visible ? '✅' : '❌';
+                    const updatedText = product?.updated ? new Date(product.updated).toLocaleString('ja-JP') : 'なし';
+                    
+                    // 決済リンク状況の判定
+                    let linkStatusClass = '';
+                    let linkStatusText = '';
+                    if (detail.validLinks > 0) {
+                        linkStatusClass = 'text-success';
+                        linkStatusText = `🔗 ${detail.validLinks}件 設定済`;
+                    } else if (detail.activeLinks > 0) {
+                        linkStatusClass = 'text-warning';
+                        linkStatusText = `⚠️ ${detail.activeLinks}件 URL未設定`;
+                    } else if (detail.totalLinks > 0) {
+                        linkStatusClass = 'text-danger';
+                        linkStatusText = `❌ ${detail.totalLinks}件 無効`;
+                    } else {
+                        linkStatusClass = 'text-danger';
+                        linkStatusText = '❌ リンクなし';
+                    }
+                    
+                    const rowClass = detail.status.includes('❌') ? 'table-danger' : 
+                                   detail.status.includes('⚠️') ? 'table-warning' : '';
+                    
+                    productsHtml += `
+                        <tr class="${rowClass}">
+                            <td>
+                                <strong>${detail.productName}</strong>
+                                <br><small class="${linkStatusClass}">${linkStatusText}</small>
+                            </td>
+                            <td><code>${detail.productId || '未設定'}</code></td>
+                            <td>¥${product?.regularPrice.toLocaleString() || 'N/A'}</td>
+                            <td>¥${detail.price.toLocaleString()}</td>
+                            <td class="${statusClass}">${statusIcon} ${detail.visible ? '表示' : '非表示'}</td>
+                            <td><small>${updatedText}</small></td>
+                        </tr>
+                    `;
+                });
+            } else {
+                // フォールバック：従来の表示方法
+                currentData.products.forEach((product, index) => {
+                    const statusClass = product.visible ? 'text-success' : 'text-muted';
+                    const statusIcon = product.visible ? '✅' : '❌';
+                    const updatedText = product.updated ? new Date(product.updated).toLocaleString('ja-JP') : 'なし';
+                    
+                    productsHtml += `
+                        <tr>
+                            <td><strong>${product.name}</strong></td>
+                            <td><code>${product.productId || '未設定'}</code></td>
+                            <td>¥${product.regularPrice.toLocaleString()}</td>
+                            <td>¥${product.salePrice.toLocaleString()}</td>
+                            <td class="${statusClass}">${statusIcon} ${product.visible ? '表示' : '非表示'}</td>
+                            <td><small>${updatedText}</small></td>
+                        </tr>
+                    `;
+                });
+            }
             
             productsHtml += '</tbody></table>';
             document.getElementById('sync-products-details').innerHTML = productsHtml;
@@ -2533,16 +2540,19 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
                 syncIssues.forEach(issue => {
                     switch (issue.type) {
                         case '決済リンク未作成':
-                            issuesHtml += `<li><strong>${issue.product}</strong> (¥${issue.price}) - 決済リンクが作成されていません</li>`;
+                            issuesHtml += `<li><span class="badge bg-danger">重要</span> <strong>${issue.product}</strong> (¥${issue.price}) - 決済リンクが作成されていません</li>`;
+                            break;
+                        case 'URL未設定':
+                            issuesHtml += `<li><span class="badge bg-warning">注意</span> <strong>${issue.product}</strong> (¥${issue.price}) - 決済リンクは作成済みですが、SquareのURLが設定されていません</li>`;
                             break;
                         case '商品未発見':
-                            issuesHtml += `<li><strong>${issue.productName || issue.productId}</strong> - 対応する商品が見つかりません</li>`;
+                            issuesHtml += `<li><span class="badge bg-info">情報</span> <strong>${issue.productName || issue.productId}</strong> - 対応する商品が見つかりません（削除済み商品の可能性）</li>`;
                             break;
                         case '価格不一致':
-                            issuesHtml += `<li><strong>${issue.productId}</strong> - 決済リンク: ¥${issue.linkPrice}, 商品: ¥${issue.productPrice}</li>`;
+                            issuesHtml += `<li><span class="badge bg-warning">注意</span> <strong>${issue.productId}</strong> - 価格不一致（決済リンク: ¥${issue.linkPrice}, 商品: ¥${issue.productPrice}）</li>`;
                             break;
                         default:
-                            issuesHtml += `<li><strong>${issue.type}</strong>: ${JSON.stringify(issue)}</li>`;
+                            issuesHtml += `<li><span class="badge bg-secondary">その他</span> <strong>${issue.type}</strong>: ${JSON.stringify(issue)}</li>`;
                     }
                 });
                 
@@ -4165,10 +4175,6 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             // タブ固有の初期化
             if (tabName === 'history') {
                 loadHistory();
-            } else if (tabName === 'preview') {
-                refreshPreview();
-            } else if (tabName === 'bulk-operations') {
-                updateScheduledOperationsList();
             } else if (tabName === 'payment-links') {
                 updatePaymentLinksTable();
             }
@@ -4189,9 +4195,6 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             updatePricingRulesTable();
             console.log('🔍 updatePricingRulesTable後のcurrentData.products:', currentData.products);
             
-            console.log('🔄 updateBulkCouponSelect 実行中...');
-            updateBulkCouponSelect();
-            console.log('🔍 updateBulkCouponSelect後のcurrentData.products:', currentData.products);
             
             console.log('🔄 updateAvailableCoupons 実行中...');
             updateAvailableCoupons();
@@ -6031,7 +6034,6 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             
             saveData();
             updatePricingRulesTable();
-            updateBulkCouponSelect();
             addHistoryEntry(
                 ruleId ? 'クーポン更新' : 'クーポン作成',
                 `クーポン「${couponCode}」を${ruleId ? '更新' : '作成'}しました`
@@ -6059,162 +6061,8 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             }
         }
 
-        // 一括更新実行
-        function executeBulkUpdate() {
-            const couponId = document.getElementById('bulk-coupon-select').value;
-            const type = document.getElementById('bulk-update-type').value;
-            
-            if (!couponId && (type === 'enable-coupon' || type === 'disable-coupon')) {
-                showMessage('クーポンを選択してください', 'error');
-                return;
-            }
-            
-            showLoading(true);
-            
-            setTimeout(() => {
-                switch (type) {
-                    case 'enable-coupon':
-                        const enableRule = currentData.pricingRules.find(r => r.id === couponId);
-                        if (enableRule) {
-                            enableRule.active = true;
-                            addHistoryEntry('クーポン有効化', `クーポン「${enableRule.couponCode}」を有効化しました`);
-                        }
-                        break;
-                        
-                    case 'disable-coupon':
-                        const disableRule = currentData.pricingRules.find(r => r.id === couponId);
-                        if (disableRule) {
-                            disableRule.active = false;
-                            addHistoryEntry('クーポン無効化', `クーポン「${disableRule.couponCode}」を無効化しました`);
-                        }
-                        break;
-                        
-                    case 'update-products':
-                        addHistoryEntry('商品情報更新', '対象商品の情報を更新しました');
-                        break;
-                        
-                    case 'update-discount':
-                        addHistoryEntry('割引額更新', '割引額を更新しました');
-                        break;
-                }
-                
-                saveData();
-                updateAllTables();
-                updateBulkCouponSelect();
-                showLoading(false);
-                showMessage('一括更新を実行しました', 'success');
-            }, 1500);
-        }
 
-        // 一括更新用クーポン選択肢を更新
-        function updateBulkCouponSelect() {
-            const select = document.getElementById('bulk-coupon-select');
-            if (!select) {
-                console.log('⚠️ bulk-coupon-select 要素が見つかりません');
-                return;
-            }
-            
-            select.innerHTML = '<option value="">クーポンを選択...</option>';
-            
-            console.log('🔄 一括更新用クーポン選択肢を更新中...価格ルール数:', currentData.pricingRules.length);
-            
-            let addedCount = 0;
-            currentData.pricingRules.forEach(rule => {
-                const option = document.createElement('option');
-                option.value = rule.id;
-                option.textContent = `${rule.couponCode} - ${rule.description}`;
-                select.appendChild(option);
-                addedCount++;
-                console.log('✅ 一括更新クーポン追加:', rule.couponCode);
-            });
-            
-            console.log('📊 一括更新に追加されたクーポン数:', addedCount);
-            
-            if (addedCount === 0) {
-                const option = document.createElement('option');
-                option.value = '';
-                option.textContent = 'クーポンがありません - 価格ルール設定で追加してください';
-                option.disabled = true;
-                select.appendChild(option);
-                showMessage('一括更新用のクーポンがありません', 'info');
-            }
-        }
 
-        // 予約設定
-        function scheduleBulkUpdate() {
-            console.log('🔄 scheduleBulkUpdate 関数が呼び出されました');
-            
-            const startDatetime = document.getElementById('scheduled-datetime').value;
-            const endDatetime = document.getElementById('schedule-end-datetime').value;
-            const type = document.getElementById('bulk-update-type').value;
-            const couponId = document.getElementById('bulk-coupon-select').value;
-            
-            console.log('📊 フォーム値:', { startDatetime, endDatetime, type, couponId });
-            
-            if (!startDatetime) {
-                showMessage('開始日時を設定してください', 'error');
-                return;
-            }
-            
-            if (!couponId && (type.includes('coupon') || type.includes('products'))) {
-                showMessage('クーポンを選択してください', 'error');
-                return;
-            }
-
-            // 商品選択が必要な場合のチェック
-            if ((type === 'enable-selected-products' || type === 'disable-selected-products')) {
-                const selectedProducts = document.querySelectorAll('#bulk-product-checkboxes input[type="checkbox"]:checked');
-                if (selectedProducts.length === 0) {
-                    showMessage('対象商品を選択してください', 'error');
-                    return;
-                }
-            }
-            
-            const rule = currentData.pricingRules.find(r => r.id === couponId);
-            // 選択された商品IDを取得
-            let selectedProductIds = [];
-            if (type === 'enable-selected-products' || type === 'disable-selected-products') {
-                const selectedCheckboxes = document.querySelectorAll('#bulk-product-checkboxes input[type="checkbox"]:checked');
-                selectedProductIds = Array.from(selectedCheckboxes).map(cb => cb.value);
-            }
-            
-            const scheduledOperation = {
-                id: 'scheduled_' + Date.now(),
-                startDatetime: startDatetime,
-                endDatetime: endDatetime || null,
-                type: type,
-                couponId: couponId,
-                couponCode: rule ? rule.couponCode : '',
-                selectedProducts: selectedProductIds,
-                status: 'pending',
-                created: new Date().toISOString()
-            };
-            
-            currentData.scheduledOperations.push(scheduledOperation);
-            console.log('📊 予約操作を追加:', scheduledOperation);
-            console.log('📊 追加後の予約操作数:', currentData.scheduledOperations.length);
-            
-            saveData();
-            
-            // 予約操作一覧を強制更新
-            setTimeout(() => {
-                updateScheduledOperationsList();
-                console.log('🔄 予約操作一覧を強制更新しました');
-            }, 100);
-            
-            const endInfo = endDatetime ? ` - ${endDatetime}終了` : '';
-            const productInfo = selectedProductIds.length > 0 ? ` (対象商品: ${selectedProductIds.length}件)` : '';
-            addHistoryEntry('一括更新予約', `${startDatetime}${endInfo}にクーポン「${rule?.couponCode}」の${type}を予約${productInfo}`);
-            showMessage('✅ 一括更新を予約しました！「📅 予約済み操作」セクションをご確認ください', 'success');
-            
-            // フォームリセット
-            document.getElementById('scheduled-datetime').value = '';
-            document.getElementById('schedule-end-datetime').value = '';
-            if (document.getElementById('bulk-product-checkboxes')) {
-                const checkboxes = document.querySelectorAll('#bulk-product-checkboxes input[type="checkbox"]');
-                checkboxes.forEach(cb => cb.checked = false);
-            }
-        }
 
         // 予約操作一覧を更新
         function updateScheduledOperationsList() {
@@ -6791,7 +6639,6 @@ ${errorCount > 0 ? `❌ エラー: ${errorCount}件\n` : ''}📊 現在の価格
             
             saveData();
             updatePricingRulesTable();
-            updateBulkCouponSelect();
             
             addHistoryEntry('クーポンインポート', `クーポン「${couponData.code}」を${selectedProducts.length}個の商品に適用しました`);
             
@@ -8048,6 +7895,17 @@ localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body" style="overflow-y: auto; max-height: calc(100vh - 140px); padding: 20px;">
+                    <!-- 説明文 -->
+                    <div class="alert alert-info mb-4">
+                        <h6><i class="fas fa-info-circle"></i> 同期状況について</h6>
+                        <p class="mb-2">このページは<strong>統合管理画面で管理されているデータ</strong>と<strong>実際の各ページで使用されるデータ</strong>の同期状況を表示します。</p>
+                        <ul class="mb-0" style="padding-left: 20px;">
+                            <li><strong>✅ 正常</strong>: 決済リンクが作成され、SquareのURLも設定済み</li>
+                            <li><strong>⚠️ URL未設定</strong>: 決済リンクは作成済みですが、SquareのURLが未設定</li>
+                            <li><strong>❌ リンクなし</strong>: 決済リンク自体が作成されていません</li>
+                        </ul>
+                    </div>
+                    
                     <!-- 概要サマリー -->
                     <div class="row mb-4">
                         <div class="col-md-3">
@@ -8118,10 +7976,17 @@ localStorage予約数: ${savedData ? JSON.parse(savedData).scheduledOperations?.
                     <!-- 問題点の表示 -->
                     <div id="sync-issues" class="mt-3" style="display: none;">
                         <div class="alert alert-warning">
-                            <h6>⚠️ 発見された問題点</h6>
+                            <h6>⚠️ 発見された問題点と解決方法</h6>
                             <ul id="sync-issues-list">
                                 <!-- 問題点がここに挿入されます -->
                             </ul>
+                            <hr>
+                            <h6>🔧 解決方法</h6>
+                            <ol>
+                                <li><strong>決済リンク未作成</strong> → 「🔄 強制同期実行」ボタンをクリックして自動作成</li>
+                                <li><strong>URL未設定</strong> → 決済リンク管理タブでSquareの正しいURLを設定</li>
+                                <li><strong>価格不一致</strong> → 商品管理で価格を修正するか、決済リンクを再作成</li>
+                            </ol>
                         </div>
                     </div>
                 </div>
